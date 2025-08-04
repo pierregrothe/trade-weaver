@@ -90,6 +90,12 @@ testpaths = ["tests"]
 # Add the source root to the python path so imports like 'from trade_weaver.core...' work in tests
 pythonpath = "src"
 asyncio_mode = "auto"
+# Explicitly set the event loop scope for async fixtures to 'function'.
+asyncio_default_fixture_loop_scope = "function"
+# Filter (ignore) specific warnings to keep the test output clean.
+filterwarnings = [
+    "ignore::DeprecationWarning:eventkit.*",
+]
 
 [tool.hatch.build.targets.wheel]
 # This is crucial: it tells the build system that our actual Python package

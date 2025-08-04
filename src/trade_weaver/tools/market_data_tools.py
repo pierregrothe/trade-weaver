@@ -1,25 +1,29 @@
-# File: src/trade_weaver/tools/market_data_tools.py
+# File: src/trade_weaver/tools/market_data_tools.py (Corrected)
 
 from trade_weaver.core.ibkr_broker import IBKRBroker
-# In the future, we might add a factory here to select the right broker.
 
 def get_market_data(ticker: str) -> dict:
     """
-    Connects to the broker and retrieves the latest market data for a given stock ticker.
+    Connects to the broker and retrieves market data for a given stock ticker.
 
     Args:
         ticker (str): The stock symbol (e.g., "NVDA", "AAPL").
 
     Returns:
-        dict: A dictionary containing the market data from the broker.
+        dict: A dictionary with 'status' and the 'price' if successful.
     """
     print(f"TOOL INFO: 'get_market_data' tool invoked for ticker: {ticker}")
     broker = IBKRBroker()
     
-    # In a real app, portfolio_id would come from the ToolContext
     if broker.connect(portfolio_id="simulated_portfolio"):
-        market_data = broker.get_market_data(ticker)
+        response = broker.get_market_data(ticker)
         broker.disconnect()
-        return market_data
+        
+        if response.get("status") == "success":
+            price = response.get("data", {}).get("last_price")
+            # Return a simple, structured dictionary. This is the preferred pattern.
+            return {"status": "success", "price": price}
+        else:
+            return {"status": "error", "message": response.get("message", "Broker error")}
     else:
         return {"status": "error", "message": "Could not connect to the broker."}
