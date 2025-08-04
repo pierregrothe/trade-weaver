@@ -1,0 +1,5 @@
+google-adk
+ib_insync
+google-cloud-firestore
+google-cloud-secret-manager
+python-dotenv
