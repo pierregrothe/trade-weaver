@@ -26,30 +26,30 @@ Trade Weaver uses a decoupled, hybrid architecture to leverage the best of both 
 
 ```mermaid
 graph TD
-    subgraph User Interaction
+    subgraph "User Interaction"
         User[👤 Trader/PM] --> UIMgmt[Firebase App - Management Cockpit];
     end
 
-    subgraph Firebase Backend (Serverless)
-        UIMgmt -- Manages/Displays Data --> Firestore[🔥 Firestore Database];
+    subgraph "Firebase Backend (Serverless)"
+        UIMgmt -- "Manages/Displays Data" --> Firestore[🔥 Firestore Database];
         UIMgmt -- Authenticates --> FirebaseAuth[🔒 Firebase Auth];
         Firestore -- Triggers --> CloudFunctions[⚙️ Cloud Functions];
     end
 
-    subgraph Asynchronous Communication
-        CloudFunctions -- Publishes Commands --> PubSub[📬 Google Cloud Pub/Sub];
+    subgraph "Asynchronous Communication"
+        CloudFunctions -- "Publishes Commands" --> PubSub[📬 Google Cloud Pub/Sub];
     end
 
-    subgraph Trading Engine (High Performance)
-        CloudRun[☁️ Google Cloud Run Service] -- Subscribes to --> PubSub;
+    subgraph "Trading Engine (High Performance)"
+        CloudRun[☁️ Google Cloud Run Service] -- "Subscribes to" --> PubSub;
         CloudRun --> ADKAgents[🤖 ADK Agents];
-        ADKAgents -- Uses --> Tools[🛠️ Core Tools];
-        Tools -- Interacts with --> BrokerInterface[🔌 Broker Interface];
+        ADKAgents -- "Uses" --> Tools[🛠️ Core Tools];
+        Tools -- "Interacts with" --> BrokerInterface[🔌 Broker Interface];
     end
     
-    subgraph External Services
+    subgraph "External Services"
         BrokerInterface --> IBKR[🏦 Interactive Brokers API];
-        CloudRun -- Fetches Secrets --> SecretManager[🔑 Google Secret Manager];
+        CloudRun -- "Fetches Secrets" --> SecretManager[🔑 Google Secret Manager];
     end
 
     style User fill:#D5E8D4
