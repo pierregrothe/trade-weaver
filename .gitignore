@@ -1,0 +1,59 @@
+# File: .gitignore
+
+# ===================================================================
+# SECRETS - This is the most important section.
+# Never commit files containing sensitive credentials.
+# ===================================================================
+.env
+.env.*
+*.local
+
+
+# ===================================================================
+# Python & Dependency Management
+# ===================================================================
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+
+# Mypy, Ruff, and Pytest cache
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# uv lock file (optional, but good to ignore if everyone reinstalls in dev containers)
+uv.lock
+
+
+# ===================================================================
+# IDE / Editor specific files
+# ===================================================================
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+
+# ===================================================================
+# Operating System specific files
+# ===================================================================
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
