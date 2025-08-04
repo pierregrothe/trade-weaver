@@ -1,22 +1,17 @@
-# File: src/trade_weaver/agents/analyzer_agent/agent.py (Definitive Version)
+# File: src/trade_weaver/agents/analyzer_agent/agent.py (Corrected)
 
 from google.adk.agents import Agent
 
-# Import the decoupled prompt and the shared tool
+from trade_weaver import config
 from .prompts import ANALYZER_AGENT_INSTRUCTION
-from trade_weaver.tools.market_data_tools import get_market_data
+from trade_weaver.tools.market_scanner_tools import create_tradable_universe
 
-# The 'root_agent' variable is the conventional name ADK looks for.
 root_agent = Agent(
     name="analyzer_agent",
-    
-    # --- THIS IS THE CORRECTED MODEL NAME ---
-    # Based on the latest official documentation for function calling.
-    model="gemini-2.0-flash",
-    
-    description="Scans markets for trading opportunities based on pre-defined strategies.",
+    model=config.FLASH_MODEL, # Using the correct variable from our config
+    description="Scans and filters markets to create a daily watchlist of tradable stocks.",
     instruction=ANALYZER_AGENT_INSTRUCTION,
     tools=[
-        get_market_data
+        create_tradable_universe
     ]
 )
