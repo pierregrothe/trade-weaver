@@ -1,0 +1,97 @@
+[build-system]
+# Defines the tools needed to build your project package. Hatch is a modern choice.
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trade-weaver"
+version = "0.1.0"
+description = "AI-powered day trading agent using Google ADK and Cloud."
+authors = [
+    {name = "Pierre Grothé", email = "pierre@grothe.ca"},
+]
+
+requires-python = ">=3.10,<3.14"
+
+# These are the core dependencies your application needs to RUN.
+dependencies = [
+    "google-adk>=1.9.0",
+    "google-generativeai",
+    "ib_insync",                      # For Interactive Brokers
+    "google-cloud-firestore",         # For our database
+    "google-cloud-secret-manager",    # For secure key storage
+    "python-dotenv",                  # For managing local .env files
+    "fastapi",                        # The web server framework used by 'adk web'
+    "uvicorn[standard]",              # The high-performance server that runs FastAPI
+]
+
+[project.urls]
+Homepage = "https://github.com/pierregrothe/trade-weaver" # Replace with your repo URL
+
+# Defines optional dependencies, grouped for different purposes (e.g., development).
+[project.optional-dependencies]
+# The 'dev' group includes everything needed for development, linting, and testing.
+dev = [
+    "ruff>=0.4.6",
+    "mypy~=1.15.0",
+    "codespell~=2.2.0",
+    "types-pyyaml~=6.0.12.20240917",
+    "types-requests~=2.32.0.20240914",
+    "pytest",
+    "pytest-asyncio",
+]
+
+# --- Tool Configurations ---
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+# Tell Ruff that our code lives in the 'src' directory. This helps it resolve imports correctly.
+src = ["src"]
+
+[tool.ruff.lint]
+select = [ "E", "F", "W", "I", "C", "B", "UP", "RUF" ]
+ignore = ["E501", "C901"] # ignore line too long, too complex
+
+[tool.ruff.lint.isort]
+# Since we told ruff our code is in 'src', we must now refer to our package by its actual name.
+known-first-party = ["trade_weaver"]
+
+[tool.mypy]
+python_version = "3.13"
+# Tell mypy where to find our code, and to follow our package structure.
+mypy_path = "src"
+explicit_package_bases = true
+
+# Rules
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+follow_imports = "silent"
+ignore_missing_imports = true
+disable_error_code = ["misc", "no-untyped-call", "no-any-return"]
+
+# Exclude folders from type checking
+exclude = ["\\.venv", "\\.devcontainer", "build"]
+
+[tool.codespell]
+ignore-words-list = "rouge"
+skip = "./.venv,./.devcontainer,./build,**/*.ipynb"
+
+[tool.pytest.ini_options]
+# Tell pytest to look for tests in the 'tests' directory
+testpaths = ["tests"]
+# Add the source root to the python path so imports like 'from trade_weaver.core...' work in tests
+pythonpath = "src"
+asyncio_mode = "auto"
+
+[tool.hatch.build.targets.wheel]
+# This is crucial: it tells the build system that our actual Python package
+# is the 'trade_weaver' directory inside 'src'.
+packages = ["src/trade_weaver"]

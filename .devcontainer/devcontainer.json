@@ -1,25 +1,32 @@
 {
     "name": "Trade Weaver Dev Container",
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "context": ".."
     },
+
+    // Tells VS Code which user to run as inside the container.
+    // The base image creates 'vscode' for us.
+    "remoteUser": "vscode",
+
     "customizations": {
         "vscode": {
+            "settings": {
+                    // Set Python path for VS Code tools like linters
+                    "python.defaultInterpreterPath": "/usr/local/bin/python"
+                },
             "extensions": [
                 "ms-python.python",
                 "ms-python.vscode-pylance"
             ]
         }
     },
-    // Forward the port for the ADK web server
+    
     "forwardPorts": [8000],
 
-    // Mount the local gcloud config directory into the container.
-    // This makes your local 'gcloud auth' credentials available inside the container!
     "mounts": [
         "source=${localEnv:USERPROFILE}\\.config\\gcloud,target=/home/vscode/.config/gcloud,type=bind,consistency=cached"
     ],
 
-    // Run post-create commands. We'll use this to set the active gcloud project.
     "postCreateCommand": "gcloud config set project trade-weaver-platform"
 }
