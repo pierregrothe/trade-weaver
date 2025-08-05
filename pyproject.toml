@@ -20,9 +20,17 @@ dependencies = [
     "ib_insync",                      # For Interactive Brokers
     "google-cloud-firestore",         # For our database
     "google-cloud-secret-manager",    # For secure key storage
-    "python-dotenv",                  # For managing local .env files
+    "python-dotenv = "^1.0.1"
+eodhd-async = "^0.1.3"",                  # For managing local .env files
     "fastapi",                        # The web server framework used by 'adk web'
     "uvicorn[standard]",              # The high-performance server that runs FastAPI
+    "yfinance",                       # For fetching public market data
+    "pandas",                         # For data manipulation and analysis
+    "lxml",                           # Required by pandas for reading HTML tables
+    "beautifulsoup4",
+    "requests",
+    "playwright",
+    "pytz",
 ]
 
 [project.urls]
@@ -78,7 +86,7 @@ ignore_missing_imports = true
 disable_error_code = ["misc", "no-untyped-call", "no-any-return"]
 
 # Exclude folders from type checking
-exclude = ["\\.venv", "\\.devcontainer", "build"]
+exclude = ['\.venv', '\\.devcontainer', 'build']
 
 [tool.codespell]
 ignore-words-list = "rouge"
@@ -88,7 +96,7 @@ skip = "./.venv,./.devcontainer,./build,**/*.ipynb"
 # Tell pytest to look for tests in the 'tests' directory
 testpaths = ["tests"]
 # Add the source root to the python path so imports like 'from trade_weaver.core...' work in tests
-pythonpath = "src"
+pythonpath = "app"
 asyncio_mode = "auto"
 # Explicitly set the event loop scope for async fixtures to 'function'.
 asyncio_default_fixture_loop_scope = "function"
@@ -100,4 +108,7 @@ filterwarnings = [
 [tool.hatch.build.targets.wheel]
 # This is crucial: it tells the build system that our actual Python package
 # is the 'trade_weaver' directory inside 'src'.
-packages = ["src/trade_weaver"]
+packages = ["app"]
+
+[tool.setuptools]
+packages = ["app"]

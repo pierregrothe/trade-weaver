@@ -1,0 +1,509 @@
+{
+    "name": "AI Day Trading Agent Knowledge Base",
+    "version": "3.0",
+    "description": "A comprehensive, structured, and quantitatively deep knowledge base about day trading, synthesized for a Retrieval-Augmented Generation (RAG) AI system. Version 3.0 includes deep-dive research.",
+    "files": [
+        {
+            "path": "01_foundations/01_core_principles.md",
+            "description": "Defines the fundamental concepts and quantitative characteristics of day trading (timeframe, frequency, holding period), its distinction from investing, and the key advantages an AI agent has over human traders. Includes common beginner misconceptions to avoid.",
+            "keywords": [
+                "day trading",
+                "principles",
+                "AI edge",
+                "HFT",
+                "institutional trading",
+                "misconceptions"
+            ]
+        },
+        {
+            "path": "01_foundations/02_risk_management_architecture.md",
+            "description": "Details the multi-layered, hierarchical risk management system. Covers Layer 1 (Single-Trade protocols like the 1% Rule), Layer 2 (Portfolio-Level protocols like max sector exposure), and Layer 3 (System-Level circuit breakers like trailing drawdown and VIX scaling).",
+            "keywords": [
+                "risk management",
+                "position sizing",
+                "stop-loss",
+                "1% rule",
+                "portfolio risk",
+                "drawdown",
+                "VIX",
+                "hierarchical risk"
+            ]
+        },
+        {
+            "path": "01_foundations/03_market_psychology.md",
+            "description": "Explains common cognitive biases (FOMO, Revenge Trading, Complacency, Confirmation Bias) and provides their quantitative signatures for AI detection. Details specific, programmable AI countermeasures for each bias.",
+            "keywords": [
+                "psychology",
+                "cognitive bias",
+                "FOMO",
+                "revenge trading",
+                "complacency",
+                "AI countermeasures",
+                "circuit breaker"
+            ]
+        },
+        {
+            "path": "01_foundations/04_tradable_markets_comparison.md",
+            "description": "Provides a detailed comparative analysis of Equities, Forex, and Crypto markets. Includes critical AI Agent Implications regarding operational hours (24/7), data requirements, capital constraints, and necessary risk controls for each market.",
+            "keywords": [
+                "markets",
+                "equities",
+                "forex",
+                "cryptocurrency",
+                "volatility",
+                "liquidity",
+                "AI implications",
+                "leverage"
+            ]
+        },
+        {
+            "path": "01_foundations/05_market_regime_analysis_module.md",
+            "description": "A deep-dive guide for the AI's situational awareness module. Details the quantitative analysis of VIX for volatility, ADX for trend, and Time of Day. Provides the logic for creating a machine-readable 'market_regime' state object and the ADK implementation pattern for updating it.",
+            "keywords": [
+                "market regime",
+                "VIX",
+                "ADX",
+                "volatility",
+                "trend analysis",
+                "situational awareness",
+                "ADK implementation"
+            ]
+        },
+        {
+            "path": "02_operational_playbook/01_daily_routine_and_cadence.md",
+            "description": "Outlines the agent's operational state machine for a trading day (Pre-Market, Open, Mid-Day, Close, Post-Market), detailing the active modules, key data inputs, and constraints for each state.",
+            "keywords": [
+                "routine",
+                "schedule",
+                "trading plan",
+                "cadence",
+                "workflow",
+                "state machine"
+            ]
+        },
+        {
+            "path": "02_operational_playbook/02_pre_market_scanning_and_watchlist.md",
+            "description": "Details the four-stage data processing pipeline for creating a ranked daily watchlist, including universe filtering, dynamic gapper scanning (RVOL, Gap %), NLP-based catalyst scoring, and a final weighted ranking algorithm.",
+            "keywords": [
+                "watchlist",
+                "scanner",
+                "pre-market",
+                "gappers",
+                "catalyst",
+                "NLP",
+                "relative volume",
+                "ranking"
+            ]
+        },
+        {
+            "path": "02_operational_playbook/03_trade_execution_logic.md",
+            "description": "Defines a hierarchical trade execution logic, including pre-entry prerequisite checks (market regime, broad market filter) and explicit, programmable rules for entry, exit, and in-trade management (scaling, trailing stops).",
+            "keywords": [
+                "execution",
+                "entry strategy",
+                "exit strategy",
+                "breakout",
+                "dip buy",
+                "ATR stop",
+                "bracket order"
+            ]
+        },
+        {
+            "path": "02_operational_playbook/04_performance_journaling_and_review.md",
+            "description": "Explains the critical feedback loop of journaling. Specifies essential data points for an algorithmic journal and details the Automated Feedback Loop Implementation using an ADK LoopAgent for self-optimization.",
+            "keywords": [
+                "journal",
+                "performance review",
+                "feedback loop",
+                "KPMs",
+                "profit factor",
+                "ADK",
+                "LoopAgent"
+            ]
+        },
+        {
+            "path": "02_operational_playbook/05_advanced_trade_selection_algorithm.md",
+            "description": "Details a sophisticated, quantitative algorithm for selecting and sizing trades from a watchlist to manage correlated risk. The process involves scoring, Hierarchical Risk Parity (HRP) clustering for diversification, and Risk Parity for position sizing.",
+            "keywords": [
+                "trade selection",
+                "portfolio construction",
+                "Hierarchical Risk Parity",
+                "HRP",
+                "Risk Parity",
+                "diversification",
+                "correlated risk"
+            ]
+        },
+        {
+            "path": "03_strategies/00_dynamic_strategy_selection_matrix.md",
+            "description": "The master decision matrix for the AI agent. This document provides a quantitative, rule-based framework for dynamically selecting the optimal trading strategy (Momentum, Breakout, Mean Reversion) based on real-time market conditions, including Time of Day, VIX level, and ADX reading.",
+            "keywords": [
+                "strategy selection",
+                "decision matrix",
+                "market regime",
+                "VIX",
+                "ADX",
+                "dynamic strategy",
+                "playbook"
+            ]
+        },
+        {
+            "path": "03_strategies/01_momentum_trading.md",
+            "description": "A deep dive into the Intraday Momentum strategy. Details the statistical edge from behavioral biases, optimal parameters (13/48 EMA Crossover), and a full quantitative performance analysis based on VIX, ADX, and Time of Day regimes.",
+            "keywords": [
+                "strategy",
+                "momentum trading",
+                "trend following",
+                "EMA",
+                "performance analysis",
+                "profit factor",
+                "behavioral finance"
+            ]
+        },
+        {
+            "path": "03_strategies/02_breakout_trading.md",
+            "description": "A deep dive into the Opening Range Breakout (ORB) strategy. Details the statistical edge from the market open liquidity event, optimal parameters (15-min range, EOC target), and a quantitative performance analysis based on VIX and prior day's ADX.",
+            "keywords": [
+                "strategy",
+                "breakout trading",
+                "Opening Range Breakout",
+                "ORB",
+                "volume confirmation",
+                "performance",
+                "market open"
+            ]
+        },
+        {
+            "path": "03_strategies/03_mean_reversion.md",
+            "description": "A deep dive into the Intraday Mean Reversion strategy. Details the statistical edge from behavioral overreactions, optimal parameters (RSI(9), BB(10, 1.5)), a quantitative performance analysis, and a critical AI guardrail to prevent its use in trending markets.",
+            "keywords": [
+                "strategy",
+                "mean reversion",
+                "counter-trend",
+                "Bollinger Bands",
+                "RSI",
+                "performance",
+                "guardrail"
+            ]
+        },
+        {
+            "path": "03_strategies/04_scalping.md",
+            "description": "A deep dive into high-frequency Scalping. Defines quantitative prerequisites (liquidity, spread) and provides pseudocode for two specific AI architectures: Passive Market Making and Aggressive Order Flow Imbalance. Details the required hybrid 'two-speed brain' ADK architecture.",
+            "keywords": [
+                "strategy",
+                "scalping",
+                "high-frequency",
+                "HFT",
+                "Level 2",
+                "order flow",
+                "imbalance",
+                "ADK architecture"
+            ]
+        },
+        {
+            "path": "03_strategies/05_news_based_trading.md",
+            "description": "A deep dive into News-Based Trading. Provides two programmable tactics (Volatility Straddle, Data Deviation) and a detailed ADK Implementation Pipeline using a SequentialAgent and FunctionTools for processing unstructured news with NLP.",
+            "keywords": [
+                "strategy",
+                "news trading",
+                "catalyst",
+                "volatility",
+                "NLP",
+                "ADK",
+                "SequentialAgent"
+            ]
+        },
+        {
+            "path": "03_strategies/06_intraday_chart_patterns_for_ai.md",
+            "description": "An algorithmic guide to identifying classic intraday chart patterns. Translates visual patterns like Bull Flags, Pennants, Triangles, and Head & Shoulders into quantifiable characteristics and pseudocode for AI detection. Includes specific entry, stop-loss, and profit target rules for each pattern.",
+            "keywords": [
+                "chart patterns",
+                "algorithmic detection",
+                "bull flag",
+                "pennant",
+                "triangle pattern",
+                "head and shoulders",
+                "pseudocode"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/01_technical_indicators_decoded.md",
+            "description": "A reference library of essential technical indicators, including a crucial section on the Hierarchy and Role of Indicators (Trend, Momentum, Volatility, Volume) to ensure confirmation and avoid multicollinearity in AI strategy design.",
+            "keywords": [
+                "technical analysis",
+                "indicators",
+                "RSI",
+                "MACD",
+                "VWAP",
+                "confirmation",
+                "hierarchy"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/02_order_flow_data_feeds.md",
+            "description": "Explains the hierarchy of market data (L1, L2, Tape) and provides concrete, programmable rules with pseudocode for an AI to 'read the tape' by detecting patterns like Absorption and Iceberg Orders.",
+            "keywords": [
+                "data feeds",
+                "order flow",
+                "Level 2",
+                "market depth",
+                "time and sales",
+                "iceberg order",
+                "absorption",
+                "pseudocode"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/03_software_and_platforms.md",
+            "description": "Provides an overview of the essential software stack, translating each component into its role for an AI. Details how the agent programmatically integrates with Charting Platforms, Scanners, and News APIs.",
+            "keywords": [
+                "software",
+                "platforms",
+                "tools",
+                "TradingView",
+                "scanners",
+                "news API",
+                "AI integration"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/04_data_provider_analysis_eodhd.md",
+            "description": "An in-depth analysis of EOD Historical Data (EODHD). Includes a ranked justification for its primary recommendation, focusing on architectural simplification, TCO, and its official asynchronous Python client for ADK implementation.",
+            "keywords": [
+                "data provider",
+                "EODHD",
+                "API",
+                "WebSocket",
+                "TCO",
+                "async",
+                "eodhdc"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/05_data_provider_alternatives.md",
+            "description": "A comparative analysis of Polygon.io and Alpha Vantage, including a Strategic Recommendation Matrix that guides the AI on which provider to select based on project phase (Prototyping vs. Production) and primary objective (Latency vs. Balanced).",
+            "keywords": [
+                "data provider",
+                "Polygon.io",
+                "Alpha Vantage",
+                "comparison",
+                "recommendation matrix",
+                "TCO"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/06_technical_indicator_playbook.md",
+            "description": "A professional playbook for using technical indicators in combination for high-probability signals. Details the principle of Signal Confluence and provides specific, multi-indicator combinations and programmable rules for Momentum, Breakout, and Mean Reversion strategies.",
+            "keywords": [
+                "indicator playbook",
+                "signal confluence",
+                "indicator combination",
+                "confirmation",
+                "programmable rules",
+                "ADK FunctionTool"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/07_execution_engine_deep_dive.md",
+            "description": "A deep dive into algorithmic trade execution. Provides a decision-theoretic framework for advanced order types (Market, Limit, Stop-Limit), quantitative slippage models, and resilient broker API interaction patterns like the Token Bucket algorithm and Exponential Backoff with Jitter.",
+            "keywords": [
+                "execution engine",
+                "order types",
+                "slippage model",
+                "market impact",
+                "API rate limit",
+                "token bucket",
+                "partial fills",
+                "resilience"
+            ]
+        },
+        {
+            "path": "04_tools_and_data/08_quantitative_modeling_workflow.md",
+            "description": "A methodological guide to the quantitative trading model development lifecycle. Covers predictive feature engineering (Log Returns, ROC, OFI), a decision framework for model selection (ARIMA vs. XGBoost vs. LSTM), and rigorous data hygiene protocols to prevent data leakage.",
+            "keywords": [
+                "quantitative modeling",
+                "feature engineering",
+                "model selection",
+                "XGBoost",
+                "LSTM",
+                "data leakage",
+                "look-ahead bias",
+                "data hygiene"
+            ]
+        },
+        {
+            "path": "05_regulatory_and_fiscal/01_us_pattern_day_trader_rule.md",
+            "description": "A definitive guide to the US FINRA Pattern Day Trader (PDT) Rule. Includes explicit AI Implementation Logic with required state variables (`day_trade_counter`, `is_pdt_flagged`) and pseudocode for compliance checks.",
+            "keywords": [
+                "PDT",
+                "Pattern Day Trader",
+                "FINRA",
+                "regulation",
+                "compliance",
+                "AI logic"
+            ]
+        },
+        {
+            "path": "05_regulatory_and_fiscal/02_canadian_regulatory_framework.md",
+            "description": "Explains the Canadian regulatory environment (CIRO). Includes a critical new section on account type rules, explicitly forbidding day trading in registered accounts (TFSA/RRSP) and explaining cash account violations.",
+            "keywords": [
+                "Canada",
+                "CIRO",
+                "regulation",
+                "PDT rule Canada",
+                "TFSA",
+                "RRSP",
+                "margin account"
+            ]
+        },
+        {
+            "path": "05_regulatory_and_fiscal/03_quebec_taxation_guide.md",
+            "description": "A fiscal guide for Québec traders. Includes a new 'Key AI Agent Directives' section that translates the tax analysis into hard-coded rules for expense tracking, tax form data, and an alert trigger for incorporation.",
+            "keywords": [
+                "Québec",
+                "taxation",
+                "CRA",
+                "business income",
+                "incorporation",
+                "AI directives"
+            ]
+        },
+        {
+            "path": "05_regulatory_and_fiscal/04_margin_and_leverage_rules.md",
+            "description": "Explains margin and leverage. Includes a new, detailed 'Quantitative Example of a Margin Call' section, providing a step-by-step calculation an AI agent can run to continuously monitor its margin health and prevent forced liquidation.",
+            "keywords": [
+                "margin",
+                "leverage",
+                "margin call",
+                "quantitative example",
+                "liquidation",
+                "risk"
+            ]
+        },
+        {
+            "path": "06_brokers_and_platforms/01_broker_selection_criteria_for_ai.md",
+            "description": "Outlines broker selection criteria with a new 'Ranked Decision-Making Hierarchy'. This provides a sequential decision flow for the AI, prioritizing API access and regulatory compliance before cost and features.",
+            "keywords": [
+                "broker",
+                "selection",
+                "API",
+                "criteria",
+                "decision hierarchy",
+                "PDT"
+            ]
+        },
+        {
+            "path": "06_brokers_and_platforms/02_interactive_brokers_deep_dive.md",
+            "description": "An in-depth analysis of Interactive Brokers (IBKR). Includes a new 'AI Agent-Specific Assessment' section that scores the broker against the ranked criteria and notes how its TWS API fits into an ADK FunctionTool.",
+            "keywords": [
+                "Interactive Brokers",
+                "IBKR",
+                "broker",
+                "API",
+                "TWS",
+                "AI assessment",
+                "ADK"
+            ]
+        },
+        {
+            "path": "06_brokers_and_platforms/03_questrade_deep_dive.md",
+            "description": "An in-depth analysis of Questrade. Includes a new 'AI Agent-Specific Assessment' section that scores the broker, highlighting its key advantage (no PDT enforcement) and disadvantages (high FX fees) for an AI.",
+            "keywords": [
+                "Questrade",
+                "broker",
+                "API",
+                "Edge",
+                "PDT rule",
+                "AI assessment",
+                "FX fees"
+            ]
+        },
+        {
+            "path": "06_brokers_and_platforms/04_broker_comparison_and_recommendations.md",
+            "description": "Provides a head-to-head comparison and features a new 'Decision Flowchart for AI Agent', a structured, step-by-step logic tree the AI can follow to select the optimal broker based on capital and objectives.",
+            "keywords": [
+                "broker comparison",
+                "Interactive Brokers",
+                "Questrade",
+                "recommendation",
+                "decision flowchart"
+            ]
+        },
+        {
+            "path": "07_ai_agent_development/01_system_architecture_blueprint.md",
+            "description": "Outlines a robust, event-driven system architecture using GCP and Firebase. Includes a new 'ADK Implementation Strategy' section that explicitly maps architectural components to ADK classes like LlmAgent, FunctionTool, and callbacks.",
+            "keywords": [
+                "architecture",
+                "system design",
+                "GCP",
+                "ADK",
+                "LlmAgent",
+                "callbacks",
+                "serverless"
+            ]
+        },
+        {
+            "path": "07_ai_agent_development/02_backtesting_and_validation.md",
+            "description": "Details the science of strategy validation. Features a new 'Backtesting Engine Architecture' section with explicit pseudocode for an event-driven backtesting loop, making the concept directly translatable to Python code.",
+            "keywords": [
+                "backtesting",
+                "validation",
+                "overfitting",
+                "survivorship bias",
+                "event-driven",
+                "pseudocode"
+            ]
+        },
+        {
+            "path": "07_ai_agent_development/03_market_microstructure_for_algos.md",
+            "description": "Explains market microstructure for AI agents. Features a new 'AI Agent's Tactical Response' section with concrete rules for how the agent should dynamically adjust its behavior (e.g., order types) based on real-time liquidity data.",
+            "keywords": [
+                "microstructure",
+                "HFT",
+                "slippage",
+                "latency",
+                "tactical response",
+                "order types"
+            ]
+        },
+        {
+            "path": "07_ai_agent_development/04_ai_challenges_and_continuous_learning.md",
+            "description": "Addresses AI-specific challenges like 'alpha decay'. Features a new 'ADK-Native Implementation Framework' section detailing a self-improving agent using a LoopAgent and FunctionTools for a continuous feedback loop.",
+            "keywords": [
+                "AI challenges",
+                "alpha decay",
+                "continuous learning",
+                "ADK",
+                "LoopAgent",
+                "self-optimization"
+            ]
+        },
+        {
+            "path": "07_ai_agent_development/05_advanced_concepts_for_agentic_trading.md",
+            "description": "An advanced guide for agentic AI development. Covers HFT context, latency analysis, advanced backtesting (Monte Carlo, Walk-Forward), and AI-specific challenges, with explicit implementation strategies using the Google ADK framework.",
+            "keywords": [
+                "advanced",
+                "HFT",
+                "microstructure",
+                "latency",
+                "Monte Carlo",
+                "Walk-Forward Analysis",
+                "ADK callbacks"
+            ]
+        },
+        {
+            "path": "07_ai_agent_development/06_adk_implementation_patterns.md",
+            "description": "Provides practical, executable Python code examples and design patterns for core AI agent modules using the Google ADK framework. Includes implementations for the Risk Governor (before_tool_callback), Volatility Circuit Breaker (before_agent_callback), and the Automated Feedback Loop (LoopAgent).",
+            "keywords": [
+                "ADK implementation",
+                "code examples",
+                "Risk Governor",
+                "Circuit Breaker",
+                "Feedback Loop",
+                "before_tool_callback",
+                "LoopAgent",
+                "FunctionTool"
+            ]
+        }
+    ]
+}
