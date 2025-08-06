@@ -139,15 +139,13 @@ The project follows a modern Python package structure, with a clear separation o
 ├── .devcontainer/      # VS Code Dev Container configuration
 ├── .github/            # CI/CD workflows for GitHub Actions
 ├── docs/               # All project documentation, including ADRs
-├── src/
-│   └── trade_weaver/   # The main installable Python package
-│       ├── __init__.py
-│       ├── config.py   # Centralized configuration loader
-│       ├── agents/     # All ADK Agent packages
-│       ├── core/       # Shared business logic (e.g., broker interface)
-│       ├── strategies/ # Pluggable trading strategy modules
-│       └── tools/      # Shared, reusable agent tools
-└── tests/              # All tests for the application```
+├── trade_weaver/       # The main installable Python package
+│   ├── __init__.py     # Makes 'trade_weaver' a package
+│   ├── agent.py        # Defines the root agent and orchestrator
+│   ├── config.py       # Centralized configuration (e.g., model names)
+│   └── sub_agents/     # Contains specialized agents for the workflow
+└── tests/              # All tests for the application
+```
 
 ## 🗺️ Core Workflow (User-Approved Trade)
 
