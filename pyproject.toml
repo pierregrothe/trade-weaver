@@ -15,26 +15,26 @@ requires-python = ">=3.10,<3.14"
 
 # These are the core dependencies your application needs to RUN.
 dependencies = [
-    "google-adk>=1.9.0",
-    "google-generativeai",
-    "ib_insync",                      # For Interactive Brokers
-    "google-cloud-firestore",         # For our database
-    "google-cloud-secret-manager",    # For secure key storage
-    "python-dotenv = "^1.0.1"
-eodhd-async = "^0.1.3"",                  # For managing local .env files
-    "fastapi",                        # The web server framework used by 'adk web'
-    "uvicorn[standard]",              # The high-performance server that runs FastAPI
-    "yfinance",                       # For fetching public market data
-    "pandas",                         # For data manipulation and analysis
-    "lxml",                           # Required by pandas for reading HTML tables
     "beautifulsoup4",
-    "requests",
+    "eodhd-async",
+    "fastapi",
+    "google-adk>=1.9.0",
+    "google-cloud-firestore",
+    "google-cloud-secret-manager",
+    "google-generativeai",
+    "ib_insync",
+    "lxml",
+    "pandas",
     "playwright",
+    "python-dotenv>=1.0.1",
     "pytz",
+    "requests",
+    "uvicorn[standard]",
+    "yfinance",
 ]
 
 [project.urls]
-Homepage = "https://github.com/pierregrothe/trade-weaver" # Replace with your repo URL
+Homepage = "https://github.com/pierregrothe/trade-weaver"
 
 # Defines optional dependencies, grouped for different purposes (e.g., development).
 [project.optional-dependencies]
@@ -49,26 +49,22 @@ dev = [
     "pytest-asyncio",
 ]
 
-# --- Tool Configurations ---
-
 [tool.ruff]
 line-length = 88
 target-version = "py310"
-# Tell Ruff that our code lives in the 'src' directory. This helps it resolve imports correctly.
-src = ["src"]
 
 [tool.ruff.lint]
 select = [ "E", "F", "W", "I", "C", "B", "UP", "RUF" ]
 ignore = ["E501", "C901"] # ignore line too long, too complex
 
 [tool.ruff.lint.isort]
-# Since we told ruff our code is in 'src', we must now refer to our package by its actual name.
-known-first-party = ["trade_weaver"]
+# Our application code is in the 'app' directory.
+known-first-party = ["app"]
 
 [tool.mypy]
 python_version = "3.13"
 # Tell mypy where to find our code, and to follow our package structure.
-mypy_path = "src"
+mypy_path = "app"
 explicit_package_bases = true
 
 # Rules
@@ -95,8 +91,8 @@ skip = "./.venv,./.devcontainer,./build,**/*.ipynb"
 [tool.pytest.ini_options]
 # Tell pytest to look for tests in the 'tests' directory
 testpaths = ["tests"]
-# Add the source root to the python path so imports like 'from trade_weaver.core...' work in tests
-pythonpath = "app"
+# Add the project root to the python path so imports like 'from app.core...' work in tests
+pythonpath = "."
 asyncio_mode = "auto"
 # Explicitly set the event loop scope for async fixtures to 'function'.
 asyncio_default_fixture_loop_scope = "function"
@@ -107,8 +103,5 @@ filterwarnings = [
 
 [tool.hatch.build.targets.wheel]
 # This is crucial: it tells the build system that our actual Python package
-# is the 'trade_weaver' directory inside 'src'.
-packages = ["app"]
-
-[tool.setuptools]
+# is the 'app' directory.
 packages = ["app"]

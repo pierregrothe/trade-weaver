@@ -5,6 +5,7 @@
     "files": [
         {
             "path": "01_foundations/01_core_principles.md",
+            "category": "foundations",
             "description": "Defines the fundamental concepts and quantitative characteristics of day trading (timeframe, frequency, holding period), its distinction from investing, and the key advantages an AI agent has over human traders. Includes common beginner misconceptions to avoid.",
             "keywords": [
                 "day trading",
