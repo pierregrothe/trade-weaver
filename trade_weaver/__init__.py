@@ -7,4 +7,4 @@ Initializes the trade_weaver package and exposes the root_agent.
 # This allows other parts of the application to import the root agent directly
 # from the trade_weaver package, like so:
 # from trade_weaver import agent
-from . import agent
+from .agent import root_agent, CoordinatorAgent
