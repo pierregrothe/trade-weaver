@@ -29,17 +29,17 @@ requires-python = ">=3.11,<3.15"
 
 # Core dependencies required for the application to run.
 dependencies = [
-    "eodhd>=1.0.32", # CORRECTED: Pinned to the latest available version.
-    "fastapi>=0.111.0",
+    "eodhd>=1.0.32",
+    "fastapi>=0.116.1",
     "google-adk>=1.9.0",
-    "google-cloud-firestore>=2.17.0",
-    "google-cloud-secret-manager>=2.20.0",
-    "google-generativeai>=0.7.0",
-    "lxml>=5.2.0",
-    "pandas>=2.2.0",
-    "python-dotenv>=1.0.1",
-    "requests>=2.32.0",
-    "uvicorn[standard]>=0.29.0", # 'standard' provides performance improvements.
+    "google-cloud-firestore>=2.21.0",
+    "google-cloud-secret-manager>=2.24.0",
+    "google-generativeai>=0.8.5",
+    "lxml>=6.0.0",
+    "pandas>=2.3.1",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
+    "uvicorn[standard]>=0.35.0", # 'standard' provides performance improvements.
 ]
 
 [project.urls]
@@ -50,12 +50,12 @@ Homepage = "https://github.com/pierregrothe/trade-weaver"
 # To install: pip install -e ".[dev]"
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.5.0",
-    "mypy>=1.10.0",
-    "codespell>=2.3.0",
+    "ruff>=0.12.7",
+    "mypy>=1.17.1",
+    "codespell>=2.4.1",
     "types-requests>=2.32.0", # Type stubs for the 'requests' library.
-    "pytest>=8.3.0",
-    "pytest-asyncio>=0.23.0",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
 ]
 
 # --- Tool Configurations ---
