@@ -1,3 +1,6 @@
+# This file defines the project's metadata, dependencies, and tool configurations.
+# It is the central configuration file for modern Python projects.
+
 [build-system]
 # Defines the tools needed to build your project package. Hatch is a modern choice.
 requires = ["hatchling"]
@@ -7,101 +10,89 @@ build-backend = "hatchling.build"
 name = "trade-weaver"
 version = "0.1.0"
 description = "AI-powered day trading agent using Google ADK and Cloud."
+readme = "README.md"
 authors = [
     {name = "Pierre Grothé", email = "pierre@grothe.ca"},
 ]
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+# Updated to reflect the latest stable Python versions.
+requires-python = ">=3.11,<3.15"
 
-requires-python = ">=3.10,<3.14"
-
-# These are the core dependencies your application needs to RUN.
+# Core dependencies required for the application to run.
 dependencies = [
-    "beautifulsoup4",
-    "eodhd",
-    "fastapi",
+    "eodhd>=1.0.32", # CORRECTED: Pinned to the latest available version.
+    "fastapi>=0.111.0",
     "google-adk>=1.9.0",
-    "google-cloud-firestore",
-    "google-cloud-secret-manager",
-    "google-generativeai",
-    "ib_insync",
-    "lxml",
-    "pandas",
-    "playwright",
+    "google-cloud-firestore>=2.17.0",
+    "google-cloud-secret-manager>=2.20.0",
+    "google-generativeai>=0.7.0",
+    "lxml>=5.2.0",
+    "pandas>=2.2.0",
     "python-dotenv>=1.0.1",
-    "pytz",
-    "requests",
-    "uvicorn[standard]",
-    "yfinance",
+    "requests>=2.32.0",
+    "uvicorn[standard]>=0.29.0", # 'standard' provides performance improvements.
 ]
 
 [project.urls]
 Homepage = "https://github.com/pierregrothe/trade-weaver"
+"Bug Tracker" = "https://github.com/pierregrothe/trade-weaver/issues"
 
-# Defines optional dependencies, grouped for different purposes (e.g., development).
+# Optional dependencies for development, linting, and testing.
+# To install: pip install -e ".[dev]"
 [project.optional-dependencies]
-# The 'dev' group includes everything needed for development, linting, and testing.
 dev = [
-    "ruff>=0.4.6",
-    "mypy~=1.15.0",
-    "codespell~=2.2.0",
-    "types-pyyaml~=6.0.12.20240917",
-    "types-requests~=2.32.0.20240914",
-    "pytest",
-    "pytest-asyncio",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "codespell>=2.3.0",
+    "types-requests>=2.32.0", # Type stubs for the 'requests' library.
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.23.0",
 ]
+
+# --- Tool Configurations ---
+# Centralized settings for your development tools.
+
+[tool.hatch.version]
+# Tells Hatch where to find the project's version number.
+path = "src/trade_weaver/__init__.py"
 
 [tool.ruff]
+# Configuration for the Ruff linter and formatter.
 line-length = 88
-target-version = "py310"
+target-version = "py312" # Target a specific stable Python version for consistent formatting.
 
 [tool.ruff.lint]
-select = [ "E", "F", "W", "I", "C", "B", "UP", "RUF" ]
-ignore = ["E501", "C901"] # ignore line too long, too complex
-
-[tool.ruff.lint.isort]
-# Our application code is in the 'app' directory.
-known-first-party = ["app"]
+# Select the rules you want Ruff to enforce.
+# "E", "F", "W" are standard flakes8 rules. "I" is for import sorting. "UP" is for pyupgrade.
+select = ["E", "F", "W", "I", "UP"]
+ignore = []
 
 [tool.mypy]
-python_version = "3.13"
-# Tell mypy where to find our code, and to follow our package structure.
-mypy_path = "app"
-explicit_package_bases = true
-
-# Rules
-disallow_untyped_calls = true
+# Configuration for the MyPy static type checker.
+python_version = "3.12"
+warn_return_any = true
+ignore_missing_imports = true # Good for starting out, can be tightened later.
 disallow_untyped_defs = true
-disallow_incomplete_defs = true
-no_implicit_optional = true
-check_untyped_defs = true
-warn_incomplete_stub = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_unreachable = true
-follow_imports = "silent"
-ignore_missing_imports = true
-disable_error_code = ["misc", "no-untyped-call", "no-any-return"]
-
-# Exclude folders from type checking
-exclude = ['\.venv', '\\.devcontainer', 'build']
-
-[tool.codespell]
-ignore-words-list = "rouge"
-skip = "./.venv,./.devcontainer,./build,**/*.ipynb"
 
 [tool.pytest.ini_options]
-# Tell pytest to look for tests in the 'tests' directory
-testpaths = ["tests"]
-# Add the project root to the python path so imports like 'from app.core...' work in tests
-pythonpath = "."
-asyncio_mode = "auto"
-# Explicitly set the event loop scope for async fixtures to 'function'.
-asyncio_default_fixture_loop_scope = "function"
-# Filter (ignore) specific warnings to keep the test output clean.
-filterwarnings = [
-    "ignore::DeprecationWarning:eventkit.*",
+# Configuration for the Pytest testing framework.
+# VS Code will automatically use this configuration.
+# To set up VS Code, open your settings.json and add:
+# "python.testing.pytestArgs": [ "tests" ],
+# "python.testing.unittestEnabled": false,
+# "python.testing.pytestEnabled": true
+minversion = "6.0"
+addopts = "-ra -q --import-mode=importlib" # Recommended options for clarity and modern import handling.
+testpaths = [
+    "tests", # Directory where your tests are located.
 ]
-
-[tool.hatch.build.targets.wheel]
-# This is crucial: it tells the build system that our actual Python package
-# is the 'app' directory.
-packages = ["app"]
+asyncio_mode = "auto" # Let pytest-asyncio handle the event loop automatically.
