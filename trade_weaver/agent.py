@@ -12,7 +12,9 @@ from google.adk.agents import LlmAgent
 from trade_weaver import config
 
 # Import the specific instruction prompt for this agent
-from prompt import INSTRUCTION
+from . import prompt
+
+from .schemas import AgentTaskPayload # Import our new schema
 
 # --- Sub-Agent Imports ---
 # These imports define the "team" that this coordinator manages.
@@ -23,10 +25,10 @@ from prompt import INSTRUCTION
 
 # Define the root agent instance
 root_agent = LlmAgent(
-    name="coordinator_agent",
+    name="trading_desk_coordinator",
 
     # Use a powerful model for high-level reasoning and delegation.
-    model=config.MODEL_PRO,
+    model=config.MODEL_FLASH,
 
     description=(
         "The main coordinator agent. Handles task routing to specialist agents "
@@ -34,7 +36,9 @@ root_agent = LlmAgent(
     ),
 
     # The instruction prompt is imported from the separate prompts file for clarity.
-    instruction=INSTRUCTION,
+    instruction=prompt.INSTRUCTION,
+    # Tell the agent to expect a JSON string that conforms to our Pydantic model.
+    input_schema=AgentTaskPayload,
 
     # This agent has no tools of its own. Its sole purpose is to delegate.
     tools=[],
