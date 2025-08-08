@@ -65,24 +65,52 @@ class CoordinatorAgent(BaseAgent):
 
         # 3. Execute the parallel pipelines and stream their events
         async for event in parallel_runner.run_async(ctx):
+            if event.content and event.content.parts and event.content.parts[0].text and "error" in event.content.parts[0].text:
+                yield create_final_event(
+                    "error",
+                    {
+                        "error_message": "All exchange analyses failed to produce a valid result."
+                    },
+                )
+                return
             yield event
 
         # 4. (Fan-In) Aggregate results from session state
         analysis_results: List[ExchangeAnalysisResult] = []
+        successful_exchanges: List[str] = []
         for exchange in exchanges:
             result_key = f"result_{exchange}"
             exchange_result = ctx.session.state.get(result_key)
             if exchange_result and isinstance(exchange_result, ExchangeAnalysisResult):
                 analysis_results.append(exchange_result)
+                successful_exchanges.append(exchange)
             else:
                 # In a real application, you would log this failure.
                 # For now, we just skip the failed pipeline's result.
-                yield Event(author=self.name, content=f"Warning: Could not find or validate result for exchange '{exchange}'.")
+                yield Event(
+                    author=self.name,
+                    content=Content(
+                        parts=[
+                            Part(
+                                text=f"Warning: Could not find or validate result for exchange '{exchange}'."
+                            )
+                        ]
+                    ),
+                )
 
         # 5. Assemble the final report using the new schema
+        if not analysis_results:
+            yield create_final_event(
+                "error",
+                {
+                    "error_message": "All exchange analyses failed to produce a valid result."
+                },
+            )
+            return
+
         final_report = DailyWatchlistDocument(
             analysis_timestamp_utc=datetime.now(pytz.UTC).isoformat(),
-            exchanges_scanned=exchanges,
+            exchanges_scanned=successful_exchanges,
             analysis_results=analysis_results,
         )
 

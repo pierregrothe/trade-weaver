@@ -16,7 +16,7 @@ The AI Day Trading Agent requires a systematic, automated, and robust process to
 
 * **True Parallelism & Efficiency:** Each exchange is processed by a separate, independent Cloud Run instance, drastically reducing the total time required for pre-market analysis.
 * **Scalability:** Adding new markets is a simple configuration change in Firestore. Cloud Run will automatically scale the number of parallel workers to match the workload.
-* **Reliability & Resilience:** Using Pub/Sub decouples the components. If a scan for one exchange fails, it can be retried without impacting the others.
+* **Reliability & Resilience:** Using Pub/Sub decouples the components. If a scan for one exchange fails, it can be retried without impacting the others. The root `CoordinatorAgent` is designed to be resilient, yielding a final "error" status if all child pipelines fail, ensuring the system doesn't produce an empty success report.
 
 ### Negative Consequences
 

@@ -69,4 +69,4 @@ sequenceDiagram
     - **Lower Cost**: Fewer LLM calls result in lower operational costs.
 
 - **Negative**:
-    - None identified. The new architecture is a strict improvement over the previous one.
+    - The `CoordinatorAgent` must be robust enough to handle cases where all parallel pipelines fail. The fan-in logic needs to explicitly check for an empty result set and return a final "error" status if no pipelines succeeded.
