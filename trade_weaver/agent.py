@@ -12,7 +12,7 @@ from google.adk.events import Event
 from google.genai.types import Content, Part
 
 # --- Sub-Agent Imports (Placeholders) ---
-# from .sub_agents.pre_market_scanner.agent import pre_market_scanner_agent
+from .sub_agents.market_analyst import market_analyst_agent
 # from .sub_agents.executor.agent import executor_agent
 
 
@@ -82,7 +82,7 @@ root_agent = CoordinatorAgent(
     description="The main deterministic coordinator agent for M2M task routing.",
     # This custom agent has no model, prompt, or tools of its own.
     sub_agents=[
-        # pre_market_scanner_agent, # Will be added once defined
+        market_analyst_agent,
         # executor_agent,
     ],
 )
