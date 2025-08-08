@@ -60,8 +60,8 @@ sequenceDiagram
 
 #### CoordinatorAgent (Root Agent)
 
-* **ADK Class:** `BaseAgent` (custom implementation).
-* **Task:**
+*   **ADK Class:** `BaseAgent` (custom implementation).
+*   **Task:**
     1.  Receives a JSON payload with a list of exchanges.
     2.  Dynamically constructs a `ParallelAgent`.
     3.  For each exchange, it instantiates a complete `MarketAnalystPipeline` worker and adds it to the `ParallelAgent`.
@@ -72,10 +72,20 @@ sequenceDiagram
 
 #### MarketAnalystPipeline (Worker Pipeline)
 
-* **ADK Class:** `SequentialAgent`.
-* **Input:** An `exchange` string (e.g., "NASDAQ") passed during instantiation.
-* **Task:** Execute the full analysis for a single exchange by running a sequence of sub-pipelines and agents.
-* **Output:** Writes a single, complete `ExchangeAnalysisResult` object to a unique key in the session state (e.g., `result_NASDAQ`).
+*   **ADK Class:** `SequentialAgent`.
+*   **Input:** An `exchange` string (e.g., "NASDAQ") passed during instantiation.
+*   **Task:** Execute the full analysis for a single exchange by running a sequence of sub-pipelines and agents. This pipeline is optimized to be "deterministic-first," using custom code-driven agents for tool calls to maximize efficiency and reliability.
+*   **Internal Structure:**
+    1.  **`SetExchangeParamAgent` (`BaseAgent`):** Sets the initial `exchange` parameter in the state.
+    2.  **`CustomToolCallingAgent` (`BaseAgent`):** Deterministically calls the `get_exchange_details` tool.
+    3.  **`MarketRegimeSubPipeline` (`SequentialAgent`):**
+        *   Runs a `ParallelAgent` containing multiple `CustomToolCallingAgent`s to gather VIX, ADX, and time data deterministically.
+        *   Runs a single `LlmAgent` to synthesize the gathered data into a `MarketRegimeState`.
+    4.  **`StockScannerSubPipeline` (`SequentialAgent`):**
+        *   Runs the `StockDataEnrichmentAgent` (`BaseAgent`) to deterministically execute the multi-step tool-calling logic for finding and enriching stock data.
+        *   Runs a single `LlmAgent` to synthesize the enriched data into a `StockCandidateList`.
+    5.  **`FinalResultAssemblerAgent` (`BaseAgent`):** Deterministically assembles the final `ExchangeAnalysisResult` from the outputs of the sub-pipelines.
+*   **Output:** Writes a single, complete `ExchangeAnalysisResult` object to a unique key in the session state (e.g., `result_NASDAQ`).
 
 ### Appendix C: Detailed Data Schemas
 
