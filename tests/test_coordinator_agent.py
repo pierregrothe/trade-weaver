@@ -66,36 +66,62 @@ async def test_coordinator_correctly_sets_initial_state_for_sub_agent(
 
 # The parameterized error test remains the same.
 @pytest.mark.parametrize(
-    "test_id, payload_str, expected_error_msg",
+    "test_id, payload_str, expected_error_fragment",
     [
-        ("invalid_json", "this is not valid json", "Error: Invalid JSON payload."),
+        ("invalid_json", "this is not valid json", "Invalid JSON payload."),
         (
             "missing_key",
             json.dumps({"parameters": {}}),
-            "Error: 'target_agent' key missing from JSON payload.",
+            "'target_agent' key missing",
         ),
         (
             "agent_not_found",
             json.dumps({"target_agent": "non_existent_agent"}),
-            "Error: Sub-agent 'non_existent_agent' not found.",
+            "Sub-agent 'non_existent_agent' not found.",
         ),
-        ("no_payload", "", "Error: No JSON payload provided."),
+        ("no_payload", "", "No JSON payload provided."),
     ],
 )
 async def test_coordinator_error_conditions(
-    test_id, payload_str, expected_error_msg, root_agent, adk_test_harness
+    test_id, payload_str, expected_error_fragment, root_agent, adk_test_harness
 ):
+    """
+    Unit Test: Verifies the coordinator returns a structured JSON error event
+    under various failure conditions.
+    """
     runner, session_service = adk_test_harness
     session = await session_service.create_session(
         app_name="test_app", user_id="test_user", session_id=test_id
     )
     content = Content(parts=[Part(text=payload_str)])
+
+    # --- Execution ---
     events = [
         event
         async for event in runner.run_async(
             session_id=session.id, user_id="test_user", new_message=content
         )
     ]
-    assert len(events) == 1
-    assert expected_error_msg in events[0].content.parts[0].text
-    assert events[0].author == root_agent.name
+
+    # --- Assertions ---
+    assert len(events) == 1, "Expected exactly one error event."
+    final_event = events[0]
+    assert final_event.author == root_agent.name
+
+    # 1. Assert the event content is valid JSON
+    try:
+        error_payload = json.loads(final_event.content.parts[0].text)
+    except (json.JSONDecodeError, IndexError):
+        pytest.fail("The error event content was not valid JSON.")
+
+    # 2. Assert the JSON payload has the correct error structure
+    assert error_payload.get("status") == "error"
+    assert "result" in error_payload, "Error payload must have a 'result' field."
+    assert (
+        "error_message" in error_payload["result"]
+    ), "Error result must have an 'error_message' key."
+
+    # 3. Assert the specific error message is present
+    assert (
+        expected_error_fragment in error_payload["result"]["error_message"]
+    ), "The expected error message was not found in the payload."

@@ -16,6 +16,10 @@ class MarketRegimeState(BaseModel):
     providing a clear, machine-readable snapshot that downstream agents can use
     for strategy selection and decision-making.
     """
+    exchange: str = Field(
+        ...,
+        description="The exchange the analysis was performed for (e.g., 'NASDAQ')."
+    )
     vix_value: float = Field(
         ...,
         description="The real-time value of the CBOE Volatility Index (VIX)."
@@ -32,11 +36,15 @@ class MarketRegimeState(BaseModel):
         ...,
         description="The classified state of the market trend (e.g., 'Ranging_Market', 'Trending_Market')."
     )
-    time_state: str = Field(
+    time_of_day_state: str = Field(
         ...,
         description="The classified state of the market session time (e.g., 'Opening_Hour', 'Midday_Lull', 'Closing_Hour')."
     )
     regime_code: str = Field(
         ...,
         description="A composite code summarizing the overall market regime (e.g., 'OPENING_TRENDING_MEDIUM_VOL')."
+    )
+    timestamp: str = Field(
+        ...,
+        description="The UTC timestamp of when the analysis was performed."
     )

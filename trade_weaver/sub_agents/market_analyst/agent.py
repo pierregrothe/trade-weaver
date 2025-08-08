@@ -1,125 +1,118 @@
 """
-Defines the Market Analyst Agent, its callbacks, and its instantiation.
+Defines the Market Analyst Agent as a four-step sequential pipeline.
 
-This agent is responsible for analyzing market conditions (volatility, trend, time)
-and producing a structured `MarketRegimeState` object. It leverages ADK callbacks
-for robust logging, validation, and state management.
+This agent is responsible for analyzing market conditions by orchestrating a
+series of sub-agents to fetch, process, and synthesize market data into a
+structured `MarketRegimeState` object.
 """
-
-import json
-import logging
-import re
-from typing import Dict, Any, Optional
-
-from google.adk.agents import LlmAgent
-from google.adk.agents.callback_context import CallbackContext
-from google.adk.models.llm_response import LlmResponse
-from google.adk.tools import ToolContext
-from google.adk.tools.base_tool import BaseTool
-from pydantic import ValidationError
+from google.adk.agents import LlmAgent, ParallelAgent, SequentialAgent
 
 from trade_weaver.config import MODEL_FLASH
 from .prompt import INSTRUCTION
 from .schemas import MarketRegimeState
-from .tools import MarketAnalystToolset
+from .tools import market_analyst_toolset
 
-market_toolset = MarketAnalystToolset()
+from typing import Dict, Any, Optional
+from google.adk.tools import ToolContext
+from google.adk.tools.base_tool import BaseTool
 
-# --- ADK Callbacks for Robustness and Observability ---
-def validate_and_log_tool_output(
+def skip_summarization_callback(
     tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict
 ) -> Optional[Dict]:
     """
-    ADK `after_tool_callback` to perform structured logging and basic validation.
+    An after_tool_callback that sets the skip_summarization flag and ensures
+    the tool's dictionary output is preserved.
+    This prevents the LlmAgent from making a follow-up model call to summarize
+    the tool's output, which is crucial for the pipeline's conversational flow.
+    It returns the original tool_response to ensure it's correctly processed.
     """
-    tool_name = tool.name
-
-    # Structured logging for better observability
-    log_data: Dict[str, Any] = {
-        "event": "after_tool_call",
-        "tool_name": tool_name,
-        "tool_args": args,
-        "tool_response": tool_response,
-        # VALIDATED: This explicit path is robust and satisfies static analysis.
-        "session_id": tool_context._invocation_context.session.id,
-    }
-    logging.info(json.dumps(log_data))
-
-    # Basic validation for critical data points
-    if tool_name == "get_vix_data":
-        if isinstance(tool_response, dict):
-            vix_value = tool_response.get("vix_value", -1.0)
-            if not isinstance(vix_value, (int, float)) or vix_value < 0:
-                logging.warning(f"VIX value '{vix_value}' is unrealistic.")
-
-    if tool_name == "get_adx_data":
-        if isinstance(tool_response, dict):
-            adx_value = tool_response.get("adx_value", -1.0)
-            if not isinstance(adx_value, (int, float)) or adx_value < 0:
-                logging.warning(f"ADX value '{adx_value}' is unrealistic.")
-    
-    # Return None to indicate no modification of the tool_response is needed.
-    return None
+    tool_context.actions.skip_summarization = True
+    return tool_response
 
 
-def parse_and_save_intermediate_state(
-    callback_context: CallbackContext, llm_response: LlmResponse
-) -> Optional[LlmResponse]:
-    """
-    ADK `after_model_callback` to parse, validate, and save structured state.
-
-    This is a critical data integrity step. It finds the JSON block in the LLM's
-    text response, validates it against the `MarketRegimeState` Pydantic schema,
-    and if successful, saves the structured data to the session state. This makes
-    the validated data available to subsequent tools like `persist_market_regime`.
-    """
-    if not (llm_response and llm_response.content and llm_response.content.parts):
-        logging.debug("after_model_callback: LlmResponse has no content to parse.")
-        return None
-
-    model_response_text = "".join(
-        part.text for part in llm_response.content.parts if part.text
-    )
-    
-    log_data: Dict[str, Any] = {
-        "event": "after_model_call",
-        "session_id": callback_context._invocation_context.session.id,
-    }
-
-    try:
-        # Use a resilient regex to find a JSON object within the text
-        match = re.search(r"\{.*\}", model_response_text, re.DOTALL)
-        if not match:
-            raise json.JSONDecodeError("No JSON object found in response.", model_response_text, 0)
-        
-        json_str = match.group(0)
-        json_data = json.loads(json_str)
-        validated_data = MarketRegimeState(**json_data)
-
-        callback_context.state["intermediate_market_regime"] = validated_data.model_dump()
-        
-        log_data["status"] = "success"
-        log_data["validated_data"] = validated_data.model_dump()
-
-    except (json.JSONDecodeError, ValidationError) as e:
-        log_data["status"] = "error"
-        log_data["error_message"] = str(e)
-        logging.error(f"Failed to parse or validate market regime state: {e}")
-
-    logging.info(json.dumps(log_data, indent=2))
-    
-    # Return None to indicate no modification of the LlmResponse is needed.
-    return None
-
-# --- Agent Definition ---
-market_analyst_agent = LlmAgent(
-    name="market_analyst_agent",
-    description="Analyzes and reports on the current market regime.",
+# --- Step 1: Exchange Info Fetcher Agent ---
+# This agent's sole responsibility is to call the tool that fetches
+# foundational details about the target exchange.
+exchange_info_fetcher_agent = LlmAgent(
+    name="exchange_info_fetcher",
+    description="Fetches key details for a given stock exchange.",
     model=MODEL_FLASH,
-    instruction=INSTRUCTION,
-    tools=[market_toolset],
-    after_tool_callback=validate_and_log_tool_output,
-    after_model_callback=parse_and_save_intermediate_state,
-    output_key="intermediate_market_regime",
+    instruction="Given the 'exchange' parameter, call the `get_exchange_details` tool and then you are done.",
+    tools=[market_analyst_toolset.get_exchange_details_tool],
+    after_tool_callback=skip_summarization_callback,
+)
 
+# --- Step 2: Data Gatherer Agent (Parallel) ---
+# This agent runs multiple data-gathering tools concurrently for maximum efficiency.
+# It relies on the 'exchange_details' being present in the session state from Step 1.
+data_gatherer_agent = ParallelAgent(
+    name="data_gatherer",
+    description="Gathers various market data points in parallel.",
+    sub_agents=[
+        # Each of these is a "headless" LlmAgent designed to call one specific tool.
+        LlmAgent(
+            name="vix_fetcher",
+            description="Fetches VIX data.",
+            model=MODEL_FLASH,
+            instruction="Call the `get_vix_data` tool and you are done.",
+            tools=[market_analyst_toolset.get_vix_data_tool],
+            after_tool_callback=skip_summarization_callback,
+        ),
+        LlmAgent(
+            name="adx_fetcher",
+            description="Fetches ADX data.",
+            model=MODEL_FLASH,
+            instruction="Call the `get_adx_data` tool and you are done.",
+            tools=[market_analyst_toolset.get_adx_data_tool],
+            after_tool_callback=skip_summarization_callback,
+        ),
+        LlmAgent(
+            name="time_fetcher",
+            description="Fetches the current time for the exchange.",
+            model=MODEL_FLASH,
+            instruction="Call the `get_current_time` tool and you are done.",
+            tools=[market_analyst_toolset.get_current_time_tool],
+            after_tool_callback=skip_summarization_callback,
+        ),
+    ],
+)
+
+# --- Step 3: Synthesizer Agent ---
+# This agent takes all the data gathered in the previous steps and synthesizes it
+# into the final, structured `MarketRegimeState` object.
+synthesizer_agent = LlmAgent(
+    name="synthesizer",
+    description="Synthesizes gathered data into a final market regime analysis.",
+    model=MODEL_FLASH,
+    instruction=INSTRUCTION,  # The detailed prompt from prompt.py
+    # This agent does not call tools directly; it only synthesizes data.
+    # Its output is constrained to the Pydantic schema.
+    output_schema=MarketRegimeState,
+    output_key="validated_market_regime",
+)
+
+# --- Step 4: Persistence Agent ---
+# The final step in the pipeline, this agent's only job is to persist the
+# validated result produced by the Synthesizer.
+persistence_agent = LlmAgent(
+    name="persistence",
+    description="Persists the final analysis result to a data store.",
+    model=MODEL_FLASH,
+    instruction="Call the `persist_market_regime` tool to save the result.",
+    tools=[market_analyst_toolset.persist_market_regime_tool],
+)
+
+
+# --- The Final Pipeline: Market Analyst Agent (Sequential) ---
+# This sequential agent orchestrates the entire workflow, ensuring each step
+# is executed in the correct order.
+market_analyst_agent = SequentialAgent(
+    name="market_analyst_agent",
+    description="A pipeline that analyzes and reports on the current market regime.",
+    sub_agents=[
+        exchange_info_fetcher_agent,
+        data_gatherer_agent,
+        synthesizer_agent,
+        persistence_agent,
+    ],
 )
