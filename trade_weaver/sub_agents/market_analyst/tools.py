@@ -34,7 +34,7 @@ def get_vix_data() -> dict:
     return {
         "status": "success",
         "vix_value": 22.5,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(pytz.UTC).isoformat()
     }
 
 def get_adx_data(tool_context: ToolContext) -> dict:
@@ -59,7 +59,7 @@ def get_adx_data(tool_context: ToolContext) -> dict:
     return {
         "status": "success",
         "adx_value": 28.1,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(pytz.UTC).isoformat()
     }
 
 def get_current_time() -> dict:
