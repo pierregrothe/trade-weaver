@@ -99,9 +99,9 @@ def get_current_time(tool_context: ToolContext) -> dict:
         msg = "get_current_time requires 'exchange_details' with a 'timezone' key."
         logging.error(f"TOOL ERROR: {msg}")
         return {"status": "error", "message": msg}
-
+    
+    tz_str = exchange_details["timezone"]
     try:
-        tz_str = exchange_details["timezone"]
         exchange_timezone = pytz.timezone(tz_str)
         exchange_time = datetime.now(exchange_timezone)
         result = {"current_time_iso": exchange_time.isoformat()}
