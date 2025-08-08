@@ -1,47 +1,35 @@
-# File: /trade-weaver/tests/test_coordinator_dispatch.py
 import json
-
 import pytest
 from google.genai.types import Content, Part
-
-from trade_weaver.sub_agents.market_analyst.schemas import MarketRegimeState
+from trade_weaver.schemas import DailyWatchlistDocument
 
 pytestmark = pytest.mark.asyncio
 
-
-# @pytest.mark.xfail(
-#     reason="This test is expected to fail until the agent is refactored."
-# )
-async def test_market_analyst_end_to_end_m2m_workflow(
-    root_agent, adk_test_harness
-):
+async def test_coordinator_fan_out_fan_in_workflow(root_agent, adk_test_harness):
     """
-    Integration Test: Verifies the new M2M workflow for the market_analyst_agent.
+    Integration Test: Verifies the Coordinator's dynamic fan-out/fan-in workflow.
 
     It validates:
-    1.  The CoordinatorAgent accepts a JSON payload with params.
-    2.  The market_analyst_agent pipeline runs successfully.
-    3.  The CoordinatorAgent produces a final, consolidated JSON event.
-    4.  The final event has a "status" of "success".
-    5.  The final event's "result" field is a valid MarketRegimeState object.
+    1.  The Coordinator accepts a payload with a list of exchanges.
+    2.  It dynamically creates and runs parallel MarketAnalystPipelines.
+    3.  It correctly aggregates results from the unique state keys.
+    4.  It produces a final, consolidated DailyWatchlistDocument.
     """
     runner, session_service = adk_test_harness
     session = await session_service.create_session(
         app_name="test_app",
         user_id="test_user",
-        session_id="m2m_workflow_test",
+        session_id="fan_out_fan_in_test",
     )
 
-    # --- Input ---
-    # This payload invokes the market_analyst_agent pipeline via the Coordinator.
+    # --- Input: Request analysis for a single exchange to avoid rate limiting ---
     payload = {
-        "target_agent": "market_analyst_agent",
-        "parameters": {"exchange": "NASDAQ"},  # Pass 'exchange' as the parameter
+        "target_agent": "market_analyst_agent", # This is now just a routing key
+        "parameters": {"exchanges": ["NASDAQ"]},
     }
     content = Content(parts=[Part(text=json.dumps(payload))])
 
     # --- Execution ---
-    # Collect all events from the generator
     events = [
         event
         async for event in runner.run_async(
@@ -52,45 +40,36 @@ async def test_market_analyst_end_to_end_m2m_workflow(
     # --- FINAL EVENT VALIDATION ---
     assert events, "Test failed: No events were returned from the agent run."
 
-    # 1. Get the very last event, which should be the Coordinator's final payload
     final_event = events[-1]
-    assert (
-        final_event.author == "trading_desk_coordinator"
-    ), "The final event should be from the coordinator."
-    assert (
-        final_event.content and final_event.content.parts
-    ), "The final event must have content."
+    assert final_event.author == "trading_desk_coordinator"
+    assert final_event.content and final_event.content.parts
 
-    # 2. Parse the JSON content of the final event
     try:
         final_payload = json.loads(final_event.content.parts[0].text)
-    except json.JSONDecodeError:
-        pytest.fail(
-            "The final event from the Coordinator was not valid JSON. "
-            f"Content: {final_event.content.parts[0].text}"
-        )
+    except (json.JSONDecodeError, IndexError):
+        pytest.fail("The final event content was not valid JSON.")
 
-    # 3. Assert the status is 'success'
-    assert (
-        final_payload.get("status") == "success"
-    ), f"The final status should be 'success'. Payload: {final_payload}"
+    # 1. Assert the overall status is 'success'
+    assert final_payload.get("status") == "success"
 
-    # 4. Assert the 'result' field exists and is a dictionary
+    # 2. Assert the result field is a valid DailyWatchlistDocument
     result_data = final_payload.get("result")
-    assert isinstance(
-        result_data, dict
-    ), f"The 'result' field should be a dictionary. Payload: {final_payload}"
-
-    # 5. Validate the result against the MarketRegimeState Pydantic schema
+    assert isinstance(result_data, dict)
     try:
-        MarketRegimeState(**result_data)
+        watchlist = DailyWatchlistDocument(**result_data)
     except Exception as e:
         pytest.fail(
-            "The 'result' field in the final payload is not a valid "
-            f"MarketRegimeState object. Validation error: {e}. Payload: {final_payload}"
+            "The 'result' field is not a valid DailyWatchlistDocument. "
+            f"Validation error: {e}. Payload: {result_data}"
         )
 
-    # 6. (Optional but good) Check a specific field to ensure data flowed correctly
-    assert (
-        result_data.get("exchange") == "NASDAQ"
-    ), "The 'exchange' in the final result does not match the input parameter."
+    # 3. Assert the fan-out/fan-in and data structure are correct
+    assert sorted(watchlist.exchanges_scanned) == ["NASDAQ"]
+    assert len(watchlist.analysis_results) == 1, "Should have one result object for the single exchange."
+
+    # Check the contents of the analysis result
+    result = watchlist.analysis_results[0]
+    assert result.market_regime is not None
+    assert result.market_regime.exchange == "NASDAQ"
+    assert isinstance(result.candidate_list, list)
+    assert len(result.candidate_list) > 0, "Candidate list should not be empty."

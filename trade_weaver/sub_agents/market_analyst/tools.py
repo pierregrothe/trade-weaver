@@ -128,6 +128,49 @@ def persist_market_regime(tool_context: ToolContext) -> dict:
     return {"status": "success", "persisted": True}
 
 
+# --- Mock Stock Scanning Tools ---
+
+def find_pre_market_movers(tool_context: ToolContext) -> dict:
+    """Simulates finding top pre-market movers for the given exchange."""
+    exchange = tool_context.state.get("exchange_details", {}).get("market_proxy", "UNKNOWN")
+    logging.info(f"Tool: find_pre_market_movers for {exchange}. Returning mock tickers.")
+    result = {"tickers": ["MSFT", "GOOG", "TSLA"]}
+    tool_context.state["pre_market_movers"] = result
+    return result
+
+def get_full_stock_details(tool_context: ToolContext, ticker: str) -> dict:
+    """
+    Simulates fetching a consolidated set of details for a single stock ticker,
+    including profile, financial data, and news. This is more efficient than
+    calling three separate tools.
+    """
+    logging.info(f"Tool: get_full_stock_details for {ticker}. Returning mock data.")
+
+    # Combine profile, financials, and news into one payload
+    details = {
+        "profile": {
+            "sector": "Technology",
+            "industry": "Software - Infrastructure",
+            "market_cap": 2_000_000_000_000,
+        },
+        "financials": {
+            "adjusted_close": 305.00,
+            "pre_market_high": 308.50,
+            "pre_market_low": 304.00,
+        },
+        "news": [
+            {"headline": "New AI Product Announced", "source": "Reuters", "timestamp": datetime.now().isoformat()}
+        ]
+    }
+
+    # Store the consolidated details in the state
+    if "full_stock_details" not in tool_context.state:
+        tool_context.state["full_stock_details"] = {}
+    tool_context.state["full_stock_details"][ticker] = details
+
+    return {"status": "success", "ticker": ticker, "details": details}
+
+
 # --- 2. Create the Toolset with State-Aware Tools ---
 
 
@@ -138,23 +181,29 @@ class MarketAnalystToolset(BaseToolset):
         self.prefix = prefix
 
         # Instantiate each function as a FunctionTool.
-        # The output key is handled by the LlmAgent, not the tool itself.
         self.get_exchange_details_tool = FunctionTool(func=get_exchange_details)
         self.get_vix_data_tool = FunctionTool(func=get_vix_data)
         self.get_adx_data_tool = FunctionTool(func=get_adx_data)
         self.get_current_time_tool = FunctionTool(func=get_current_time)
         self.persist_market_regime_tool = FunctionTool(func=persist_market_regime)
 
+        # Stock scanning tools
+        self.find_pre_market_movers_tool = FunctionTool(func=find_pre_market_movers)
+        self.get_full_stock_details_tool = FunctionTool(func=get_full_stock_details)
+
+
     async def get_tools(
         self, readonly_context: Optional[ReadonlyContext] = None
     ) -> List[BaseTool]:
-        """Return all market regime tools."""
+        """Return all market regime and stock scanning tools."""
         return [
             self.get_exchange_details_tool,
             self.get_vix_data_tool,
             self.get_adx_data_tool,
             self.get_current_time_tool,
             self.persist_market_regime_tool,
+            self.find_pre_market_movers_tool,
+            self.get_full_stock_details_tool,
         ]
 
     async def close(self) -> None:

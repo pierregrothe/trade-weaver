@@ -1,108 +1,99 @@
 # File: /trade_weaver/agent.py
 """
-Defines the root Coordinator Agent using a custom, deterministic dispatcher.
-This is a high-performance, non-LLM agent for M2M routing.
+Defines the root Coordinator Agent which dynamically orchestrates parallel
+market analysis pipelines.
 """
 import json
-from typing import AsyncGenerator
+import asyncio
+from datetime import datetime
+from typing import AsyncGenerator, List, Dict, Any
 
-# Correct, validated ADK import paths
-from google.adk.agents import BaseAgent, InvocationContext
+import pytz
+from google.adk.agents import BaseAgent, InvocationContext, ParallelAgent
 from google.adk.events import Event
 from google.genai.types import Content, Part
 
-# --- Sub-Agent Imports (Placeholders) ---
-from .sub_agents.market_analyst import market_analyst_agent
-# from .sub_agents.executor.agent import executor_agent
+from .sub_agents.market_analyst.agent import MarketAnalystPipeline
+from .schemas import DailyWatchlistDocument, ExchangeAnalysisResult
 
 
 class CoordinatorAgent(BaseAgent):
     """
-    A custom agent that deterministically dispatches tasks to sub-agents
-    based on a JSON payload. It does not use an LLM for routing.
+    A custom agent that dynamically creates and runs market analysis pipelines
+    in parallel for a list of exchanges, then aggregates the results.
     """
 
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
+        """Implements the fan-out/fan-in orchestration logic."""
 
-        # Helper function to create a properly structured error event
-        def create_error_event(error_message: str) -> Event:
-            error_payload = {
-                "status": "error",
+        def create_final_event(status: str, result: Any) -> Event:
+            payload = {
+                "status": status,
                 "source_agent": self.name,
-                "result": {"error_message": error_message},
+                "result": result,
             }
             return Event(
                 author=self.name,
-                content=Content(parts=[Part(text=json.dumps(error_payload))]),
+                content=Content(parts=[Part(text=json.dumps(payload))]),
             )
 
-        # 1. Get the incoming JSON payload from the user's message
-        if not (
-            ctx.user_content
-            and ctx.user_content.parts
-            and ctx.user_content.parts[0].text
-        ):
-            yield create_error_event("No JSON payload provided.")
+        # 1. Parse and validate incoming payload
+        if not (ctx.user_content and ctx.user_content.parts and ctx.user_content.parts[0].text):
+            yield create_final_event("error", {"error_message": "No JSON payload provided."})
             return
 
-        payload_str = ctx.user_content.parts[0].text
         try:
-            payload = json.loads(payload_str)
-            target_agent_name = payload.get("target_agent")
+            payload = json.loads(ctx.user_content.parts[0].text)
             parameters = payload.get("parameters", {})
-        except json.JSONDecodeError:
-            yield create_error_event("Invalid JSON payload.")
+            exchanges = parameters.get("exchanges")
+            if not isinstance(exchanges, list) or not exchanges:
+                yield create_final_event("error", {"error_message": "'exchanges' parameter must be a non-empty list."})
+                return
+        except (json.JSONDecodeError, KeyError):
+            yield create_final_event("error", {"error_message": "Invalid JSON payload or missing 'exchanges' parameter."})
             return
 
-        if not target_agent_name:
-            yield create_error_event("'target_agent' key missing from JSON payload.")
-            return
+        # 2. (Fan-Out) Dynamically build the parallel pipeline
+        worker_pipelines = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
+        parallel_runner = ParallelAgent(
+            name="parallel_market_scanner",
+            description="Runs analysis pipelines for multiple exchanges concurrently.",
+            sub_agents=worker_pipelines,
+        )
 
-        # 2. Find the target sub-agent by name
-        target_agent = self.find_sub_agent(target_agent_name)
-
-        if not target_agent:
-            yield create_error_event(f"Sub-agent '{target_agent_name}' not found.")
-            return
-
-        # 3. Update the session state with the parameters for the sub-agent
-        for key, value in parameters.items():
-            ctx.session.state[key] = value
-
-        # 4. Directly invoke the sub-agent pipeline and stream its events back
-        async for event in target_agent.run_async(ctx):
+        # 3. Execute the parallel pipelines and stream their events
+        async for event in parallel_runner.run_async(ctx):
             yield event
 
-        # 5. After the pipeline completes, capture the final result from the state
-        final_result = ctx.session.state.get("validated_market_regime")
+        # 4. (Fan-In) Aggregate results from session state
+        analysis_results: List[ExchangeAnalysisResult] = []
+        for exchange in exchanges:
+            result_key = f"result_{exchange}"
+            exchange_result = ctx.session.state.get(result_key)
+            if exchange_result and isinstance(exchange_result, ExchangeAnalysisResult):
+                analysis_results.append(exchange_result)
+            else:
+                # In a real application, you would log this failure.
+                # For now, we just skip the failed pipeline's result.
+                yield Event(author=self.name, content=f"Warning: Could not find or validate result for exchange '{exchange}'.")
 
-        if not final_result:
-            yield create_error_event(
-                "Pipeline completed, but 'validated_market_regime' not found in state."
-            )
-            return
-
-        # 6. Construct and yield the final, consolidated M2M payload
-        success_payload = {
-            "status": "success",
-            "source_agent": self.name,
-            "result": final_result,
-        }
-        yield Event(
-            author=self.name,
-            content=Content(parts=[Part(text=json.dumps(success_payload))]),
+        # 5. Assemble the final report using the new schema
+        final_report = DailyWatchlistDocument(
+            analysis_timestamp_utc=datetime.now(pytz.UTC).isoformat(),
+            exchanges_scanned=exchanges,
+            analysis_results=analysis_results,
         )
+
+        # 6. Yield the final aggregated result
+        yield create_final_event("success", final_report.model_dump())
 
 
 # --- Agent Instantiation ---
+# The root agent no longer needs sub-agents defined at initialization,
+# as it creates them dynamically.
 root_agent = CoordinatorAgent(
     name="trading_desk_coordinator",
-    description="The main deterministic coordinator agent for M2M task routing.",
-    # This custom agent has no model, prompt, or tools of its own.
-    sub_agents=[
-        market_analyst_agent,
-        # executor_agent,
-    ],
+    description="The main dynamic coordinator for parallel M2M task execution.",
 )
