@@ -40,6 +40,12 @@ def get_exchange_details(exchange: str, tool_context: ToolContext) -> dict:
             "volatility_index": "^VIX",
             "yfinance_suffix": ".US",
         },
+        "TSX": {
+            "timezone": "America/Toronto",
+            "market_proxy": "XIU.TO",
+            "volatility_index": "^VIXC",
+            "yfinance_suffix": ".TO",
+        },
     }
     details = exchange_data.get(exchange)
     if details:
@@ -51,61 +57,38 @@ def get_exchange_details(exchange: str, tool_context: ToolContext) -> dict:
         return {"error": f"Exchange '{exchange}' not found."}
 
 
-def get_vix_data(tool_context: ToolContext) -> dict:
+def get_market_regime_data(tool_context: ToolContext) -> dict:
     """
-    Retrieves the current CBOE Volatility Index (VIX) value.
-    It reads the 'volatility_index' from the 'exchange_details' in the session state.
-    The returned dictionary will be placed into the 'vix_data' state key.
+    Retrieves all data required for market regime analysis in a single call.
+    This includes VIX, ADX, and the current time in the exchange's timezone.
+    The returned dictionary will be placed into the 'market_regime_data' state key.
     """
     exchange_details = tool_context.state.get("exchange_details")
-    if not exchange_details or "volatility_index" not in exchange_details:
-        msg = "get_vix_data requires 'exchange_details' with a 'volatility_index' key."
+    if not exchange_details:
+        msg = "get_market_regime_data requires 'exchange_details' in state."
         logging.error(f"TOOL ERROR: {msg}")
         return {"status": "error", "message": msg}
 
-    volatility_index = exchange_details["volatility_index"]
-    logging.info(f"Tool: get_vix_data called for {volatility_index}. Returning mock data.")
-    result = {"vix_value": 22.5}
-    tool_context.state["vix_data"] = result
-    return result
+    volatility_index = exchange_details.get("volatility_index")
+    market_proxy = exchange_details.get("market_proxy")
+    tz_str = exchange_details.get("timezone")
 
-
-def get_adx_data(tool_context: ToolContext) -> dict:
-    """
-    Retrieves the Average Directional Index (ADX) for a given market proxy.
-    It reads the 'market_proxy' from 'exchange_details' in the session state.
-    The returned dictionary will be placed into the 'adx_data' state key.
-    """
-    exchange_details = tool_context.state.get("exchange_details")
-    if not exchange_details or "market_proxy" not in exchange_details:
-        msg = "get_adx_data requires 'exchange_details' with a 'market_proxy' key."
+    if not all([volatility_index, market_proxy, tz_str]):
+        msg = "get_market_regime_data requires 'volatility_index', 'market_proxy', and 'timezone' in 'exchange_details'."
         logging.error(f"TOOL ERROR: {msg}")
         return {"status": "error", "message": msg}
 
-    market_proxy = exchange_details["market_proxy"]
-    logging.info(f"Tool: get_adx_data called for {market_proxy}. Returning mock data.")
-    result = {"adx_value": 28.1}
-    tool_context.state["adx_data"] = result
-    return result
-
-
-def get_current_time(tool_context: ToolContext) -> dict:
-    """
-    Gets the current time in the timezone specified by the exchange details.
-    The returned dictionary will be placed into the 'time_data' state key.
-    """
-    exchange_details = tool_context.state.get("exchange_details")
-    if not exchange_details or "timezone" not in exchange_details:
-        msg = "get_current_time requires 'exchange_details' with a 'timezone' key."
-        logging.error(f"TOOL ERROR: {msg}")
-        return {"status": "error", "message": msg}
+    logging.info(f"Tool: get_market_regime_data called for {exchange_details['market_proxy']}. Returning mock data.")
     
-    tz_str = exchange_details["timezone"]
     try:
         exchange_timezone = pytz.timezone(tz_str)
         exchange_time = datetime.now(exchange_timezone)
-        result = {"current_time_iso": exchange_time.isoformat()}
-        tool_context.state["time_data"] = result
+        result = {
+            "vix_value": 22.5,
+            "adx_value": 28.1,
+            "current_time_iso": exchange_time.isoformat()
+        }
+        tool_context.state["market_regime_data"] = result
         return result
     except pytz.UnknownTimeZoneError:
         logging.error(f"TOOL ERROR: Invalid timezone '{tz_str}' provided.")
@@ -138,37 +121,40 @@ def find_pre_market_movers(tool_context: ToolContext) -> dict:
     tool_context.state["pre_market_movers"] = result
     return result
 
-def get_full_stock_details(tool_context: ToolContext, ticker: str) -> dict:
+def get_full_stock_details(tool_context: ToolContext, tickers: List[str]) -> dict:
     """
-    Simulates fetching a consolidated set of details for a single stock ticker,
+    Simulates fetching a consolidated set of details for a list of stock tickers,
     including profile, financial data, and news. This is more efficient than
-    calling three separate tools.
+    calling three separate tools for each ticker.
     """
-    logging.info(f"Tool: get_full_stock_details for {ticker}. Returning mock data.")
+    logging.info(f"Tool: get_full_stock_details for {tickers}. Returning mock data.")
 
-    # Combine profile, financials, and news into one payload
-    details = {
-        "profile": {
-            "sector": "Technology",
-            "industry": "Software - Infrastructure",
-            "market_cap": 2_000_000_000_000,
-        },
-        "financials": {
-            "adjusted_close": 305.00,
-            "pre_market_high": 308.50,
-            "pre_market_low": 304.00,
-        },
-        "news": [
-            {"headline": "New AI Product Announced", "source": "Reuters", "timestamp": datetime.now().isoformat()}
-        ]
-    }
+    all_details = {}
+    for ticker in tickers:
+        # Combine profile, financials, and news into one payload
+        details = {
+            "profile": {
+                "sector": "Technology",
+                "industry": "Software - Infrastructure",
+                "market_cap": 2_000_000_000_000,
+            },
+            "financials": {
+                "adjusted_close": 305.00,
+                "pre_market_high": 308.50,
+                "pre_market_low": 304.00,
+            },
+            "news": [
+                {"headline": "New AI Product Announced", "source": "Reuters", "timestamp": datetime.now().isoformat()}
+            ]
+        }
+        all_details[ticker] = details
 
     # Store the consolidated details in the state
     if "full_stock_details" not in tool_context.state:
         tool_context.state["full_stock_details"] = {}
-    tool_context.state["full_stock_details"][ticker] = details
+    tool_context.state["full_stock_details"].update(all_details)
 
-    return {"status": "success", "ticker": ticker, "details": details}
+    return {"status": "success", "details": all_details}
 
 
 # --- 2. Create the Toolset with State-Aware Tools ---
@@ -182,9 +168,7 @@ class MarketAnalystToolset(BaseToolset):
 
         # Instantiate each function as a FunctionTool.
         self.get_exchange_details_tool = FunctionTool(func=get_exchange_details)
-        self.get_vix_data_tool = FunctionTool(func=get_vix_data)
-        self.get_adx_data_tool = FunctionTool(func=get_adx_data)
-        self.get_current_time_tool = FunctionTool(func=get_current_time)
+        self.get_market_regime_data_tool = FunctionTool(func=get_market_regime_data)
         self.persist_market_regime_tool = FunctionTool(func=persist_market_regime)
 
         # Stock scanning tools
@@ -198,9 +182,7 @@ class MarketAnalystToolset(BaseToolset):
         """Return all market regime and stock scanning tools."""
         return [
             self.get_exchange_details_tool,
-            self.get_vix_data_tool,
-            self.get_adx_data_tool,
-            self.get_current_time_tool,
+            self.get_market_regime_data_tool,
             self.persist_market_regime_tool,
             self.find_pre_market_movers_tool,
             self.get_full_stock_details_tool,

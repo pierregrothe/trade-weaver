@@ -13,7 +13,7 @@ from google.adk.agents import BaseAgent, InvocationContext, ParallelAgent
 from google.adk.events import Event
 from google.genai.types import Content, Part
 
-from .sub_agents.market_analyst.agent import MarketAnalystPipeline
+from .sub_agents.market_analyst.agent import market_analyst_agent_class
 from .schemas import DailyWatchlistDocument, ExchangeAnalysisResult
 
 
@@ -56,7 +56,7 @@ class CoordinatorAgent(BaseAgent):
             return
 
         # 2. (Fan-Out) Dynamically build the parallel pipeline
-        worker_pipelines = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
+        worker_pipelines = [market_analyst_agent_class(exchange=ex) for ex in exchanges]
         parallel_runner = ParallelAgent(
             name="parallel_market_scanner",
             description="Runs analysis pipelines for multiple exchanges concurrently.",
@@ -79,24 +79,19 @@ class CoordinatorAgent(BaseAgent):
         analysis_results: List[ExchangeAnalysisResult] = []
         successful_exchanges: List[str] = []
         for exchange in exchanges:
-            result_key = f"result_{exchange}"
-            exchange_result = ctx.session.state.get(result_key)
-            if exchange_result and isinstance(exchange_result, ExchangeAnalysisResult):
-                analysis_results.append(exchange_result)
-                successful_exchanges.append(exchange)
-            else:
-                # In a real application, you would log this failure.
-                # For now, we just skip the failed pipeline's result.
-                yield Event(
-                    author=self.name,
-                    content=Content(
-                        parts=[
-                            Part(
-                                text=f"Warning: Could not find or validate result for exchange '{exchange}'."
-                            )
-                        ]
-                    ),
-                )
+            regime_dict = ctx.session.state.get("validated_market_regime")
+            candidate_list_obj_dict = ctx.session.state.get("candidate_list_object")
+
+            if not regime_dict or not candidate_list_obj_dict:
+                yield Event(author=self.name, content=Content(parts=[Part(text="Error: Missing regime or candidate list in state.")]))
+                continue
+
+            final_result = ExchangeAnalysisResult(
+                market_regime=MarketRegimeState(**regime_dict),
+                candidate_list=StockCandidateList(**candidate_list_obj_dict).candidates,
+            )
+            analysis_results.append(final_result)
+            successful_exchanges.append(exchange)
 
         # 5. Assemble the final report using the new schema
         if not analysis_results:

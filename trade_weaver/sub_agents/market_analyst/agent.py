@@ -1,12 +1,5 @@
-"""
-Defines the Market Analyst Agent as a highly efficient, deterministic-first
-pipeline.
+# File: /trade_weaver/sub_agents/market_analyst/agent.py
 
-This final refactoring minimizes LLM calls by using custom, code-driven agents
-for all deterministic tool-calling tasks. LLMs are now used only for their
-essential reasoning and synthesis capabilities, resulting in a faster, more
-reliable, and cost-effective system.
-"""
 import inspect
 import uuid
 from typing import AsyncGenerator, Dict, Any, List
@@ -21,6 +14,7 @@ from google.adk.agents import (
 from google.adk.events import Event, EventActions
 from google.adk.tools import BaseTool, ToolContext
 from google.genai import types as genai_types
+from google.genai.types import Content, Part
 from pydantic import ConfigDict
 
 from trade_weaver.config import MODEL_FLASH
@@ -33,165 +27,125 @@ from .tools import market_analyst_toolset
 from .prompt import INSTRUCTION as REGIME_INSTRUCTION
 from .prompt import SCANNER_SYNTHESIS_INSTRUCTION
 
-
-# --- Deterministic, Reusable Tool-Calling Agents ---
+# --- Reusable Custom Agents for Deterministic Tool Calls ---
 
 class CustomToolCallingAgent(BaseAgent):
-    """A deterministic agent that calls a single, specific tool."""
+    """A custom agent that deterministically calls a single, specific tool."""
+
     tool: BaseTool
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        """Deterministically runs the tool and yields the correct events."""
+        # Logic to call the tool deterministically...
+        # (This remains the same as your previous correct version)
         tool_params = inspect.signature(self.tool.func).parameters
-        args = {p: ctx.session.state[p] for p in tool_params if p != "tool_context"}
-
+        args = {
+            param_name: ctx.session.state.get(param_name)
+            for param_name in tool_params
+            if param_name != "tool_context"
+        }
         call_id = f"fn_call_{uuid.uuid4()}"
-        yield Event(
-            author=self.name,
-            content=genai_types.Content(parts=[genai_types.Part(
-                function_call=genai_types.FunctionCall(id=call_id, name=self.tool.name, args=args)
-            )])
-        )
+        function_call = genai_types.FunctionCall(id=call_id, name=self.tool.name, args=args)
+        yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(function_call=function_call)]))
+
         tool_ctx = ToolContext(invocation_context=ctx, function_call_id=call_id, event_actions=EventActions())
         tool_response = await self.tool.run_async(args=args, tool_context=tool_ctx)
-        yield Event(
-            author=self.name,
-            content=genai_types.Content(role="user", parts=[genai_types.Part(
-                function_response=genai_types.FunctionResponse(id=call_id, name=self.tool.name, response=tool_response)
-            )]),
-            actions=tool_ctx.actions
-        )
 
-class StockDataEnrichmentAgent(BaseAgent):
-    """A deterministic agent that orchestrates the stock enrichment process."""
+        function_response = genai_types.FunctionResponse(id=call_id, name=self.tool.name, response=tool_response)
+        yield Event(author=self.name, content=genai_types.Content(role="user", parts=[genai_types.Part(function_response=function_response)]), actions=tool_ctx.actions)
+
+
+class SetInitialStateAgent(BaseAgent):
+    """A deterministic agent that sets the initial state for the pipeline."""
+    exchange: str
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        """Deterministically finds movers and gets details for each one."""
-        # 1. Find pre-market movers
-        movers_tool = market_analyst_toolset.find_pre_market_movers_tool
-        call_id_movers = f"fn_call_{uuid.uuid4()}"
-        yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(function_call=genai_types.FunctionCall(id=call_id_movers, name=movers_tool.name, args={}))]))
-        tool_ctx_movers = ToolContext(invocation_context=ctx, function_call_id=call_id_movers, event_actions=EventActions())
-        movers_response = await movers_tool.run_async(args={}, tool_context=tool_ctx_movers)
-        yield Event(author=self.name, content=genai_types.Content(role="user", parts=[genai_types.Part(function_response=genai_types.FunctionResponse(id=call_id_movers, name=movers_tool.name, response=movers_response))]), actions=tool_ctx_movers.actions)
-
-        tickers = movers_response.get("tickers", [])
-        if not tickers:
-            yield Event(author=self.name, content="No pre-market movers found. Ending stock scan.")
-            return
-
-        # 2. For each ticker, get full details
-        details_tool = market_analyst_toolset.get_full_stock_details_tool
-        for ticker in tickers:
-            call_id_details = f"fn_call_{uuid.uuid4()}"
-            args = {"ticker": ticker}
-            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(function_call=genai_types.FunctionCall(id=call_id_details, name=details_tool.name, args=args))]))
-            tool_ctx_details = ToolContext(invocation_context=ctx, function_call_id=call_id_details, event_actions=EventActions())
-            details_response = await details_tool.run_async(args=args, tool_context=tool_ctx_details)
-            yield Event(author=self.name, content=genai_types.Content(role="user", parts=[genai_types.Part(function_response=genai_types.FunctionResponse(id=call_id_details, name=details_tool.name, response=details_response))]), actions=tool_ctx_details.actions)
+        # This agent now directly calls the tool's function to set the state.
+        tool = market_analyst_toolset.get_exchange_details_tool
+        args = {"exchange": self.exchange}
+        tool_ctx = ToolContext(invocation_context=ctx, event_actions=EventActions())
+        # We call the tool's function directly to ensure the state is set.
+        await tool.run_async(args=args, tool_context=tool_ctx)
+        # This agent's job is done, it just yields a confirmation event.
+        yield Event(author=self.name, content=Content(parts=[Part(text=f"State initialized for {self.exchange}.")]))
 
 
-# --- Sub-Pipelines ---
+
+# --- Sub-Pipelines as Classes ---
 
 class MarketRegimeSubPipeline(SequentialAgent):
     """A pipeline to determine the market regime for an exchange."""
     def __init__(self, **kwargs):
+        # **CRITICAL:** Sub-agents are INSTANTIATED HERE, inside __init__.
+        data_gatherer = CustomToolCallingAgent(
+            name="regime_data_gatherer",
+            tool=market_analyst_toolset.get_market_regime_data_tool
+        )
+        regime_synthesizer = LlmAgent(
+            name="regime_synthesizer",
+            model=MODEL_FLASH,
+            instruction=REGIME_INSTRUCTION,
+            output_schema=MarketRegimeState,
+            output_key="validated_market_regime",
+        )
+        # We pass the list of INSTANCES to the parent constructor.
         super().__init__(
             name="market_regime_sub_pipeline",
-            description="Determines the market regime.",
-            sub_agents=[
-                ParallelAgent(
-                    name="regime_data_gatherer",
-                    description="Gathers market regime data in parallel.",
-                    sub_agents=[
-                        CustomToolCallingAgent(name="vix_fetcher", tool=market_analyst_toolset.get_vix_data_tool),
-                        CustomToolCallingAgent(name="adx_fetcher", tool=market_analyst_toolset.get_adx_data_tool),
-                        CustomToolCallingAgent(name="time_fetcher", tool=market_analyst_toolset.get_current_time_tool),
-                    ],
-                ),
-                LlmAgent(
-                    name="regime_synthesizer",
-                    description="Synthesizes data into a market regime.",
-                    model=MODEL_FLASH,
-                    instruction=REGIME_INSTRUCTION,
-                    output_schema=MarketRegimeState,
-                    output_key="validated_market_regime",
-                )
-            ],
+            sub_agents=[data_gatherer, regime_synthesizer],
             **kwargs,
         )
 
 class StockScannerSubPipeline(SequentialAgent):
     """A pipeline to scan for and enrich stock candidates."""
     def __init__(self, **kwargs):
+        # **CRITICAL:** Sub-agents are INSTANTIATED HERE, inside __init__.
+        stock_data_enricher = CustomToolCallingAgent(
+            name="stock_data_enricher",
+            tool=market_analyst_toolset.find_pre_market_movers_tool
+        )
+        synthesis_scanner = LlmAgent(
+            name="synthesis_scanner",
+            model=MODEL_FLASH,
+            instruction=SCANNER_SYNTHESIS_INSTRUCTION,
+            output_schema=StockCandidateList,
+            output_key="candidate_list_object",
+        )
+        # We pass the list of INSTANCES to the parent constructor.
         super().__init__(
             name="stock_scanner_sub_pipeline",
-            description="Finds and enriches stock candidates.",
-            sub_agents=[
-                StockDataEnrichmentAgent(name="stock_data_enricher", description="Deterministically enriches stock data."),
-                LlmAgent(
-                    name="synthesis_scanner",
-                    description="Synthesizes gathered data into a candidate list.",
-                    model=MODEL_FLASH,
-                    instruction=SCANNER_SYNTHESIS_INSTRUCTION,
-                    output_schema=StockCandidateList,
-                    output_key="candidate_list_object",
-                )
-            ],
+            sub_agents=[stock_data_enricher, synthesis_scanner],
             **kwargs,
         )
 
-class FinalResultAssemblerAgent(BaseAgent):
-    """Assembles the final result from the sub-pipelines."""
-    async def _run_async_impl(
-        self, ctx: InvocationContext
-    ) -> AsyncGenerator[Event, None]:
-        regime_dict = ctx.session.state.get("validated_market_regime", {})
-        candidate_list_dict = ctx.session.state.get("candidate_list_object", {})
-
-        if not regime_dict or not candidate_list_dict:
-            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="Error: Missing regime or candidate list in state.")]))
-            return
-
-        regime = MarketRegimeState(**regime_dict)
-        candidate_list_obj = StockCandidateList(**candidate_list_dict)
-        final_result = ExchangeAnalysisResult(market_regime=regime, candidate_list=candidate_list_obj.candidates)
-
-        exchange = regime.exchange
-        ctx.session.state[f"result_{exchange}"] = final_result
-        yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text=f"Successfully assembled final result for {exchange}.")]))
-
-
-# --- Main Worker Pipeline ---
+# --- Main Worker Pipeline Class ---
 
 class MarketAnalystPipeline(SequentialAgent):
     """The complete, parameterized pipeline for analyzing a single exchange."""
+    exchange: str
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     def __init__(self, exchange: str, **kwargs):
-        # The initial state setter is also a deterministic tool call
-        set_initial_state = CustomToolCallingAgent(
-            name=f"initial_state_setter_{exchange}",
-            tool=market_analyst_toolset.get_exchange_details_tool,
-        )
-        # We need to ensure the 'exchange' parameter is in the state for the tool
-        # A small agent to do just that is the cleanest way.
-        class SetExchangeParamAgent(BaseAgent):
-            async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
-                ctx.session.state["exchange"] = exchange
-                if False: yield # Required for async generator
+        # **CRITICAL:** The entire sub-agent tree is created uniquely for this instance.
+        # When the Coordinator creates two of these, they will be completely independent.
+        sub_agents_for_this_instance = [
+            SetInitialStateAgent(name=f"initial_state_setter_{exchange}", exchange=exchange),
+            MarketRegimeSubPipeline(),
+            StockScannerSubPipeline(),
+        ]
 
         super().__init__(
             name=f"market_analyst_pipeline_{exchange}",
             description=f"A full worker pipeline for the {exchange} market.",
-            sub_agents=[
-                SetExchangeParamAgent(name=f"set_exchange_param_{exchange}"),
-                set_initial_state,
-                MarketRegimeSubPipeline(),
-                StockScannerSubPipeline(),
-                FinalResultAssemblerAgent(name="final_result_assembler"),
-            ],
+            sub_agents=sub_agents_for_this_instance,
+            exchange=exchange,
             **kwargs,
         )
+
+# We now export the CLASS itself, not an instance.
+# The CoordinatorAgent will be responsible for creating instances.
+market_analyst_agent_class = MarketAnalystPipeline

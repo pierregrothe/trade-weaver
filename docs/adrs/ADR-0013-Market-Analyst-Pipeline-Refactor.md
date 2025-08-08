@@ -33,31 +33,31 @@ The new architecture is composed of the following key components:
 ```mermaid
 sequenceDiagram
     participant CoordinatorAgent
-    box rgba(230, 240, 255, 0.8) MarketAnalystPipeline (SequentialAgent)
-        participant SetInitialStateAgent (Custom)
-        participant MarketRegimeSubPipeline (Sequential)
-        participant StockScannerSubPipeline (Sequential)
-        participant FinalResultAssemblerAgent (Custom)
-    end
     participant Session State
+    box rgba(230, 240, 255, 0.8) Dynamically Created ParallelAgent
+        participant MarketAnalystPipeline (for NASDAQ)
+        participant MarketAnalystPipeline (for TSX)
+    end
+    participant Final Report
 
-    CoordinatorAgent->>+MarketAnalystPipeline: Invokes pipeline
+    CoordinatorAgent->>CoordinatorAgent: 1. Receives payload `exchanges: ["NASDAQ", "TSX"]`
 
-    MarketAnalystPipeline->>+SetInitialStateAgent: **(Deterministic)** Sets state
-    SetInitialStateAgent-->>Session State: Writes `exchange_details`
+    CoordinatorAgent->>+ParallelAgent: 2. **(Fan-Out)** Dynamically builds a ParallelAgent with two complete, self-contained pipeline instances.
 
-    MarketAnalystPipeline->>+MarketRegimeSubPipeline: **(Deterministic)** Runs regime data gathering
-    MarketRegimeSubPipeline-->>Session State: Writes `vix_data`, `adx_data`, etc.
-    Note over MarketRegimeSubPipeline: Contains the ONLY necessary LLM call for regime analysis.
+    Note right of ParallelAgent: Both pipelines run their FULL internal sequence concurrently in the SAME session.
 
-    MarketAnalystPipeline->>+StockScannerSubPipeline: **(Deterministic)** Runs stock scanning
-    StockScannerSubPipeline-->>Session State: Writes `final_candidate_list`
-    Note over StockScannerSubPipeline: Contains the ONLY necessary LLM call for stock analysis.
+    ParallelAgent->>+MarketAnalystPipeline: 3a. **NASDAQ Pipeline Executes:**<br/>1. Fetches its details.<br/>2. Calculates its market regime.<br/>3. Scans for its stocks.<br/>4. Assembles its complete `ExchangeAnalysisResult`.
+    MarketAnalystPipeline-->>Session State: Writes the single, complete result to **`result_NASDAQ`**.
 
-    MarketAnalystPipeline->>+FinalResultAssemblerAgent: **(Deterministic)** Assembles final result
-    FinalResultAssemblerAgent-->>Session State: Writes `result_{exchange}`
+    ParallelAgent->>+MarketAnalystPipeline: 3b. **TSX Pipeline Executes (in parallel)...**<br/>...and writes its complete result to **`result_TSX`**.
 
-    MarketAnalystPipeline-->>-CoordinatorAgent: Pipeline completes
+    ParallelAgent-->>-CoordinatorAgent: 4. Parallel execution completes.
+
+    CoordinatorAgent->>Session State: 5. **(Fan-In)** Reads the complete `ExchangeAnalysisResult` objects from `result_NASDAQ` and `result_TSX`.
+
+    CoordinatorAgent->>Final Report: 6. Assembles the final `DailyWatchlistDocument`.
+
+    CoordinatorAgent-->>External System: 7. Returns final, aggregated JSON report.
 ```
 
 ## Consequences
@@ -70,3 +70,69 @@ sequenceDiagram
 
 - **Negative**:
     - The `CoordinatorAgent` must be robust enough to handle cases where all parallel pipelines fail. The fan-in logic needs to explicitly check for an empty result set and return a final "error" status if no pipelines succeeded.
+
+## Data Schemas
+
+### MarketRegimeState
+```python
+class MarketRegimeState(BaseModel):
+    """A structured representation of the market's current regime."""
+    exchange: str
+    vix_value: float
+    vix_state: str
+    adx_value: float
+    adx_state: str
+    time_of_day_state: str
+    regime_code: str
+    timestamp: str
+```
+
+### StockCandidateObject
+```python
+class StockCandidateObject(BaseModel):
+    """
+    Detailed schema for each individual stock candidate that is evolved as it
+    moves through thepipeline.
+    """
+    code: str
+    name: str
+    exchange: str
+    sector: str
+    industry: str
+    adjusted_close: float
+    market_capitalization: int
+    pre_market_high: float
+    pre_market_low: float
+    status: str
+    status_reason: str
+    correlation_cluster_id: str
+    pipeline_scores: List[PipelineScore]
+    catalyst_details: List[CatalystDetail]
+```
+
+### StockCandidateList
+```python
+class StockCandidateList(BaseModel):
+    """A wrapper for a list of stock candidates, used for LLM output."""
+    candidates: List[StockCandidateObject]
+```
+
+### ExchangeAnalysisResult
+```python
+class ExchangeAnalysisResult(BaseModel):
+    """The complete analysis result for a single exchange worker pipeline."""
+    market_regime: MarketRegimeState
+    candidate_list: List[StockCandidateObject]
+```
+
+### DailyWatchlistDocument
+```python
+class DailyWatchlistDocument(BaseModel):
+    """
+    The final, aggregated watchlist document for a given day, containing
+    the analysis results for each scanned exchange.
+    """
+    analysis_timestamp_utc: str
+    exchanges_scanned: List[str]
+    analysis_results: List[ExchangeAnalysisResult]
+```
