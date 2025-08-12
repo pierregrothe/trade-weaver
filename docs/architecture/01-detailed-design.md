@@ -39,41 +39,11 @@ class BrokerInterface(ABC):
         pass
 ```
 
-## 2. Firestore Database Schema (Initial Version)
+## 2. Firestore Database Schema
 
-The following outlines the primary collections and their intended document structures.
+The canonical definition for the Firestore database schema, including all collections, fields, and interaction patterns, is maintained in the following document:
 
-### `Portfolios` Collection
+- **[Firestore Database Schema](./02-firestore-database-schema.md)**
 
-* **Document ID:** Auto-generated unique ID.
-* **Purpose:** The central document for a single pool of capital.
-* **Fields:**
-  * `name`: (string) "Claude's Investment Fund"
-  * `ownerId`: (string) UID from Firebase Auth.
-  * `managers`: (array of strings) List of UIDs for users with Trader/PM roles.
-  * `capital`: (map) `{ "CAD": 100000, "USD": 50000 }`
-  * `pnl`: (map) `{ "daily": 150.75, "total": 2500.50 }`
-  * `settings`: (map)
-    * `yoloLiveEnabled`: (boolean) `false`
-    * `yoloPaperEnabled`: (boolean) `true`
-    * `activeStrategies`: (array of strings) `["Momentum_Breakout"]`
-    * `maxDailyDrawdownPercent`: (number) `6`
-
-### `Trades` Collection
-
-* **Document ID:** Auto-generated unique ID.
-* **Purpose:** An immutable log of every single trade execution.
-* **Fields:**
-  * `portfolioId`: (string) Foreign key to the `Portfolios` collection.
-  * `status`: (string) "FILLED", "CANCELLED", "ERROR"
-  * `ticker`: (string) "AAPL"
-  * `market`: (string) "NASDAQ"
-  * `direction`: (string) "LONG"
-  * `quantity`: (number) 100
-  * `executionPrice`: (number) 175.50
-  * `currency`: (string) "USD"
-  * `exchangeRateApplied`: (number) 1.3570
-  * `totalCostInBaseCurrency`: (number) 23815.35 (which is 100 *175.50* 1.3570)
-  * `timestamp`: (timestamp) Firestore timestamp of execution.
-  * `mode`: (string) "live" or "paper"
+This ensures a single source of truth for our data model.
   

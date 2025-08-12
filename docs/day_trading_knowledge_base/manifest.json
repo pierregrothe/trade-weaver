@@ -97,6 +97,20 @@
             ]
         },
         {
+            "path": "02_operational_playbook/02a_pre_market_analysis_framework_deep_dive.md",
+            "category": "operational_playbook",
+            "description": "The definitive, end-to-end technical blueprint for the AI agent's pre-market analysis and watchlist generation pipeline. Consolidates and expands upon other documents, incorporating advanced quantitative metrics, market-specific models, an ML-powered feedback loop, and ADK implementation patterns.",
+            "keywords": [
+                "pre-market",
+                "framework",
+                "deep dive",
+                "quantitative scoring",
+                "ml feedback loop",
+                "adk",
+                "pipeline"
+            ]
+        },
+        {
             "path": "02_operational_playbook/03_trade_execution_logic.md",
             "description": "Defines a hierarchical trade execution logic, including pre-entry prerequisite checks (market regime, broad market filter) and explicit, programmable rules for entry, exit, and in-trade management (scaling, trailing stops).",
             "keywords": [
@@ -138,7 +152,13 @@
         {
             "path": "02_operational_playbook/06_advanced_post_trade_analysis.md",
             "description": "A guide to advanced post-trade analysis using Maximum Favorable Excursion (MFE) and Maximum Adverse Excursion (MAE) to quantitatively optimize stop-loss and take-profit placement.",
-            "keywords": ["post-trade analysis", "MFE", "MAE", "stop-loss optimization", "take-profit optimization"]
+            "keywords": [
+                "post-trade analysis",
+                "MFE",
+                "MAE",
+                "stop-loss optimization",
+                "take-profit optimization"
+            ]
         },
         {
             "path": "03_strategies/00_dynamic_strategy_selection_matrix.md",
@@ -340,17 +360,37 @@
         {
             "path": "04_tools_and_data/09_eodhd_api_playbook.md",
             "description": "A practical guide for using the EODHD API to power the data ingestion and analysis modules of the AI trading agent, with a focus on the official `eodhd` Python library.",
-            "keywords": ["EODHD", "API playbook", "data ingestion", "WebSocket", "technical indicators", "sentiment analysis"]
+            "keywords": [
+                "EODHD",
+                "API playbook",
+                "data ingestion",
+                "WebSocket",
+                "technical indicators",
+                "sentiment analysis"
+            ]
         },
         {
             "path": "04_tools_and_data/10_data_hygiene_protocol.md",
             "description": "A detailed protocol for cleaning and preparing financial time-series data, covering missing data, corporate actions, outliers, and survivorship bias.",
-            "keywords": ["data hygiene", "data cleaning", "preprocessing", "missing data", "survivorship bias", "outliers"]
+            "keywords": [
+                "data hygiene",
+                "data cleaning",
+                "preprocessing",
+                "missing data",
+                "survivorship bias",
+                "outliers"
+            ]
         },
         {
             "path": "04_tools_and_data/11_execution_algorithms_deep_dive.md",
             "description": "A deep dive into institutional-grade execution algorithms like TWAP and VWAP for minimizing market impact on large orders.",
-            "keywords": ["execution algorithm", "TWAP", "VWAP", "market impact", "slippage"]
+            "keywords": [
+                "execution algorithm",
+                "TWAP",
+                "VWAP",
+                "market impact",
+                "slippage"
+            ]
         },
         {
             "path": "05_regulatory_and_fiscal/01_us_pattern_day_trader_rule.md",
@@ -453,7 +493,14 @@
         {
             "path": "06_brokers_and_platforms/05_interactive_brokers_api_playbook.md",
             "description": "A practical guide for using the Interactive Brokers API via the `ib_insync` library for order execution, portfolio management, and high-fidelity data.",
-            "keywords": ["Interactive Brokers", "IBKR", "API playbook", "ib_insync", "order execution", "portfolio management"]
+            "keywords": [
+                "Interactive Brokers",
+                "IBKR",
+                "API playbook",
+                "ib_insync",
+                "order execution",
+                "portfolio management"
+            ]
         },
         {
             "path": "07_ai_agent_development/01_system_architecture_blueprint.md",
@@ -534,27 +581,61 @@
         {
             "path": "07_ai_agent_development/07_ml_for_trading_overview.md",
             "description": "An overview of the different Machine Learning models (ARIMA, SVM, LSTMs) and their applications in trading, including predictive modeling and sentiment analysis.",
-            "keywords": ["machine learning", "LSTM", "reinforcement learning", "sentiment analysis", "predictive modeling"]
+            "keywords": [
+                "machine learning",
+                "LSTM",
+                "reinforcement learning",
+                "sentiment analysis",
+                "predictive modeling"
+            ]
         },
         {
             "path": "07_ai_agent_development/08_lstm_for_time_series_forecasting.md",
             "description": "A detailed, practical guide to building a Long Short-Term Memory (LSTM) neural network for stock price prediction, including a step-by-step Python tutorial.",
-            "keywords": ["LSTM", "deep learning", "time series", "forecasting", "neural network", "python tutorial"]
+            "keywords": [
+                "LSTM",
+                "deep learning",
+                "time series",
+                "forecasting",
+                "neural network",
+                "python tutorial"
+            ]
         },
         {
             "path": "07_ai_agent_development/09_reinforcement_learning_for_strategy_optimization.md",
             "description": "A guide to using Reinforcement Learning (RL) to develop adaptive trading strategies, including how to build a custom trading environment in Python.",
-            "keywords": ["reinforcement learning", "RL", "strategy optimization", "adaptive strategy", "OpenAI Gym", "Stable Baselines3"]
+            "keywords": [
+                "reinforcement learning",
+                "RL",
+                "strategy optimization",
+                "adaptive strategy",
+                "OpenAI Gym",
+                "Stable Baselines3"
+            ]
         },
         {
             "path": "07_ai_agent_development/10_nlp_for_financial_sentiment_analysis.md",
             "description": "A guide to using Natural Language Processing (NLP) for financial sentiment analysis, covering dictionary-based methods, FinBERT, and LLMs, with a Python code example.",
-            "keywords": ["NLP", "sentiment analysis", "FinBERT", "Hugging Face", "natural language processing", "news analysis"]
+            "keywords": [
+                "NLP",
+                "sentiment analysis",
+                "FinBERT",
+                "Hugging Face",
+                "natural language processing",
+                "news analysis"
+            ]
         },
         {
             "path": "07_ai_agent_development/11_system_resilience_and_failure_modes.md",
             "description": "Details protocols for handling technical and operational risks such as connectivity loss, API downtime, and data feed corruption, including the implementation of a heartbeat system and circuit breakers.",
-            "keywords": ["system resilience", "failure modes", "operational risk", "heartbeat", "circuit breaker", "fault tolerance"]
+            "keywords": [
+                "system resilience",
+                "failure modes",
+                "operational risk",
+                "heartbeat",
+                "circuit breaker",
+                "fault tolerance"
+            ]
         }
     ]
 }

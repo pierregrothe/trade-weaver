@@ -7,6 +7,7 @@
 ## Context
 
 The `MarketAnalystPipeline` was initially designed with `LlmAgent`s for most of its sequential tasks. This architecture, while functional, led to several issues:
+
 - **High Latency**: Each step involving an `LlmAgent` incurred a network roundtrip to the Gemini API.
 - **Rate Limiting**: The high frequency of API calls increased the risk of hitting rate limits.
 - **Cost**: Every LLM call has an associated financial cost.
@@ -20,11 +21,11 @@ We have decided to refactor the `MarketAnalystPipeline` to adopt a "deterministi
 
 The new architecture is composed of the following key components:
 
-1.  **`CustomToolCallingAgent`**: A reusable, deterministic agent that takes a specific tool in its constructor and calls it directly. This agent is used for simple, single-tool-calling steps.
+1. **`CustomToolCallingAgent`**: A reusable, deterministic agent that takes a specific tool in its constructor and calls it directly. This agent is used for simple, single-tool-calling steps.
 
-2.  **`StockDataEnrichmentAgent`**: A custom, deterministic agent that orchestrates a multi-step tool-calling process in code: it first finds pre-market movers and then iterates through the results to fetch detailed data for each stock.
+2. **`StockDataEnrichmentAgent`**: A custom, deterministic agent that orchestrates a multi-step tool-calling process in code: it first finds pre-market movers and then iterates through the results to fetch detailed data for each stock.
 
-3.  **Refactored Sub-Pipelines**:
+3. **Refactored Sub-Pipelines**:
     - `MarketRegimeSubPipeline`: Now uses `CustomToolCallingAgent` instances for parallel data gathering (`VIX`, `ADX`, `Time`). The `regime_synthesizer` remains an `LlmAgent`, as it performs a complex synthesis task.
     - `StockScannerSubPipeline`: Now consists of only two steps: the deterministic `StockDataEnrichmentAgent` followed by the `synthesis_scanner` `LlmAgent`, which analyzes the fully enriched data.
 
@@ -63,17 +64,20 @@ sequenceDiagram
 ## Consequences
 
 - **Positive**:
-    - **Reduced LLM Calls**: The number of LLM calls per pipeline run is reduced to the absolute minimum (two).
-    - **Increased Speed**: The pipeline is significantly faster due to the elimination of network latency for most steps.
-    - **Improved Reliability**: The pipeline is more deterministic and less prone to errors from LLM misinterpretations.
-    - **Lower Cost**: Fewer LLM calls result in lower operational costs.
+  - **Reduced LLM Calls**: The number of LLM calls per pipeline run is reduced to the absolute minimum (two).
+  - **Increased Speed**: The pipeline is significantly faster due to the elimination of network latency for most steps.
+  - **Improved Reliability**: The pipeline is more deterministic and less prone to errors from LLM misinterpretations.
+  - **Lower Cost**: Fewer LLM calls result in lower operational costs.
 
 - **Negative**:
-    - The `CoordinatorAgent` must be robust enough to handle cases where all parallel pipelines fail. The fan-in logic needs to explicitly check for an empty result set and return a final "error" status if no pipelines succeeded.
+  - The `CoordinatorAgent` must be robust enough to handle cases where all parallel pipelines fail. The fan-in logic needs to explicitly check for an empty result set and return a final "error" status if no pipelines succeeded.
 
 ## Data Schemas
 
+*The canonical, implementation-ready Pydantic models and Firestore schemas are defined in the **[Firestore Database Schema](../02-firestore-database-schema.md)** document. The schemas below are for illustrative purposes within this ADR.*
+
 ### MarketRegimeState
+
 ```python
 class MarketRegimeState(BaseModel):
     """A structured representation of the market's current regime."""
@@ -88,6 +92,7 @@ class MarketRegimeState(BaseModel):
 ```
 
 ### StockCandidateObject
+
 ```python
 class StockCandidateObject(BaseModel):
     """
@@ -111,6 +116,7 @@ class StockCandidateObject(BaseModel):
 ```
 
 ### StockCandidateList
+
 ```python
 class StockCandidateList(BaseModel):
     """A wrapper for a list of stock candidates, used for LLM output."""
@@ -118,6 +124,7 @@ class StockCandidateList(BaseModel):
 ```
 
 ### ExchangeAnalysisResult
+
 ```python
 class ExchangeAnalysisResult(BaseModel):
     """The complete analysis result for a single exchange worker pipeline."""
@@ -126,6 +133,7 @@ class ExchangeAnalysisResult(BaseModel):
 ```
 
 ### DailyWatchlistDocument
+
 ```python
 class DailyWatchlistDocument(BaseModel):
     """

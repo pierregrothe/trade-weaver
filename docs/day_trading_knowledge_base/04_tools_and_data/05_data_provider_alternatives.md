@@ -30,8 +30,10 @@ The choice of provider is a strategic decision based on project phase and priori
 
 | [PARAMETER: Scenario] | [RECOMMENDATION: Provider] | [RATIONALE: Justification] |
 | :--- | :--- | :--- |
-| **Prototyping / Extreme Budget Constraint** | **Alpha Vantage** | Lowest entry cost to validate core logic. **MUST MIGRATE** for production. |
-| **Production: Balanced Agentic System** | **EODHD (All-In-One Plan)** | **Optimal choice.** Best balance of data breadth and speed at a superior TCO. |
-| **Production: Latency is Sole Priority (US Only)** | **Hybrid: Polygon.io + EODHD** | Use Polygon for its superior low-latency WebSocket feeds. Use EODHD for all other data. Maximizes performance at the cost of higher fees and complexity. |
+| **Foundational Data (L1, Fundamentals, News)** | **EODHD (All-In-One Plan)** | **Optimal choice.** Best balance of data breadth, deep history, and cost for all non-order-book data needs. |
+| **AMER L2/L3 Data** | **Databento** | Specialist provider with true Level 3 (MBO) data, a high-performance Python API, and transparent pricing. |
+| **EMEA L2/L3 Data** | **dxFeed** | Specialist provider with extensive, established Level 3 coverage across key European exchanges. |
+| **Deep Historical Backtesting (US)** | **Algoseek** | Specialist provider of unfiltered, "as-is" historical data, which is the gold standard for backtesting microstructure-sensitive strategies. |
+| **Prototyping / Extreme Budget Constraint** | **Alpha Vantage** | Lowest entry cost to validate core logic. **MUST MIGRATE** for production due to rate limits and unofficial libraries. |
 
 [SOURCE_ID: EODHD for AI Trading Platform, Section 3, 4, 5]

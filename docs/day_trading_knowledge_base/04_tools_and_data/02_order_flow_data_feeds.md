@@ -10,11 +10,16 @@ There is a clear hierarchy of data latency and predictive power. A sophisticated
 2. **[DATA: Level_2] (Real-Time Intent):** The full order book. Shows the *intent* to trade. Provides **short-term prediction**.
 3. **[DATA: Time_and_Sales] (Real-Time Execution):** The log of executed trades. Shows *actual* transactions as they happen. Provides **immediate confirmation**.
 
-### [DATA: Level_2] Level 2 Data (Market Depth)
+### [DATA: Level_2] Level 2 Data (Market-by-Price, MBP)
 
-- **[DEFINITION:]** The "order book"—a ranked list of all open limit buy and sell orders at various price levels.
+- **[DEFINITION:]** The "order book"—a ranked list of all open limit buy and sell orders at various price levels, aggregated by price.
 - **[AI_USE_CASE: Liquidity_Analysis]** An AI must parse Level 2 data to gauge market depth and identify large orders ("bid/ask walls") that can act as temporary support or resistance.
-- **[PROGRAMMABLE_RULE: Wall_Detection]** `IF size_at_price_level_X > (average_size_per_level * 10) THEN flag_level_X_as_support_resistance_wall`.
+- **[LIMITATION:]** Standard Level 2 data is **aggregated**. It shows the total volume at a price level but does not reveal the number or size of individual orders, which is a critical limitation for advanced analysis.
+
+### [DATA: Level_3] Level 3 Data (Market-by-Order, MBO)
+
+- **[DEFINITION:]** The highest possible granularity. It is the raw, un-aggregated feed of every single order and its full lifecycle (add, modify, cancel, execute). Exchange-native feeds like NASDAQ's TotalView-ITCH provide this level of detail.
+- **[AI_USE_CASE: Predictive Modeling]** Level 3 data is a **non-negotiable prerequisite** for building a predictive `Order_Imbalance_Score`. It allows the agent to differentiate between institutional and retail order flow, detect spoofing, and analyze the replenishment of iceberg orders.
 
 ### [DATA: Time_and_Sales] Time & Sales (The "Tape")
 

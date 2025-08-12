@@ -30,11 +30,13 @@ Trade Weaver requires a database to store all user-facing and operational data, 
 
 ### High-Level Data Model
 
-We will start with the following core Firestore collections:
+We will start with the following core Firestore collections, which are detailed exhaustively in the canonical **[Firestore Database Schema](../02-firestore-database-schema.md)** document:
 
-* `Users`: Stores user profile information and links to their portfolios.
+* `Users`: Stores user profile information and roles.
 * `Portfolios`: Main collection tracking capital, P&L, and settings for each investment pool.
-* `Trades`: An immutable log of all executed trades (both live and paper).
-* `TradeOpportunities`: A list of potential trades identified by the `AnalyzerAgent`.
-* `Strategies`: A registry of available trading strategy modules.
-* `Markets` & `Exchanges`: Configuration data for global markets.
+* `Markets`: Configuration for addressable global markets (AMER, EMEA, APAC).
+* `Exchanges`: Detailed configuration for each stock exchange, including its pre-market mechanism.
+* `Strategies`: A registry of available trading strategy modules and their parameters.
+* `DailyWatchlists`: Stores the ranked output of the pre-market analysis for a given day.
+* `TradeSignals`: An immutable log of every potential trade identified by the analysis pipeline.
+* `Trades`: An immutable log of all executed trades.

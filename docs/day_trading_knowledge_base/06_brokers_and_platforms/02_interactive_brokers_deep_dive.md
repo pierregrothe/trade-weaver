@@ -29,6 +29,16 @@ Interactive Brokers (IBKR) is a premier platform for serious, active, and profes
 - **[CRITERIA_RANK: 1 - API Access]** **Excellent.** Provides multiple, robust, official APIs with full paper trading integration. The TWS API is a perfect candidate for being wrapped in a custom ADK `FunctionTool` for order execution.
 - **[CRITERIA_RANK: 2 - Regulatory]** **Conditional Pass.** IBKR **enforces the U.S. PDT rule** on Canadian clients trading U.S. securities. This makes it suitable **only for AI agents with > $25,000 USD in capital**. For under-capitalized agents targeting US markets, IBKR is not a viable option.
 - **[CRITERIA_RANK: 3 - Costs]** **Excellent.** The combination of low per-share commissions, negligible currency conversion fees, and low margin rates provides the lowest possible Total Cost of Ownership for a high-frequency, cross-border trading agent.
+
+### [DATA: Market_Data_Feeds] Market Data Feeds
+
+IBKR provides a comprehensive, albeit complex, set of market data subscription options. For an AI agent, it can serve as the primary source for real-time Level 1 and Level 2 data.
+
+- **Level 1 Data:** Provides real-time Top-of-Book (NBBO) quotes.
+- **Level 2 Data (Market-by-Price):** IBKR offers deep book data for major exchanges (e.g., NASDAQ TotalView, NYSE ArcaBook) via paid monthly subscriptions. This data is aggregated by price level (Market-by-Price) and is sufficient for calculating most of the `Chart_Clarity_Score` metrics.
+- **Level 3 Data (Market-by-Order):** True Level 3 / MBO data is not explicitly available through the standard API subscriptions. For the highest-fidelity order flow analysis, a specialist provider like Databento or dxFeed would be required as a supplementary source.
+- **Cost:** Data fees are modular and charged per-exchange. For a non-professional account, key feeds like NASDAQ TotalView are relatively inexpensive (typically <$20/month), and some data fees can be waived based on monthly commission volume, making it a cost-effective solution.
+
 - **[RECOMMENDATION]** IBKR is the **superior choice for well-capitalized, performance-sensitive AI agents**, especially those trading U.S. markets from Canada. The high complexity is a justifiable trade-off for the professional-grade infrastructure and significant cost advantages.
 
 [SOURCE_ID: Day Trading with Canadian Brokers, Section 3.1]

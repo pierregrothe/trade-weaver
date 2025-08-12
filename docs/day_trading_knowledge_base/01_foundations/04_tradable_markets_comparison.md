@@ -2,7 +2,9 @@
 
 The choice of market fundamentally dictates an AI agent's design, operational hours, data requirements, and risk models. This document compares the three primary markets for day trading.
 
-| [PARAMETER: Feature] | [MARKET: Equities_Stocks] | [MARKET: Foreign_Exchange_Forex] | [MARKET: Digital_Assets_Crypto] |
+| [PARAMETER: Feature] | [MARKET: Equities_Stocks (US)] | [MARKET: Equities_Stocks (Global)] | [MARKET: Foreign_Exchange_Forex] | [MARKET: Digital_Assets_Crypto] |
+| :--- | :--- | :--- | :--- | :--- |
+| **Pre-Open Mechanism** | **Continuous Trading** | **Opening Auction** | 24/5 Continuous | **24/7/365 Continuous** |
 | :--- | :--- | :--- | :--- |
 | **Trading Hours** | Fixed daily hours (e.g., 9:30-16:00 ET); subject to **overnight gap risk**. | 24 hours/day, 5 days/week; continuous market, no gap risk. | **24/7/365; truly continuous operation.** No concept of "market close." |
 | **Volatility Profile** | Moderate to high; driven by company/sector news and market sentiment. | High; driven by macroeconomic data and central bank policy. | **Extreme;** driven by sentiment, regulation, and technological news. Rapid and large price swings are frequent. |

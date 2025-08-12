@@ -114,7 +114,7 @@ sequenceDiagram
 
 ### Appendix C: Detailed Data Schemas
 
-*The following schemas represent the final, validated Pydantic models used in the implementation, derived from the knowledge base.*
+*The canonical, implementation-ready Pydantic models and Firestore schemas are defined in the **[Firestore Database Schema](../02-firestore-database-schema.md)** document. The schemas below are for illustrative purposes within this ADR.*
 
 #### DailyWatchlistDocument (Final Output)
 

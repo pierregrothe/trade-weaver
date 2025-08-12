@@ -23,4 +23,8 @@ The primary recommendation is to select the **EODHD "All-In-One" plan**. This de
 
 - The `eodhdc` Python library's support for asynchronous operations is a perfect match for the target architecture. The data ingestion module, deployed as a GCP Cloud Run service, should be written using Python's `asyncio` library. The ingested data can be passed to an ADK `LlmAgent` through a custom `FunctionTool` that subscribes to the GCP Pub/Sub topic where the data is published.
 
+### [CONCEPT: Limitations] Limitations and Data Gaps
+
+While EODHD is an excellent foundational provider, it is critical to understand its limitations. EODHD provides **Level 1** data (top-of-book quotes and trades). It does **not** currently provide the **Level 2 (aggregated market depth) or Level 3 (market-by-order) data** necessary for the most advanced order flow analysis, such as calculating the `Order_Imbalance_Score` or the order flow components of the `Chart_Clarity_Score`. This necessitates a hybrid data strategy, supplementing EODHD with a specialized Level 2/3 data provider.
+
 [SOURCE_ID: EODHD for AI Trading Platform, Section 2, 4, 5]
