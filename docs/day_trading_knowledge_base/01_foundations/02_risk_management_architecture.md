@@ -12,21 +12,30 @@ Risk is managed in a hierarchy, from single-trade checks to system-wide circuit 
 
 ### [LAYER: 1] Layer 1: Single-Trade Protocols
 
-- **[PROTOCOL: 1%_Rule]** No single trade shall be sized to lose more than 1% of total account equity if the stop-loss is hit.
-- **[PROTOCOL: ATR_Stop_Placement]** The initial stop-loss must be placed at a distance of at least **1.5 times the current Average True Range (ATR)** from the entry price to avoid premature exits from market noise.
-- **[PROTOCOL: Max_Position_Size]** A hard cap on the maximum dollar value of any single position to manage liquidity risk and prevent over-concentration.
+- **[PROTOCOL: Max_Risk_per_Trade]** No single trade shall be sized to lose more than a fixed percentage of total account equity. The standard is **1%**. This is the most critical rule in risk management.
+    - **Formula:** `Position Size = (Total_Account_Equity * Max_Risk_%) / (Entry_Price - Stop_Loss_Price)`
+- **[PROTOCOL: ATR_Stop_Placement]** The initial stop-loss must be placed at a distance of at least **1.5 to 2.0 times the current 14-period Average True Range (ATR)** from the entry price. This adapts the stop-loss to the stock's specific volatility and helps avoid premature exits from market noise.
+- **[PROTOCOL: Max_Position_Size]** A hard cap on the maximum dollar value of any single position (e.g., 25% of portfolio equity) to manage liquidity risk and prevent over-concentration.
 
 ### [LAYER: 2] Layer 2: Portfolio-Level Protocols
 
-- **[PROTOCOL: Max_Gross_Exposure]** The sum of the absolute values of all long and short positions shall not exceed a predefined limit of account equity (e.g., **200%**). This controls the total capital deployed and overall leverage.
+- **[PROTOCOL: Max_Gross_Exposure]** The sum of the absolute values of all long and short positions shall not exceed a predefined limit of account equity (e.g., **200%** for a 2:1 leveraged account). This controls the total capital deployed.
 - **[PROTOCOL: Max_Net_Exposure]** The difference between total long and short positions shall not exceed a predefined limit (e.g., **+/- 75%**). This measures and controls the portfolio's overall directional market bias.
-- **[PROTOCOL: Max_Sector_Exposure]** The net exposure to any single, predefined market sector (e.g., Technology, Healthcare) shall not exceed a hard limit (e.g., **25%** of account equity). This is the primary defense against the "five semiconductor stocks" problem.
-- **[PROTOCOL: Max_Catalyst_Exposure]** The aggregate risk (sum of 1% risks) across all trades sharing the same primary catalyst (e.g., "CPI Data Release") shall not exceed a hard limit (e.g., **5%** of total equity).
+- **[PROTOCOL: Max_Sector_Exposure]** The net exposure to any single, predefined market sector (e.g., Technology, Healthcare) shall not exceed a hard limit (e.g., **25%** of account equity). This prevents catastrophic losses from a sector-wide event.
+- **[PROTOCOL: Correlation_Matrix_Analysis]** The agent must periodically calculate the correlation matrix of all positions in the portfolio. If the overall portfolio correlation exceeds a certain threshold (e.g., 0.7), the agent should be prevented from adding new positions that would further increase this correlation.
 
 ### [LAYER: 3] Layer 3: System-Level Protocols (Circuit Breakers)
 
-- **[PROTOCOL: Trailing_Drawdown]** A hard stop on the entire strategy. A maximum trailing drawdown limit is set on the portfolio's equity (e.g., **5%**). If the current equity ever drops 5% below its highest-ever recorded value (the "high-water mark"), all trading is automatically halted and positions are systematically liquidated.
-- **[PROTOCOL: Volatility_Regime_Scaling]** The system must monitor a market-wide volatility index (e.g., the **VIX**). `IF VIX > 30 THEN` automatically scale down all risk parameters: reduce single-trade risk to 0.5%, reduce max gross exposure to 100%, etc. This forces the agent to be more conservative when the market is most dangerous.
+- **[PROTOCOL: Max_Daily_Drawdown]** A hard stop on the entire strategy for the day. If the total account equity drops by a predefined percentage (e.g., 3%) from the start of the day, all trading is halted, and all positions are liquidated.
+- **[PROTOCOL: Trailing_Drawdown]** A hard stop on the entire strategy. A maximum trailing drawdown limit is set on the portfolio's equity (e.g., **5%**). If the current equity ever drops 5% below its highest-ever recorded value (the "high-water mark"), all trading is automatically halted.
+- **[PROTOCOL: Volatility_Regime_Scaling]** The system must monitor a market-wide volatility index (e.g., the **VIX**). The risk parameters must be scaled dynamically based on the VIX reading:
+    - `VIX < 20`: Normal risk parameters (e.g., 1% risk per trade).
+    - `VIX 20-30`: Reduce risk parameters by 50% (e.g., 0.5% risk per trade).
+    - `VIX > 30`: Cease all new trading and only manage existing positions.
+
+### [CONCEPT: ADK_Implementation] Risk Implementation in ADK
+
+- **[IMPLEMENTATION]** These protocols will be implemented as a `before_tool_callback` on the main trading agent in the ADK. This callback, our **Risk Governor**, will intercept every call to the `execute_trade` tool. It will run through the full hierarchy of risk checks (from Layer 1 to Layer 3) before allowing a trade to be placed. If any check fails, the tool call will be blocked, and the reason for the rejection will be logged.
 
 [SOURCE_ID: Intraday Portfolio Risk Management, Section 4]
 [SOURCE_ID: Day Trading AI Agent Research, Part II, Section 2.3]

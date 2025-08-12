@@ -6,10 +6,20 @@ This document provides a methodological guide for the AI agent's research and de
 
 This is the process of transforming raw, non-stationary market data into informative, predictive signals (features) that a machine learning model can use.
 
-- **[FEATURE: Price_Transformation] Logarithmic Returns:** Raw prices are non-stationary. Log returns (`ln(Price_t / Price_t-1)`) are the standard for quantitative modeling because they are time-additive and approximately normally distributed, which is a core assumption for many statistical techniques.
-- **[FEATURE: Momentum] Rate of Change (ROC):** A pure momentum oscillator that measures the percentage price change over a lookback period. Useful for capturing trend and momentum.
-- **[FEATURE: Volatility] Historical Volatility (HV):** The annualized standard deviation of log returns. A critical feature for identifying market regimes (high vs. low volatility) and as an input for risk management.
+- **[FEATURE: Price_Transformation] Logarithmic Returns:** Raw prices are non-stationary. Log returns (`ln(Price_t / Price_t-1)`) are the standard for quantitative modeling because they are time-additive and approximately normally distributed.
+- **[FEATURE: Momentum] Rate of Change (ROC):** A pure momentum oscillator that measures the percentage price change over a lookback period.
+- **[FEATURE: Volatility] Historical Volatility (HV):** The annualized standard deviation of log returns. A critical feature for identifying market regimes and as an input for risk management.
 - **[FEATURE: Microstructure] Order Flow Imbalance (OFI):** A highly predictive, short-term feature calculated from tick data. It measures the net pressure from aggressive buy and sell orders and is a direct, causal driver of price movement.
+
+```python
+# Example: Calculating Log Returns and Historical Volatility in Python
+import numpy as np
+import pandas as pd
+
+df = pd.DataFrame({'price': [100, 101, 102, 101.5, 103]})
+df['log_returns'] = np.log(df['price'] / df['price'].shift(1))
+df['historical_volatility'] = df['log_returns'].rolling(window=5).std() * np.sqrt(252) # Annualized
+```
 
 ### [LIFECYCLE: Stage_2] Stage 2: A Decision Framework for Model Selection
 
@@ -34,9 +44,17 @@ This is a set of non-negotiable protocols to ensure the integrity of the backtes
 - **[RULE: Fit_on_Train_Only]** Any data preprocessor (e.g., StandardScaler) must be `.fit()` **only** on the training data and then `.transform()` the validation and test data.
 - **[RULE: Prevent_Look_Ahead]** All feature calculations must be causal. A feature at time `t` can only use information available at or before `t`.
 
-### [LIFECYCLE: Stage_4] Stage 4: Robust Hyperparameter Optimization
+### [LIFECYCLE: Stage_4] Stage 4: Robust Hyperparameter Optimization and Validation
 
 - **[TECHNIQUE: Search_Methods]** For tuning model hyperparameters, **Bayesian Optimization** is superior to Grid Search or Randomized Search as it is more sample-efficient, making it ideal for computationally expensive financial backtests.
 - **[TECHNIQUE: WFO] The Gold Standard: Walk-Forward Optimization (WFO):** This is the only acceptable validation framework for non-stationary financial markets. It simulates real-world adaptation by repeatedly optimizing the model on a rolling "in-sample" window and testing it on the next "out-of-sample" window. The final result is a concatenation of all out-of-sample periods, providing a robust estimate of live performance.
+- **[TECHNIQUE: Combinatorial_CV] Combinatorial Cross-Validation:** A technique that tests all possible combinations of training, validation, and test set splits to ensure that the model is robust to different market periods and not just lucky on one particular split.
+
+### [LIFECYCLE: Stage_5] Stage 5: Model Evaluation and Selection
+
+- **[METRIC: Sharpe_Ratio]** The primary metric for evaluating a trading strategy. It measures the risk-adjusted return.
+- **[METRIC: Sortino_Ratio]** An alternative to the Sharpe Ratio that only penalizes for downside volatility, which can be more relevant for trading strategies.
+- **[METRIC: Calmar_Ratio]** The ratio of the annualized return to the maximum drawdown. It provides a measure of return per unit of maximum risk taken.
+- **[METRIC: Information_Ratio]** Measures the excess return of a strategy over a benchmark (e.g., the S&P 500) divided by the standard deviation of that excess return. It shows how consistently a strategy outperforms a benchmark.
 
 [SOURCE_ID: Quantitative Trading Model Development Guide]

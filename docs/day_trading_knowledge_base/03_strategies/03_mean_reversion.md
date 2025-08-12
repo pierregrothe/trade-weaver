@@ -1,50 +1,32 @@
-# [STRATEGY: Scalping] Scalping
+# [STRATEGY: Mean_Reversion] Mean Reversion Trading
 
-This document details Scalping, the highest-frequency day trading strategy, which profits from market microstructure inefficiencies. This strategy is only viable through full automation.
+This document details the Mean Reversion strategy, a counter-trend approach that profits from the statistical tendency of prices to revert to their historical average.
 
 ### [PRINCIPLE: Statistical_Edge] 1. Statistical Edge and Rationale
 
-- **[WHAT]** Scalping exploits transient, structural inefficiencies within the market's mechanics, operating on a timescale of seconds or milliseconds.
-- **[WHY]** The edge is derived from two primary sources:
-    1. **[INEFFICIENCY: Bid_Ask_Spread] Capturing the Bid-Ask Spread:** The agent acts as a "miniature market maker," simultaneously placing buy and sell limit orders to capture the spread, profiting from the cost of immediacy paid by other traders.
-    2. **[INEFFICIENCY: Order_Flow_Imbalance] Fleeting Order Flow Imbalances:** The agent detects temporary, massive imbalances in the Limit Order Book (LOB) that precede very short-term, directional price moves, and executes a trade to front-run slower participants.
-- **[RISK: Adverse_Selection]** The primary risk is **adverse selection**: unknowingly trading with a more informed participant who is causing the imbalance, leading to immediate losses.
+- **[WHAT]** Mean reversion operates on the principle that price extremes are temporary and that prices will tend to return to a central value (the "mean"). The strategy involves buying assets that have fallen significantly and shorting assets that have risen significantly, betting on a "snap-back."
+- **[WHY]** The edge is derived from market overreactions. Behavioral biases can cause prices to overshoot their intrinsic value. Mean reversion profits from the correction of these overreactions.
+- **[RISK: Trend_Continuation]** The primary risk is that what appears to be an overextension is actually the beginning of a new, strong trend. A mean reversion trader can suffer large losses if they fight a persistent trend, making risk management critical.
 
-### [CONCEPT: Prerequisites] 2. Quantitative Prerequisites
+### [CONCEPT: Optimal_Parameters] 2. Optimal Implementation Parameters
 
-- **[REQUIREMENT: High_Liquidity]** `Average Daily Volume > 5,000,000 shares`.
-- **[REQUIREMENT: Tight_Spreads]** The bid-ask spread must be consistently **$0.01**.
-- **[REQUIREMENT: Fee_Structure]** A **per-share commission** structure is mandatory. For market making, **liquidity-adding rebates** are required for profitability.
+- **[REGIME: Ranging_Market]** This strategy is most effective in **range-bound or oscillating markets** with no strong directional trend (i.e., low ADX).
+- **[INDICATOR: Bollinger_Bands]** Bollinger Bands are a primary tool. They consist of a moving average (the mean) and bands plotted at a set number of standard deviations (typically 2) above and below it. A price touching or piercing the outer bands signals a statistical extreme.
+- **[INDICATOR: RSI]** The Relative Strength Index (RSI) is used to confirm overbought/oversold conditions. A reading > 70 indicates overbought, and < 30 indicates oversold.
+- **[SIGNAL: Confluence]** The highest-probability signals come from confluence. A long entry is triggered when the price touches the lower Bollinger Band **AND** the RSI is oversold (<30). A short entry is triggered when the price touches the upper Bollinger Band **AND** the RSI is overbought (>70).
 
-### [CONCEPT: AI_Architectures] 3. Specific, Programmable Scalping Architectures
+### [CONCEPT: Performance_Analysis] 3. Quantitative Performance Analysis
 
-1. **[ARCHITECTURE: Market_Making] Passive Market Making (Spread Capture):**
-    - **[LOGIC:]** Continuously place bid and ask limit orders around a calculated mid-price. Actively manage inventory risk by "skewing" quotes to trade back towards a flat position.
-    - **[PSEUDOCODE: See Intraday Scalping AI Architecture document for full implementation]**
+- **Win Rate:** Mean reversion strategies typically have a high win rate (often 70-85%) because prices spend more time in ranges than in strong trends. However, the average profit per trade is usually smaller than in momentum strategies.
+- **Risk Management:** Because a single strong trend can erase many small wins, strict risk management is non-negotiable. Stop-losses must be placed to cap the risk if the expected reversion does not occur.
+- **Profit Target:** The most common and logical profit target for a mean reversion trade is the middle Bollinger Band (the moving average), as this represents a return to the mean.
 
-2. **[ARCHITECTURE: Order_Flow_Imbalance] Aggressive Order Flow Imbalance (Liquidity Taking):**
-    - **[LOGIC:]** Scan the top levels of the L2 order book. If the volume on one side massively outweighs the other (e.g., `bid_volume > ask_volume * 3.0`), execute an immediate market order.
-    - **[PSEUDOCODE: Imbalance_Scalp]**
-        `FUNCTION execute_imbalance_scalp(ticker):`
-        `// Continuously monitor the top N levels of the book`
-        `WHILE True:`
-        `bid_volume, ask_volume = get_level2_volume(ticker, depth=5)`
-        `IF bid_volume > (ask_volume * 3.0):`
-        `entry_price = execute_market_buy(ticker, position_size)`
-        `// Immediately place OCO exit orders`
-        `place_oco_sell_order(ticker, position_size, take_profit=entry_price+0.03, stop_loss=entry_price-0.02)`
-        `WAIT_FOR_EXIT_FILL`
-        `BREAK`
+### [CONCEPT: ADK_Implementation] 4. ADK Implementation Notes
 
-### [CONCEPT: ADK_Implementation] 4. ADK Implementation: The Hybrid "Two-Speed Brain"
+- **[HOW]** A hybrid model is effective.
+    1. **[AGENT: LlmAgent] Strategic Layer:** A supervisory `LlmAgent` first calls the `MarketRegimeTool`. If the regime is confirmed as `Ranging_Market` (e.g., ADX < 25), it authorizes the mean reversion module.
+    2. **[TOOL: FunctionTool] Tactical Layer:** A deterministic `execute_mean_reversion_trade` `FunctionTool` takes over. It monitors the watchlist for the confluence signal (Bollinger Band touch + RSI extreme) and executes the trade with a bracket order, setting the profit target at the 20-period moving average and the stop-loss just outside the entry candle's high/low.
 
-An `LlmAgent` is far too slow for direct scalping execution. The only viable architecture is a hybrid model that separates high-latency reasoning from low-latency execution.
-
-- **Component 1: The High-Performance Execution Engine (C++ or Rust):** A lean, non-AI process that implements the core scalping logic. It subscribes directly to L2/Tape data feeds and exposes a simple control API.
-- **Component 2: The Supervisory `LlmAgent` (ADK):** The ADK agent acts as the strategic "manager." It does **not** process high-frequency data. It consumes lower-frequency data (1-min bars, news, performance logs) to make high-level decisions.
-- **Component 3: The Control Interface (`FunctionTool`):** The `LlmAgent` can only interact with the execution engine through a predefined, safety-checked set of `FunctionTool`s. This prevents the LLM from issuing dangerous or "hallucinated" commands.
-  - `toggle_scalping_module(tool_context: ToolContext, strategy_name: str, state: bool)`
-  - `update_risk_parameters(tool_context: ToolContext, max_inventory: int, order_size: int)`
-  - `get_performance_report(tool_context: ToolContext) -> dict`
-
-[SOURCE_ID: Intraday Scalping AI Architecture]
+[SOURCE_ID: Intraday Mean Reversion Strategy Analysis]
+[SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
+[SOURCE_ID: A Quantitative Framework for Algorithmic Day Trading: Regime Analysis, Pre-Market Evaluation, and Strategy Implementation]

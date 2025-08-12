@@ -34,4 +34,9 @@ The agent must execute the following sequential process:
 - **[TASK: Optimization]** The objective of risk parity is to size positions such that each asset contributes an **equal amount of risk** to the total portfolio volatility. An optimizer solves for the set of capital weights that achieves this goal, subject to the constraint that total portfolio risk does not violate higher-level rules.
 - **[OUTCOME: Risk_Balanced_Portfolio]** This process naturally allocates less capital to assets that are more volatile or more highly correlated with the rest of the selected portfolio, resulting in a truly risk-balanced final allocation.
 
+### [CONCEPT: ADK_Implementation] ADK Implementation Notes
+
+- **[HOW]** This entire process can be encapsulated in a single `FunctionTool` called `select_and_size_portfolio`. This tool would take the watchlist as input and return a dictionary of tickers and their corresponding position sizes.
+- **[ORCHESTRATION]** The main agent would call this tool after the pre-market scanning is complete. The output of this tool would then be used to place the opening trades for the day.
+
 [SOURCE_ID: Intraday Portfolio Risk Management, Section 4 & 5]
