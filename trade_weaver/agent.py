@@ -64,17 +64,26 @@ class CoordinatorAgent(BaseAgent):
             yield create_final_event("error", {"error_message": "Invalid JSON payload or missing 'exchanges' parameter."})
             return
 
+        # --- DEBUGGING: Bypassing ParallelAgent to isolate ContextVar error ---
         # 2. (Fan-Out) Dynamically build the parallel pipeline
-        worker_pipelines: List[BaseAgent] = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
-        parallel_runner = ParallelAgent(
-            name="parallel_market_scanner",
-            description="Runs analysis pipelines for multiple exchanges concurrently.",
-            sub_agents=worker_pipelines,
-        )
+        # worker_pipelines: List[BaseAgent] = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
+        # parallel_runner = ParallelAgent(
+        #     name="parallel_market_scanner",
+        #     description="Runs analysis pipelines for multiple exchanges concurrently.",
+        #     sub_agents=worker_pipelines,
+        # )
+        #
+        # # 3. Execute the parallel pipelines and stream their events
+        # async for event in parallel_runner.run_async(ctx):
+        #     yield event
 
-        # 3. Execute the parallel pipelines and stream their events
-        async for event in parallel_runner.run_async(ctx):
-            yield event
+        # Run a single pipeline directly
+        if exchanges:
+            exchange = exchanges[0]
+            pipeline = MarketAnalystPipeline(exchange=exchange)
+            async for event in pipeline.run_async(ctx):
+                yield event
+        # --- END DEBUGGING ---
 
         # 4. (Fan-In) Aggregate results from session state
         analysis_results: List[ExchangeAnalysisResult] = []
