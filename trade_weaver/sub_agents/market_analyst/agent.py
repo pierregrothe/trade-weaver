@@ -135,6 +135,8 @@ class MarketRegimeSubPipeline(SequentialAgent):
                     instruction=REGIME_INSTRUCTION,
                     output_schema=MarketRegimeState,
                     output_key="validated_market_regime",
+                    disallow_transfer_to_parent=True,
+                    disallow_transfer_to_peers=True,
                 )
             ],
             **kwargs,
@@ -155,6 +157,8 @@ class StockScannerSubPipeline(SequentialAgent):
                     instruction=SCANNER_SYNTHESIS_INSTRUCTION,
                     output_schema=StockCandidateList,
                     output_key="candidate_list_object",
+                    disallow_transfer_to_parent=True,
+                    disallow_transfer_to_peers=True,
                 )
             ],
             **kwargs,
@@ -183,17 +187,6 @@ class FinalResultAssemblerAgent(BaseAgent):
 
 # --- Main Worker Pipeline ---
 
-def validate_tool_inputs(
-    agent: BaseAgent, ctx: InvocationContext, function_call: genai_types.FunctionCall
-) -> None:
-    """A callback that validates arguments before a tool is called."""
-    if function_call.name == "get_exchange_details":
-        exchange = function_call.args.get("exchange")
-        if not isinstance(exchange, str) or not exchange.isalnum():
-            raise ValueError(
-                f"Invalid 'exchange' parameter: '{exchange}'. Must be an alphanumeric string."
-            )
-
 class MarketAnalystPipeline(SequentialAgent):
     """The complete, parameterized pipeline for analyzing a single exchange."""
     def __init__(self, exchange: str, **kwargs):
@@ -207,6 +200,11 @@ class MarketAnalystPipeline(SequentialAgent):
         # A small agent to do just that is the cleanest way.
         class SetExchangeParamAgent(BaseAgent):
             async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
+                # Manual input validation as a guardrail
+                if not isinstance(exchange, str) or not exchange.isalnum():
+                    raise ValueError(
+                        f"Invalid 'exchange' parameter: '{exchange}'. Must be an alphanumeric string."
+                    )
                 ctx.session.state["exchange"] = exchange
                 if False: yield # Required for async generator
 
@@ -222,4 +220,3 @@ class MarketAnalystPipeline(SequentialAgent):
             ],
             **kwargs,
         )
-        self.before_tool_callback = validate_tool_inputs
