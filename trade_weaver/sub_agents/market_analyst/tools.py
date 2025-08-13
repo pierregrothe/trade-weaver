@@ -88,6 +88,7 @@ def get_current_time(tool_context: ToolContext) -> dict:
         logging.error(f"TOOL ERROR: {msg}")
         return {"status": "error", "message": msg}
 
+    tz_str = ""
     try:
         tz_str = exchange_details["timezone"]
         exchange_timezone = pytz.timezone(tz_str)

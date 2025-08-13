@@ -34,7 +34,7 @@ class CoordinatorAgent(BaseAgent):
 
         # Manual input validation as a guardrail
         user_input = ctx.user_content.parts[0].text if ctx.user_content and ctx.user_content.parts else ""
-        if "<script>" in user_input:
+        if user_input and "<script>" in user_input:
             raise ValueError("Potential script injection detected. Aborting.")
 
         def create_final_event(status: str, result: Any) -> Event:
@@ -65,7 +65,7 @@ class CoordinatorAgent(BaseAgent):
             return
 
         # 2. (Fan-Out) Dynamically build the parallel pipeline
-        worker_pipelines = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
+        worker_pipelines: List[BaseAgent] = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
         parallel_runner = ParallelAgent(
             name="parallel_market_scanner",
             description="Runs analysis pipelines for multiple exchanges concurrently.",
@@ -86,7 +86,7 @@ class CoordinatorAgent(BaseAgent):
             else:
                 # In a real application, you would log this failure.
                 # For now, we just skip the failed pipeline's result.
-                yield Event(author=self.name, content=f"Warning: Could not find or validate result for exchange '{exchange}'.")
+                yield Event(author=self.name, content=Content(parts=[Part(text=f"Warning: Could not find or validate result for exchange '{exchange}'.")]))
 
         # 5. Assemble the final report using the new schema
         final_report = DailyWatchlistDocument(

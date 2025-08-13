@@ -19,7 +19,7 @@ from google.adk.agents import (
     SequentialAgent,
 )
 from google.adk.events import Event, EventActions
-from google.adk.tools import BaseTool, ToolContext
+from google.adk.tools import BaseTool, ToolContext, FunctionTool
 from google.genai import types as genai_types
 from pydantic import ConfigDict
 
@@ -41,7 +41,7 @@ class CustomToolCallingAgent(BaseAgent):
     A deterministic agent that calls a single, specific tool and saves its
     output to a designated key in the session state.
     """
-    tool: BaseTool
+    tool: FunctionTool
     output_key: str
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -90,7 +90,7 @@ class StockDataEnrichmentAgent(BaseAgent):
 
         tickers = movers_response.get("tickers", [])
         if not tickers:
-            yield Event(author=self.name, content="No pre-market movers found. Ending stock scan.")
+            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="No pre-market movers found. Ending stock scan.")]))
             return
 
         # 2. For each ticker, get full details and aggregate them
