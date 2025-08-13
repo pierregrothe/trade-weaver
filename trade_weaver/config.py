@@ -83,6 +83,11 @@ API_TIMEOUT_SECONDS = int(os.getenv("API_TIMEOUT_SECONDS", "30"))
 API_MAX_RETRIES = int(os.getenv("API_MAX_RETRIES", "3"))
 
 
+# --- Tracing Configuration ---
+# Allows disabling OpenTelemetry for environments where it causes issues (e.g., adk web).
+ENABLE_TRACING = os.getenv("ENABLE_TRACING", "False").upper() == "TRUE"
+
+
 # --- 7. Startup Validation ---
 # Fail-fast validation to ensure critical configurations are present.
 def validate_configuration():

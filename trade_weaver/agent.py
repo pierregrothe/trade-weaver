@@ -19,23 +19,14 @@ from .schemas import DailyWatchlistDocument, ExchangeAnalysisResult
 
 class CoordinatorAgent(BaseAgent):
     """
-    You are the root Coordinator Agent for the Trade Weaver platform.
-    Your primary function is to orchestrate pre-market analysis by dynamically running parallel pipelines.
-    You will receive a JSON payload containing a list of exchanges (e.g., `{"parameters": {"exchanges": ["NASDAQ", "TSX"]}}`).
-    For each exchange, you will spawn and execute a dedicated `MarketAnalystPipeline`.
-    After all pipelines complete, you will aggregate their results into a final `DailyWatchlistDocument`.
-    Your operation is purely programmatic; do not add conversational text.
+    A custom agent that dynamically creates and runs market analysis pipelines
+    in parallel for a list of exchanges, then aggregates the results.
     """
 
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         """Implements the fan-out/fan-in orchestration logic."""
-
-        # Manual input validation as a guardrail
-        user_input = ctx.user_content.parts[0].text if ctx.user_content and ctx.user_content.parts else ""
-        if user_input and "<script>" in user_input:
-            raise ValueError("Potential script injection detected. Aborting.")
 
         def create_final_event(status: str, result: Any) -> Event:
             payload = {
@@ -64,26 +55,17 @@ class CoordinatorAgent(BaseAgent):
             yield create_final_event("error", {"error_message": "Invalid JSON payload or missing 'exchanges' parameter."})
             return
 
-        # --- DEBUGGING: Bypassing ParallelAgent to isolate ContextVar error ---
         # 2. (Fan-Out) Dynamically build the parallel pipeline
-        # worker_pipelines: List[BaseAgent] = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
-        # parallel_runner = ParallelAgent(
-        #     name="parallel_market_scanner",
-        #     description="Runs analysis pipelines for multiple exchanges concurrently.",
-        #     sub_agents=worker_pipelines,
-        # )
-        #
-        # # 3. Execute the parallel pipelines and stream their events
-        # async for event in parallel_runner.run_async(ctx):
-        #     yield event
+        worker_pipelines = [MarketAnalystPipeline(exchange=ex) for ex in exchanges]
+        parallel_runner = ParallelAgent(
+            name="parallel_market_scanner",
+            description="Runs analysis pipelines for multiple exchanges concurrently.",
+            sub_agents=worker_pipelines,
+        )
 
-        # Run a single pipeline directly
-        if exchanges:
-            exchange = exchanges[0]
-            pipeline = MarketAnalystPipeline(exchange=exchange)
-            async for event in pipeline.run_async(ctx):
-                yield event
-        # --- END DEBUGGING ---
+        # 3. Execute the parallel pipelines and stream their events
+        async for event in parallel_runner.run_async(ctx):
+            yield event
 
         # 4. (Fan-In) Aggregate results from session state
         analysis_results: List[ExchangeAnalysisResult] = []
@@ -95,7 +77,7 @@ class CoordinatorAgent(BaseAgent):
             else:
                 # In a real application, you would log this failure.
                 # For now, we just skip the failed pipeline's result.
-                yield Event(author=self.name, content=Content(parts=[Part(text=f"Warning: Could not find or validate result for exchange '{exchange}'.")]))
+                yield Event(author=self.name, content=f"Warning: Could not find or validate result for exchange '{exchange}'.")
 
         # 5. Assemble the final report using the new schema
         final_report = DailyWatchlistDocument(
