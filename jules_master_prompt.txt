@@ -1,0 +1,88 @@
+### **Master Prompt for Jules: Project Trade Weaver - Phase 1**
+
+**Objective:** Initiate and execute the development of the `PreMarketAnalysis` agent for the Trade Weaver platform. This agent's purpose is to scan financial markets before they open and produce a ranked, data-rich watchlist of high-probability trading opportunities.
+
+**Core Principles:**
+This project must adhere strictly to the following design principles:
+1.  **Deterministic by Default:** All components (agents, tools) must be implemented with deterministic, coded logic. LLM-based reasoning is to be used only for tasks that are explicitly non-deterministic, such as NLP-based sentiment analysis or high-level synthesis.
+2.  **Read-Only Agent Architecture:** The agent's access to the primary data store (Firestore) is read-only. The agent's output is a structured data object returned to the calling client, which is responsible for persistence.
+3.  **Modular, Package-Based Design:** The project is structured with a dedicated, self-contained Python package for each agent.
+
+---
+
+### **Project File & Document References**
+
+**1. Core Project Structure:**
+Your work will take place within the `pre_market_analysis/` directory, which has already been scaffolded:
+```
+pre_market_analysis/
+├── __init__.py
+├── agent.py         # Contains the root PreMarketAnalysis agent orchestrator.
+├── tools.py         # Contains all FunctionTools for the analysis pipeline.
+└── schemas.py       # Contains all Pydantic data schemas.
+```
+
+**2. Key Architectural & Logic Documents:**
+Your implementation MUST adhere to the logic and architecture defined in these documents. They are your primary source of truth.
+- `docs/development_plan.md`
+- `docs/architecture/02-firestore-database-schema.md` (Crucial for configuration data)
+- `docs/architecture/adr/` (All ADRs)
+- The entire `docs/day_trading_knowledge_base/` directory.
+
+**3. ADK Framework Documentation:**
+- `llms-full.txt`: This file contains the full documentation for the Google ADK framework. Use it as a technical reference for implementing ADK classes and patterns correctly.
+
+**4. ADK Sample References (Inspiration & Patterns):**
+Refer to these official ADK samples for inspiration on best practices.
+- https://github.com/google/adk-samples/tree/main/python/agents/RAG
+- https://github.com/google/adk-samples/tree/main/python/agents/academic-research
+- https://github.com/google/adk-samples/tree/main/python/agents/data-science
+- https://github.com/google/adk-samples/tree/main/python/agents/financial-advisor
+
+---
+
+### **Iterative Development Plan**
+
+You are to follow this iterative development plan. The initial scaffolding (Step 1-3) is complete. Your first task is to begin Step 4.
+
+*   **Step 1-3 (Completed):** The agent framework, orchestration logic, and mocked components have been created.
+
+*   **Step 4: Implement Real Components Iteratively**
+    *   You will now replace the mocked implementations in `pre_market_analysis/tools.py` with real, functional code, one tool at a time.
+    *   After each tool is implemented, you must ensure all existing and new evaluation tests pass to prevent regressions.
+
+--- 
+
+### **Detailed Specifications**
+
+#### **Agent: `PreMarketAnalysis` (`agent.py`)**
+*   **Intent:** Orchestrate the pre-market scanning process using a fan-out/fan-in workflow.
+*   **ADK Class:** `google.adk.agents.BaseAgent`
+
+#### **Internal Component: `ExchangeAnalysisPipeline`**
+*   **Intent:** A deterministic sequence of tool calls to analyze a single exchange.
+*   **ADK Class:** `google.adk.agents.SequentialAgent`
+*   **Tools to Implement (in order):**
+    1.  **`GetMarketRegime`**: Fetches and calculates indicators specific to an exchange to classify its unique market state.
+    2.  **`EnrichStockUniverse`**: Filters, finds, and scores gapping stocks for a given exchange.
+    3.  **`AssembleExchangeResult`**: Aggregates the results for a single exchange.
+
+--- 
+
+### **Initial Task**
+
+Execute **Step 4** of the development plan.
+
+**Your task is to implement the first real tool: `GetMarketRegime`.**
+
+1.  **Read** the existing mocked implementation in `pre_market_analysis/tools.py` and the logic defined in `docs/day_trading_knowledge_base/01_foundations/05_market_regime_analysis_module.md`.
+2.  **Modify** the `get_market_regime` function in `pre_market_analysis/tools.py`.
+3.  **The new implementation must be exchange-specific:**
+    *   It must accept `exchange: str` as an argument (e.g., "NASDAQ", "TSX").
+    *   It must read the configuration for that exchange from the `/Exchanges/{exchange_id}` document in Firestore to determine the correct market proxies and trading hours.
+    *   **Volatility:** Based on the exchange's country code (e.g., "US", "CA"), fetch the appropriate volatility index (e.g., VIX for US, VIXC for Canada).
+    *   **Trend:** Use the `proxy_instruments` field from the exchange's configuration to get the correct broad market ETF (e.g., "QQQ" for NASDAQ). Fetch its data and calculate the 14-period ADX.
+    *   **Time of Day:** Use the `trading_hours_et` field from the exchange's configuration to determine the correct time-of-day state (e.g., "Opening_Hour").
+    *   Apply deterministic rules to classify the raw VIX and ADX values into states.
+    *   The function must return a populated `schemas.MarketRegimeState` object. The schema is already correctly defined with an `exchange` field.
+    *   Ensure the tool does **not** write to `tool_context.state`. The `SequentialAgent` orchestrator is responsible for state management.

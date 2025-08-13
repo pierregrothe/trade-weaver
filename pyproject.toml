@@ -1,0 +1,104 @@
+# This file defines the project's metadata, dependencies, and tool configurations.
+# It is the central configuration file for modern Python projects.
+
+[build-system]
+# Defines the tools needed to build your project package. Hatch is a modern choice.
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trade-weaver"
+version = "0.1.0"
+description = "AI-powered day trading agent using Google ADK and Cloud."
+readme = "README.md"
+authors = [
+    {name = "Pierre Grothé", email = "pierre@grothe.ca"},
+]
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+# Updated to reflect the latest stable Python versions.
+requires-python = ">=3.11,<3.15"
+
+# Core dependencies required for the application to run.
+dependencies = [
+    "eodhd>=1.0.32",
+    "fastapi>=0.116.1",
+    "google-adk>=1.10.0",
+    "google-cloud-firestore>=2.21.0",
+    "google-cloud-secret-manager>=2.24.0",
+    "google-generativeai>=0.8.5",
+    "lxml>=6.0.0",
+    "pandas>=2.3.1",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
+    "uvicorn[standard]>=0.35.0", # 'standard' provides performance improvements.
+]
+
+[project.urls]
+Homepage = "https://github.com/pierregrothe/trade-weaver"
+"Bug Tracker" = "https://github.com/pierregrothe/trade-weaver/issues"
+
+# Optional dependencies for development, linting, and testing.
+# To install: pip install -e ".[dev]"
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.12.7",
+    "mypy>=1.17.1",
+    "codespell>=2.4.1",
+    "types-requests>=2.32.0", # Type stubs for the 'requests' library.
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-mock>=3.14.1",
+    "google-adk[eval]>=1.10.0", # For running the evaluation framework
+]
+
+# --- Tool Configurations ---
+# Centralized settings for your development tools.
+
+[tool.hatch.version]
+# Tells Hatch where to find the project's version number.
+path = "src/trade_weaver/__init__.py"
+
+[tool.ruff]
+# Configuration for the Ruff linter and formatter.
+line-length = 88
+target-version = "py312" # Target a specific stable Python version for consistent formatting.
+
+[tool.ruff.lint]
+# Select the rules you want Ruff to enforce.
+# "E", "F", "W" are standard flakes8 rules. "I" is for import sorting. "UP" is for pyupgrade.
+select = ["E", "F", "W", "I", "UP"]
+ignore = []
+
+[tool.mypy]
+# Configuration for the MyPy static type checker.
+python_version = "3.12"
+warn_return_any = true
+ignore_missing_imports = true # Good for starting out, can be tightened later.
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+# Configuration for the Pytest testing framework.
+# VS Code will automatically use this configuration.
+# To set up VS Code, open your settings.json and add:
+# "python.testing.pytestArgs": [ "tests" ],
+# "python.testing.unittestEnabled": false,
+# "python.testing.pytestEnabled": true
+minversion = "6.0"
+addopts = "-ra -q -v --import-mode=importlib" # Recommended options for clarity and modern import handling.
+testpaths = [
+    "tests", # Directory where your tests are located.
+]
+asyncio_mode = "auto" # Let pytest-asyncio handle the event loop automatically.
+filterwarnings = [
+    "ignore::UserWarning:google.adk.evaluation.metric_evaluator_registry",
+    "ignore::UserWarning:google.adk.evaluation.agent_evaluator",
+]
