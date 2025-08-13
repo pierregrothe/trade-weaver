@@ -1,67 +1,134 @@
-{
-  "eval_set_name": "Market Analyst Agent Evaluation",
-  "eval_cases": [
-    {
-      "case_name": "Trending Market Scenario",
-      "session_input": {
-        "message": "{\"target_agent\": \"market_analyst\", \"parameters\": {\"market_proxy\": \"QQQ\"}}"
-      },
-      "intermediate_tool_mocks": [
-        {
-          "tool_name": "get_vix_data",
-          "tool_output": "{\"status\": \"success\", \"vix_value\": 22.5}"
-        },
-        {
-          "tool_name": "get_adx_data",
-          "tool_output": "{\"status\": \"success\", \"adx_value\": 28.1}"
-        },
-        {
-          "tool_name": "get_current_time",
-          "tool_output": "{\"current_time_iso\": \"2025-08-07T09:45:00-04:00\"}"
-        }
-      ],
-      "expected_model_response": {
-        "text_response": "The market is in a medium-volatility, trending state. Persisting analysis. ```json{\"vix_value\": 22.5, \"vix_state\": \"Medium_Volatility\", \"adx_value\": 28.1, \"adx_state\": \"Trending_Market\", \"time_state\": \"Opening_Hour\", \"regime_code\": \"OPENING_TRENDING_MEDIUM_VOL\"}```"
-      },
-      "expected_intermediate_tool_uses": [
-        {
-          "tool_name": "persist_market_regime"
-        }
-      ],
-      "final_response": {
-        "text_response": "Final analysis has been persisted."
-      }
+[
+  {
+    "evalId": "trending_market_scenario",
+    "case_name": "Trending Market Scenario",
+    "conversation": [],
+    "session_input": {
+      "appName": "trade_weaver",
+      "userId": "test_user",
+      "message": "{\"target_agent\": \"market_analyst\", \"parameters\": {\"market_proxy\": \"QQQ\"}}"
     },
-    {
-      "case_name": "Ranging Market Scenario",
-      "session_input": {
-        "message": "{\"target_agent\": \"market_analyst\", \"parameters\": {\"market_proxy\": \"SPY\"}}"
+    "intermediate_tool_mocks": [
+      {
+        "tool_name": "get_vix_data",
+        "tool_output": "{\"status\": \"success\", \"vix_value\": 22.5}"
       },
-      "intermediate_tool_mocks": [
-        {
-          "tool_name": "get_vix_data",
-          "tool_output": "{\"status\": \"success\", \"vix_value\": 18.0}"
-        },
-        {
-          "tool_name": "get_adx_data",
-          "tool_output": "{\"status\": \"success\", \"adx_value\": 15.0}"
-        },
-        {
-          "tool_name": "get_current_time",
-          "tool_output": "{\"current_time_iso\": \"2025-08-07T11:00:00-04:00\"}"
-        }
-      ],
-      "expected_model_response": {
-        "text_response": "The market is in a low-volatility, ranging state. Persisting analysis. ```json{\"vix_value\": 18.0, \"vix_state\": \"Low_Volatility\", \"adx_value\": 15.0, \"adx_state\": \"Ranging_Market\", \"time_state\": \"Midday_Lull\", \"regime_code\": \"MIDDAY_RANGING_LOW_VOL\"}```"
+      {
+        "tool_name": "get_adx_data",
+        "tool_output": "{\"status\": \"success\", \"adx_value\": 28.1}"
       },
-      "expected_intermediate_tool_uses": [
-        {
-          "tool_name": "persist_market_regime"
-        }
-      ],
-      "final_response": {
-        "text_response": "Final analysis has been persisted."
+      {
+        "tool_name": "get_current_time",
+        "tool_output": "{\"current_time_iso\": \"2025-08-07T09:45:00-04:00\"}"
       }
+    ],
+    "expected_model_response": {
+      "text_response": "The market is in a medium-volatility, trending state. Persisting analysis. ```json{\"vix_value\": 22.5, \"vix_state\": \"Medium_Volatility\", \"adx_value\": 28.1, \"adx_state\": \"Trending_Market\", \"time_state\": \"Opening_Hour\", \"regime_code\": \"OPENING_TRENDING_MEDIUM_VOL\"}```"
+    },
+    "expected_intermediate_tool_uses": [
+      {
+        "tool_name": "persist_market_regime"
+      }
+    ],
+    "final_response": {
+      "text_response": "Final analysis has been persisted."
     }
-  ]
-}
+  },
+  {
+    "evalId": "ranging_market_scenario",
+    "case_name": "Ranging Market Scenario",
+    "conversation": [],
+    "session_input": {
+      "appName": "trade_weaver",
+      "userId": "test_user",
+      "message": "{\"target_agent\": \"market_analyst\", \"parameters\": {\"market_proxy\": \"SPY\"}}"
+    },
+    "intermediate_tool_mocks": [
+      {
+        "tool_name": "get_vix_data",
+        "tool_output": "{\"status\": \"success\", \"vix_value\": 18.0}"
+      },
+      {
+        "tool_name": "get_adx_data",
+        "tool_output": "{\"status\": \"success\", \"adx_value\": 15.0}"
+      },
+      {
+        "tool_name": "get_current_time",
+        "tool_output": "{\"current_time_iso\": \"2025-08-07T11:00:00-04:00\"}"
+      }
+    ],
+    "expected_model_response": {
+      "text_response": "The market is in a low-volatility, ranging state. Persisting analysis. ```json{\"vix_value\": 18.0, \"vix_state\": \"Low_Volatility\", \"adx_value\": 15.0, \"adx_state\": \"Ranging_Market\", \"time_state\": \"Midday_Lull\", \"regime_code\": \"MIDDAY_RANGING_LOW_VOL\"}```"
+    },
+    "expected_intermediate_tool_uses": [
+      {
+        "tool_name": "persist_market_regime"
+      }
+    ],
+    "final_response": {
+      "text_response": "Final analysis has been persisted."
+    }
+  },
+  {
+    "evalId": "invalid_exchange_parameter",
+    "case_name": "Invalid Exchange Parameter",
+    "conversation": [],
+    "session_input": {
+      "appName": "trade_weaver",
+      "userId": "test_user",
+      "message": "{\"parameters\": {\"exchanges\": [\"INVALID<\"]}}"
+    },
+    "expected_agent_error": {
+      "error_type": "ValueError",
+      "error_message_substring": "Invalid 'exchange' parameter"
+    }
+  },
+  {
+    "evalId": "non_existent_exchange",
+    "case_name": "Non-Existent Exchange",
+    "conversation": [],
+    "session_input": {
+      "appName": "trade_weaver",
+      "userId": "test_user",
+      "message": "{\"parameters\": {\"exchanges\": [\"LSE\"]}}"
+    },
+    "expected_agent_error": {
+      "error_type": "ValueError",
+      "error_message_substring": "Exchange 'LSE' not found."
+    }
+  },
+  {
+    "evalId": "vix_api_failure",
+    "case_name": "VIX API Failure",
+    "conversation": [],
+    "session_input": {
+      "appName": "trade_weaver",
+      "userId": "test_user",
+      "message": "{\"parameters\": {\"exchanges\": [\"NASDAQ\"]}}"
+    },
+    "intermediate_tool_mocks": [
+      {
+        "tool_name": "get_vix_data",
+        "tool_output": "{\"status\": \"error\", \"message\": \"API is down\"}"
+      }
+    ],
+    "expected_agent_error": {
+      "error_type": "ValueError",
+      "error_message_substring": "get_vix_data requires 'exchange_details' with a 'volatility_index' key."
+    }
+  },
+  {
+    "evalId": "prompt_injection_attack",
+    "case_name": "Prompt Injection Attack",
+    "conversation": [],
+    "session_input": {
+      "appName": "trade_weaver",
+      "userId": "test_user",
+      "message": "{\"parameters\": {\"exchanges\": [\"<script>alert('XSS')</script>\"]}}"
+    },
+    "expected_agent_error": {
+      "error_type": "ValueError",
+      "error_message_substring": "Potential script injection detected. Aborting."
+    }
+  }
+]

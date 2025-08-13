@@ -19,14 +19,23 @@ from .schemas import DailyWatchlistDocument, ExchangeAnalysisResult
 
 class CoordinatorAgent(BaseAgent):
     """
-    A custom agent that dynamically creates and runs market analysis pipelines
-    in parallel for a list of exchanges, then aggregates the results.
+    You are the root Coordinator Agent for the Trade Weaver platform.
+    Your primary function is to orchestrate pre-market analysis by dynamically running parallel pipelines.
+    You will receive a JSON payload containing a list of exchanges (e.g., `{"parameters": {"exchanges": ["NASDAQ", "TSX"]}}`).
+    For each exchange, you will spawn and execute a dedicated `MarketAnalystPipeline`.
+    After all pipelines complete, you will aggregate their results into a final `DailyWatchlistDocument`.
+    Your operation is purely programmatic; do not add conversational text.
     """
 
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         """Implements the fan-out/fan-in orchestration logic."""
+
+        # Manual input validation as a guardrail
+        user_input = ctx.user_content.parts[0].text if ctx.user_content and ctx.user_content.parts else ""
+        if "<script>" in user_input:
+            raise ValueError("Potential script injection detected. Aborting.")
 
         def create_final_event(status: str, result: Any) -> Event:
             payload = {

@@ -37,8 +37,12 @@ from .prompt import SCANNER_SYNTHESIS_INSTRUCTION
 # --- Deterministic, Reusable Tool-Calling Agents ---
 
 class CustomToolCallingAgent(BaseAgent):
-    """A deterministic agent that calls a single, specific tool."""
+    """
+    A deterministic agent that calls a single, specific tool and saves its
+    output to a designated key in the session state.
+    """
     tool: BaseTool
+    output_key: str
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def _run_async_impl(
@@ -57,6 +61,10 @@ class CustomToolCallingAgent(BaseAgent):
         )
         tool_ctx = ToolContext(invocation_context=ctx, function_call_id=call_id, event_actions=EventActions())
         tool_response = await self.tool.run_async(args=args, tool_context=tool_ctx)
+
+        # Save the output to the designated state key
+        ctx.session.state[self.output_key] = tool_response
+
         yield Event(
             author=self.name,
             content=genai_types.Content(role="user", parts=[genai_types.Part(
@@ -77,6 +85,7 @@ class StockDataEnrichmentAgent(BaseAgent):
         yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(function_call=genai_types.FunctionCall(id=call_id_movers, name=movers_tool.name, args={}))]))
         tool_ctx_movers = ToolContext(invocation_context=ctx, function_call_id=call_id_movers, event_actions=EventActions())
         movers_response = await movers_tool.run_async(args={}, tool_context=tool_ctx_movers)
+        ctx.session.state["pre_market_movers"] = movers_response # Store for synthesis
         yield Event(author=self.name, content=genai_types.Content(role="user", parts=[genai_types.Part(function_response=genai_types.FunctionResponse(id=call_id_movers, name=movers_tool.name, response=movers_response))]), actions=tool_ctx_movers.actions)
 
         tickers = movers_response.get("tickers", [])
@@ -84,15 +93,21 @@ class StockDataEnrichmentAgent(BaseAgent):
             yield Event(author=self.name, content="No pre-market movers found. Ending stock scan.")
             return
 
-        # 2. For each ticker, get full details
+        # 2. For each ticker, get full details and aggregate them
         details_tool = market_analyst_toolset.get_full_stock_details_tool
+        full_details = {}
         for ticker in tickers:
             call_id_details = f"fn_call_{uuid.uuid4()}"
             args = {"ticker": ticker}
             yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(function_call=genai_types.FunctionCall(id=call_id_details, name=details_tool.name, args=args))]))
             tool_ctx_details = ToolContext(invocation_context=ctx, function_call_id=call_id_details, event_actions=EventActions())
             details_response = await details_tool.run_async(args=args, tool_context=tool_ctx_details)
+            if details_response.get("status") == "success":
+                full_details[ticker] = details_response.get("details", {})
             yield Event(author=self.name, content=genai_types.Content(role="user", parts=[genai_types.Part(function_response=genai_types.FunctionResponse(id=call_id_details, name=details_tool.name, response=details_response))]), actions=tool_ctx_details.actions)
+
+        # 3. Store the aggregated details in the state
+        ctx.session.state["full_stock_details"] = full_details
 
 
 # --- Sub-Pipelines ---
@@ -108,9 +123,9 @@ class MarketRegimeSubPipeline(SequentialAgent):
                     name="regime_data_gatherer",
                     description="Gathers market regime data in parallel.",
                     sub_agents=[
-                        CustomToolCallingAgent(name="vix_fetcher", tool=market_analyst_toolset.get_vix_data_tool),
-                        CustomToolCallingAgent(name="adx_fetcher", tool=market_analyst_toolset.get_adx_data_tool),
-                        CustomToolCallingAgent(name="time_fetcher", tool=market_analyst_toolset.get_current_time_tool),
+                        CustomToolCallingAgent(name="vix_fetcher", tool=market_analyst_toolset.get_vix_data_tool, output_key="vix_data"),
+                        CustomToolCallingAgent(name="adx_fetcher", tool=market_analyst_toolset.get_adx_data_tool, output_key="adx_data"),
+                        CustomToolCallingAgent(name="time_fetcher", tool=market_analyst_toolset.get_current_time_tool, output_key="time_data"),
                     ],
                 ),
                 LlmAgent(
@@ -168,6 +183,17 @@ class FinalResultAssemblerAgent(BaseAgent):
 
 # --- Main Worker Pipeline ---
 
+def validate_tool_inputs(
+    agent: BaseAgent, ctx: InvocationContext, function_call: genai_types.FunctionCall
+) -> None:
+    """A callback that validates arguments before a tool is called."""
+    if function_call.name == "get_exchange_details":
+        exchange = function_call.args.get("exchange")
+        if not isinstance(exchange, str) or not exchange.isalnum():
+            raise ValueError(
+                f"Invalid 'exchange' parameter: '{exchange}'. Must be an alphanumeric string."
+            )
+
 class MarketAnalystPipeline(SequentialAgent):
     """The complete, parameterized pipeline for analyzing a single exchange."""
     def __init__(self, exchange: str, **kwargs):
@@ -175,6 +201,7 @@ class MarketAnalystPipeline(SequentialAgent):
         set_initial_state = CustomToolCallingAgent(
             name=f"initial_state_setter_{exchange}",
             tool=market_analyst_toolset.get_exchange_details_tool,
+            output_key="exchange_details",
         )
         # We need to ensure the 'exchange' parameter is in the state for the tool
         # A small agent to do just that is the cleanest way.
@@ -195,3 +222,4 @@ class MarketAnalystPipeline(SequentialAgent):
             ],
             **kwargs,
         )
+        self.before_tool_callback = validate_tool_inputs

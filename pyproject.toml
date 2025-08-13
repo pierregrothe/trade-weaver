@@ -92,8 +92,12 @@ disallow_untyped_defs = true
 # "python.testing.unittestEnabled": false,
 # "python.testing.pytestEnabled": true
 minversion = "6.0"
-addopts = "-ra -q --import-mode=importlib" # Recommended options for clarity and modern import handling.
+addopts = "-ra -q -v --import-mode=importlib" # Recommended options for clarity and modern import handling.
 testpaths = [
     "tests", # Directory where your tests are located.
 ]
 asyncio_mode = "auto" # Let pytest-asyncio handle the event loop automatically.
+filterwarnings = [
+    "ignore::UserWarning:google.adk.evaluation.metric_evaluator_registry",
+    "ignore::UserWarning:google.adk.evaluation.agent_evaluator",
+]
