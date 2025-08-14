@@ -56,19 +56,19 @@ graph TD
 
 ### Component Descriptions
 
-*   **Cloud Scheduler:** Triggers the `CoordinatorAgent` to start the pre-market analysis at a scheduled time.
-*   **Trading Agent Service (Cloud Run):** The core containerized application running the ADK agents.
-    *   `CoordinatorAgent`: The master agent that orchestrates the entire workflow.
-    *   `MarketAnalystPipeline`: The worker agent that performs analysis on a specific exchange.
-    *   `ExecutionAgent FSM`: The state machine that manages intraday trading logic.
-    *   `RiskGovernor`: The callback that enforces all risk management protocols.
-*   **Data Services (GCP):**
-    *   `Data Ingestion Service`: A separate service responsible for connecting to all external data provider APIs and streaming the raw data into the system via Pub/Sub.
-    *   `Firestore Database`: The system's central database for all configuration, operational data, and trade logs.
-    *   `Pub/Sub Topics`: The messaging backbone that decouples data ingestion from the trading agent.
-*   **External Services:**
-    *   `User Interface`: The web-based UI for monitoring and manual control.
-    *   `EODHD/IBKR/Specialists`: The various external data providers.
+* **Cloud Scheduler:** Triggers the `CoordinatorAgent` to start the pre-market analysis at a scheduled time.
+* **Trading Agent Service (Cloud Run):** The core containerized application running the ADK agents.
+  * `CoordinatorAgent`: The master agent that orchestrates the entire workflow.
+  * `MarketAnalystPipeline`: The worker agent that performs analysis on a specific exchange.
+  * `ExecutionAgent FSM`: The state machine that manages intraday trading logic.
+  * `RiskGovernor`: The callback that enforces all risk management protocols.
+* **Data Services (GCP):**
+  * `Data Ingestion Service`: A separate service responsible for connecting to all external data provider APIs and streaming the raw data into the system via Pub/Sub.
+  * `Firestore Database`: The system's central database for all configuration, operational data, and trade logs.
+  * `Pub/Sub Topics`: The messaging backbone that decouples data ingestion from the trading agent.
+* **External Services:**
+  * `User Interface`: The web-based UI for monitoring and manual control.
+  * `EODHD/IBKR/Specialists`: The various external data providers.
 
 ---
 
