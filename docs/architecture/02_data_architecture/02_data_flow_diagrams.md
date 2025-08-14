@@ -15,7 +15,7 @@ graph TD
     end
 
     subgraph "GCP Ingestion Layer"
-        IngestionService[Data Ingestion Service (Cloud Run)]
+        IngestionService["Data Ingestion Service (Cloud Run)"]
         RawDataTopic[Pub/Sub: Raw Market Data]
     end
 
