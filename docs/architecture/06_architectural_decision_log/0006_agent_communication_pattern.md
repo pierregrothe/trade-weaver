@@ -2,7 +2,7 @@
 
 * **Status:** Accepted
 * **Date:** 2025-08-04
-* **Deciders:** [Your Name], AI Assistant
+* **Deciders:** Pierre Grothé, AI Assistant
 
 ## Context and Problem Statement
 

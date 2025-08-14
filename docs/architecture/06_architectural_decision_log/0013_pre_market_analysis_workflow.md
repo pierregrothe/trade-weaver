@@ -64,23 +64,23 @@ sequenceDiagram
 
 #### PreMarketAnalysis (Root Agent)
 
-*   **ADK Class:** `BaseAgent` (custom implementation).
-*   **Location:** `pre_market_analysis/agent.py`
-*   **Task:**
-    1.  Receives a JSON payload with a list of exchanges.
-    2.  Dynamically constructs a `ParallelAgent`.
-    3.  For each exchange, it instantiates a complete `ExchangeAnalysisPipeline` worker and adds it to the `ParallelAgent`.
-    4.  Executes the `ParallelAgent`.
-    5.  After completion, it "fans-in" the results from each pipeline from the session state.
-    6.  Aggregates the results into a single `DailyWatchlistDocument`.
-    7.  Yields a final event with the aggregated document.
+* **ADK Class:** `BaseAgent` (custom implementation).
+* **Location:** `pre_market_analysis/agent.py`
+* **Task:**
+    1. Receives a JSON payload with a list of exchanges.
+    2. Dynamically constructs a `ParallelAgent`.
+    3. For each exchange, it instantiates a complete `ExchangeAnalysisPipeline` worker and adds it to the `ParallelAgent`.
+    4. Executes the `ParallelAgent`.
+    5. After completion, it "fans-in" the results from each pipeline from the session state.
+    6. Aggregates the results into a single `DailyWatchlistDocument`.
+    7. Yields a final event with the aggregated document.
 
 #### ExchangeAnalysisPipeline (Worker Pipeline)
 
-*   **ADK Class:** `SequentialAgent`.
-*   **Input:** An `exchange` string (e.g., "NASDAQ") passed during instantiation.
-*   **Task:** Execute the full analysis for a single exchange. This pipeline is optimized to be "deterministic-first," using custom code-driven agents for tool calls to maximize efficiency and reliability.
-*   **Internal Structure & Algorithmic Steps:**
+* **ADK Class:** `SequentialAgent`.
+* **Input:** An `exchange` string (e.g., "NASDAQ") passed during instantiation.
+* **Task:** Execute the full analysis for a single exchange. This pipeline is optimized to be "deterministic-first," using custom code-driven agents for tool calls to maximize efficiency and reliability.
+* **Internal Structure & Algorithmic Steps:**
 
     1. **`SetExchangeParamAgent` (`BaseAgent`):** Sets the initial `exchange` parameter in the state.
     2. **`MarketRegimeSubPipeline` (`SequentialAgent`):** This sub-pipeline establishes the broad market context before any stock-specific analysis.
