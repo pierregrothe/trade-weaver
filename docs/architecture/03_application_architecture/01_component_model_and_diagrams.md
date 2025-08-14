@@ -17,8 +17,8 @@ graph TD
         end
 
         subgraph "Data Services"
-            E[Data Ingestion Service (Cloud Run)]
-            F[Firestore Database]
+            E[Data Ingestion Service]
+            F[(Firestore Database)]
             G[Pub/Sub Topics]
         end
 
@@ -52,7 +52,6 @@ graph TD
 
     A -- Reads Secrets From --> I
     E -- Reads Secrets From --> I
-
 ```
 
 ### Component Descriptions
