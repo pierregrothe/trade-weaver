@@ -16,15 +16,15 @@ graph TD
 
     subgraph "GCP Ingestion Layer"
         IngestionService["Data Ingestion Service (Cloud Run)"]
-        RawDataTopic[Pub/Sub: Raw Market Data]
+        RawDataTopic["Pub/Sub: Raw Market Data"]
     end
 
     subgraph "GCP Processing & Storage Layer"
-        MarketAnalystAgent[Market Analyst Agent (Cloud Run)]
-        ExecutionAgent[Strategy & Execution Agent (Cloud Run)]
-        FirestoreDB[Firestore Database]
-        TradeLogs[Trades Collection]
-        ConfigStore[Configuration Collections]
+        MarketAnalystAgent["Market Analyst Agent (Cloud Run)"]
+        ExecutionAgent["Strategy & Execution Agent (Cloud Run)"]
+        FirestoreDB["Firestore Database"]
+        TradeLogs["Trades Collection"]
+        ConfigStore["Configuration Collections"]
     end
 
     %% Data Flows
@@ -36,7 +36,7 @@ graph TD
     
     RawDataTopic -- Subscribes to --> MarketAnalystAgent
     MarketAnalystAgent -- Reads Config --> ConfigStore
-    MarketAnalystAgent -- Produces --> MarketAnalysisReport[JSON: MarketAnalysisReport]
+    MarketAnalystAgent -- Produces --> MarketAnalysisReport["JSON: MarketAnalysisReport"]
     
     MarketAnalysisReport -- Consumed by --> ExecutionAgent
     ExecutionAgent -- Reads Config --> ConfigStore
