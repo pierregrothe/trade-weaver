@@ -21,12 +21,6 @@ This document details the Mean Reversion strategy, a counter-trend approach that
 - **Risk Management:** Because a single strong trend can erase many small wins, strict risk management is non-negotiable. Stop-losses must be placed to cap the risk if the expected reversion does not occur.
 - **Profit Target:** The most common and logical profit target for a mean reversion trade is the middle Bollinger Band (the moving average), as this represents a return to the mean.
 
-### [CONCEPT: ADK_Implementation] 4. ADK Implementation Notes
-
-- **[HOW]** A hybrid model is effective.
-    1. **[AGENT: LlmAgent] Strategic Layer:** A supervisory `LlmAgent` first calls the `MarketRegimeTool`. If the regime is confirmed as `Ranging_Market` (e.g., ADX < 25), it authorizes the mean reversion module.
-    2. **[TOOL: FunctionTool] Tactical Layer:** A deterministic `execute_mean_reversion_trade` `FunctionTool` takes over. It monitors the watchlist for the confluence signal (Bollinger Band touch + RSI extreme) and executes the trade with a bracket order, setting the profit target at the 20-period moving average and the stop-loss just outside the entry candle's high/low.
-
 [SOURCE_ID: Intraday Mean Reversion Strategy Analysis]
 [SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
 [SOURCE_ID: A Quantitative Framework for Algorithmic Day Trading: Regime Analysis, Pre-Market Evaluation, and Strategy Implementation]

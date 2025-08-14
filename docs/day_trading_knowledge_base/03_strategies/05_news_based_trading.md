@@ -33,14 +33,6 @@ This document details strategies for trading the volatility from news events. Th
 - **[PRINCIPLE: Trade_the_Reaction]** A common pitfall is trading the news headline itself. The professional approach is to **"trade the reaction."** If a stock has great news but the price action is weak (e.g., fails to break the pre-market high, trades below VWAP), the negative price action overrides the positive headline.
 - **[PRINCIPLE: Volatility_Awareness]** News-driven moves are volatile. The agent should use wider stops (based on ATR) and potentially smaller position sizes. It may also be prudent to take partial profits into the initial surge and trail a stop on the remainder.
 
-### [CONCEPT: ADK_Implementation] 5. ADK Implementation Pipeline
-
-- **[ADK: SequentialAgent] `NewsTradingPipelineAgent`**: A deterministic orchestrator that runs the following `FunctionTool`s in a strict sequence, passing data between them using `ToolContext.state`.
-    1. **[TOOL: `NewsIngestionTool`]**: Fetches the latest headline, writes it to `tool_context.state`.
-    2. **[TOOL: `NlpAnalysisTool`]**: Reads the headline from state, runs the NLP pipeline, and writes the structured analysis result back to state.
-    3. **[TOOL: `SignalGenerationTool`]**: Reads the analysis result from state, calculates the MIS, and if it exceeds a threshold, returns the final, actionable trade signal (e.g., `{'signal': 'BUY', 'ticker': 'XYZ'}`).
-    4. **[TOOL: `TradeExecutionTool`]**: Before executing, this tool must verify the price action against key levels (pre-market high/low, VWAP) to confirm the market's reaction aligns with the news sentiment.
-
 [SOURCE_ID: News-Based Quantitative Trading Analysis]
 [SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
 [SOURCE_ID: A Quantitative Framework for Algorithmic Day Trading: Regime Analysis, Pre-Market Evaluation, and Strategy Implementation]

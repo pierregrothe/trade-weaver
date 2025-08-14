@@ -63,8 +63,4 @@ The output of this module is a structured object written to `session.state`, whi
 }
 ```
 
-### [CONCEPT: ADK_Implementation] ADK Implementation Pattern
 
-- **[TOOL: `updateMarketRegimeTool`]** The entire logic of this module should be encapsulated in a single `FunctionTool`.
-- **[ORCHESTRATION: Root_Agent]** The root `LlmAgent` should be instructed to call this tool at the beginning of its decision loop for every new 5-minute candle.
-- **[STATE_MANAGEMENT: `ToolContext`]** The `updateMarketRegimeTool` uses `tool_context.state['market_regime'] = regime_object` to update the central state, making the new regime instantly available to all other tools and the `LlmAgent` itself for its next decision.

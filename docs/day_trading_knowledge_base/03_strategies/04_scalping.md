@@ -44,17 +44,6 @@ Scalpers use fast-reacting indicators on very short timeframes (e.g., 1-minute c
         `WAIT_FOR_EXIT_FILL`
         `BREAK`
 
-### [CONCEPT: ADK_Implementation] 5. ADK Implementation: The Hybrid "Two-Speed Brain"
-
-An `LlmAgent` is far too slow for direct scalping execution. The only viable architecture is a hybrid model that separates high-latency reasoning from low-latency execution.
-
-- **Component 1: The High-Performance Execution Engine (C++ or Rust):** A lean, non-AI process that implements the core scalping logic. It subscribes directly to L2/Tape data feeds, sends orders, and exposes a simple control API.
-- **Component 2: The Supervisory `LlmAgent` (ADK):** The ADK agent acts as the strategic "manager." It does **not** process high-frequency data. It consumes lower-frequency data (1-min bars, news, performance logs) to make high-level decisions, such as when to activate or deactivate the scalping module based on market regime.
-- **Component 3: The Control Interface (`FunctionTool`):** The `LlmAgent` can only interact with the execution engine through a predefined, safety-checked set of `FunctionTool`s. This prevents the LLM from issuing dangerous or "hallucinated" commands.
-  - `toggle_scalping_module(tool_context: ToolContext, strategy_name: str, state: bool)`
-  - `update_risk_parameters(tool_context: ToolContext, max_inventory: int, order_size: int)`
-  - `get_performance_report(tool_context: ToolContext) -> dict`
-
 [SOURCE_ID: Intraday Scalping AI Architecture]
 [SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
 [SOURCE_ID: A Quantitative Framework for Algorithmic Day Trading: Regime Analysis, Pre-Market Evaluation, and Strategy Implementation]

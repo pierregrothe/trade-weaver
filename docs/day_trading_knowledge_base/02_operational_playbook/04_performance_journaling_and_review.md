@@ -35,16 +35,4 @@ A dedicated performance analytics module runs at regular intervals (daily, weekl
   - What is the average P&L for trades taken in the first 30 minutes vs. the last 30 minutes of the day?
   - Is there a correlation between `RSI_entry_value` and `Win_Rate` for `Strategy_ID_MeanReversion_01`?
 
-### [CONCEPT: Feedback_Loop] Automated Feedback Loop Implementation
-
-This is the engine of algorithmic evolution. The agent must be programmed to automatically act on its performance analysis.
-
-- **[ADK_IMPLEMENTATION: LoopAgent]** A post-market `LoopAgent` can be designed to manage this process.
-- **[PROCESS: Self_Optimization_Loop]**
-    1. **[TOOL: PerformanceAnalysisTool]** At the end of each week, a `FunctionTool` runs the performance analysis on the trade journal. It calculates the Profit Factor for each active `Strategy_ID` over the last 100 trades.
-    2. **[TOOL: StrategyEvaluationTool]** Another `FunctionTool` compares these metrics against predefined thresholds.
-    3. **[RULE: De-Allocation]** `IF Profit_Factor for Strategy_ID_X < 1.25 THEN reduce_capital_allocation(Strategy_ID_X, by=50%)`. The system automatically reduces the capital (and thus position size) allocated to underperforming strategies.
-    4. **[RULE: Deactivation]** `IF Profit_Factor for Strategy_ID_X < 1.0 THEN deactivate_strategy(Strategy_ID_X)`. The strategy is taken offline completely.
-    5. **[ALERT: Human_Review]** Any de-allocation or deactivation action triggers a high-priority alert for human review. The human can then decide whether the strategy needs to be re-backtested, optimized, or permanently retired.
-
 [SOURCE_ID: Day Trading AI Agent Research, Part II, Section 2.4]

@@ -36,16 +36,6 @@ Unfiltered ORB strategies are often unprofitable. The edge is derived from intel
   - **Medium VIX (20-30):** **Favorable.** Profitable with positive expectancy.
   - **High VIX (>30):** **Optimal.** Fear drives powerful, sustained intraday trends.
 
-### [CONCEPT: ADK_Implementation] 5. ADK Implementation Notes
-
-- **[HOW]** A **hybrid, two-tiered architecture** is recommended.
-    1. **[AGENT: LlmAgent] Strategic Layer:** An `OrbStrategyManager` agent runs once pre-market. It performs regime analysis (VIX, ADX) and catalyst screening. If conditions are favorable, it authorizes the strategy by passing a list of approved symbols to the tactical layer via `ToolContext.state`.
-    2. **[TOOL: FunctionTool] Tactical Layer:** A deterministic `execute_orb_trade` `FunctionTool` receives the approved symbols from state. It then handles all high-frequency, mechanical logic intraday without any further LLM discretion, including:
-        - Defining the opening range high/low.
-        - Monitoring for a candle close outside the range.
-        - Checking for the volume spike confirmation.
-        - Executing the bracket order with a pre-defined stop-loss and profit target.
-
 [SOURCE_ID: ORB Strategy Quantitative Analysis]
 [SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
 [SOURCE_ID: A Quantitative Framework for Algorithmic Day Trading: Regime Analysis, Pre-Market Evaluation, and Strategy Implementation]

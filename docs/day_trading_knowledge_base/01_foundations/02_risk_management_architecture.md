@@ -33,9 +33,5 @@ Risk is managed in a hierarchy, from single-trade checks to system-wide circuit 
     - `VIX 20-30`: Reduce risk parameters by 50% (e.g., 0.5% risk per trade).
     - `VIX > 30`: Cease all new trading and only manage existing positions.
 
-### [CONCEPT: ADK_Implementation] Risk Implementation in ADK
-
-- **[IMPLEMENTATION]** These protocols will be implemented as a `before_tool_callback` on the main trading agent in the ADK. This callback, our **Risk Governor**, will intercept every call to the `execute_trade` tool. It will run through the full hierarchy of risk checks (from Layer 1 to Layer 3) before allowing a trade to be placed. If any check fails, the tool call will be blocked, and the reason for the rejection will be logged.
-
 [SOURCE_ID: Intraday Portfolio Risk Management, Section 4]
 [SOURCE_ID: Day Trading AI Agent Research, Part II, Section 2.3]

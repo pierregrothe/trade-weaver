@@ -53,8 +53,4 @@ An AI agent must not trade on a single indicator signal in isolation. A high-qua
     `is_momentum_exhausted = rsi(9) < 25`
     `RETURN is_ranging AND is_stat_extreme AND is_momentum_exhausted`
 
-### [CONCEPT: ADK_Implementation] ADK Implementation Note
-
-- **[TOOL: `FunctionTool`]** Each of these playbooks should be implemented as a separate, complex `FunctionTool`. The agent's `LlmAgent` instruction is simplified to: `"If you believe a momentum opportunity exists, call the checkForMomentumSignalTool and act on its boolean response."`
-
 [SOURCE_ID: Day Trading AI Agent Research, Part IV]

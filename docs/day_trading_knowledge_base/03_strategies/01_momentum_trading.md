@@ -41,15 +41,6 @@ This document provides a deep dive into the Intraday Momentum strategy, detailin
   - **Midday Lull (10:30-15:00):** **Break-even.** Profit Factor: **1.08**.
   - **Closing Hour (15:00-16:00):** **Strong.** Profit Factor: **1.79**.
 
-### [CONCEPT: ADK_Implementation] 5. ADK Implementation Notes
-
-- **[HOW]** The optimal architecture is a **hybrid, supervisory model**.
-    1. **[TOOL: FunctionTool] The Execution Agent:** The core trading logic (indicator calculation, entry/exit rules, pattern detection) should be encapsulated in a deterministic, high-speed Python function and exposed to the agent as a **`FunctionTool`** (e.g., `execute_momentum_trade`).
-    2. **[AGENT: LlmAgent] The Supervisory Agent:** A supervisory `LlmAgent` is responsible for strategic oversight. Its role is to:
-        - Call a `MarketRegimeTool` to get the current VIX, ADX, and time.
-        - Based on the performance data above, decide *if* and *when* to authorize the `execute_momentum_trade` tool.
-        - Its instruction prompt would contain the logic: `"You are a risk manager. Your primary goal is to preserve capital. Only authorize the momentum tool if the market regime is favorable (VIX < 30 and ADX > 25) and it is during the opening or closing hours. In all other conditions, you must refuse to execute the trade."`
-
 [SOURCE_ID: Intraday Momentum Strategy Analysis]
 [SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
 [SOURCE_ID: A Quantitative Framework for Algorithmic Day Trading: Regime Analysis, Pre-Market Evaluation, and Strategy Implementation]
