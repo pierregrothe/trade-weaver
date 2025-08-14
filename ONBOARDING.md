@@ -6,10 +6,10 @@ Welcome to the Trade Weaver project! This guide provides a step-by-step process 
 
 Ensure you have the following software installed:
 
--   [Git](https://git-scm.com/)
--   [Python 3.10+](https://www.python.org/)
--   [Visual Studio Code](https://code.visualstudio.com/)
--   [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+- [Git](https://git-scm.com/)
+- [Python 3.10+](https://www.python.org/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
 
 ## Step 1: Clone the Repository
 
@@ -24,19 +24,19 @@ cd trade-weaver
 
 This project uses a dedicated Python virtual environment to manage dependencies.
 
-1.  **Create the virtual environment:**
+1. **Create the virtual environment:**
 
     ```cmd
     python -m venv .venv
     ```
 
-2.  **Activate the environment.** You must do this every time you open a new terminal to work on the project.
+2. **Activate the environment.** You must do this every time you open a new terminal to work on the project.
 
     ```cmd
     .\.venv\Scripts\activate
     ```
 
-3.  **Install dependencies.** (Note: A `requirements.txt` file should be created and maintained at the project root).
+3. **Install dependencies.** (Note: A `requirements.txt` file should be created and maintained at the project root).
 
     ```cmd
     pip install -r requirements.txt
@@ -44,12 +44,12 @@ This project uses a dedicated Python virtual environment to manage dependencies.
 
 ## Step 3: Configure Visual Studio Code
 
-1.  Open the project folder in VSCODE: `code .`
-2.  VSCODE should automatically detect the virtual environment. If not, open the Command Palette (`Ctrl+Shift+P`) and select **Python: Select Interpreter**, then choose the interpreter from the `./.venv/Scripts` folder.
-3.  **Recommended Extensions:** Install the following extensions in VSCODE for an optimal experience:
-    -   `ms-python.python` (Python)
-    -   `ms-python.vscode-pylance` (Pylance)
-    -   `charliermarsh.ruff` (Ruff)
+1. Open the project folder in VSCODE: `code .`
+2. VSCODE should automatically detect the virtual environment. If not, open the Command Palette (`Ctrl+Shift+P`) and select **Python: Select Interpreter**, then choose the interpreter from the `./.venv/Scripts` folder.
+3. **Recommended Extensions:** Install the following extensions in VSCODE for an optimal experience:
+    - `ms-python.python` (Python)
+    - `ms-python.vscode-pylance` (Pylance)
+    - `charliermarsh.ruff` (Ruff)
 
 ## Step 4: Authenticate with Google Cloud
 
@@ -65,8 +65,8 @@ Follow the prompts in the browser to log in with your Google account.
 
 While Google Jules is the primary tool for code validation and agent testing, you can perform a quick local run from the terminal to verify your setup.
 
-1.  **Ensure your virtual environment is active.**
-2.  **Run the `MarketAnalystAgent`:**
+1. **Ensure your virtual environment is active.**
+2. **Run the `MarketAnalystAgent`:**
 
     ```cmd
     adk run --agent_path .\pre_market_analysis --input_text "Run a pre-market scan for NASDAQ."

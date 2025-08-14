@@ -30,16 +30,10 @@ requires-python = ">=3.11,<3.15"
 # Core dependencies required for the application to run.
 dependencies = [
     "eodhd>=1.0.32",
-#    "fastapi>=0.116.1",
     "google-adk>=1.10.0",
     "google-cloud-firestore>=2.21.0",
     "google-cloud-secret-manager>=2.24.0",
-#    "google-generativeai>=0.8.5",
-#    "lxml>=6.0.0",
-#    "pandas>=2.3.1",
     "python-dotenv>=1.1.1",
-#    "requests>=2.32.4",
-#    "uvicorn[standard]>=0.35.0", # 'standard' provides performance improvements.
 ]
 
 [project.urls]
@@ -52,8 +46,6 @@ Homepage = "https://github.com/pierregrothe/trade-weaver"
 dev = [
     "ruff>=0.12.7",
     "mypy>=1.17.1",
-    "codespell>=2.4.1",
-    "types-requests>=2.32.0", # Type stubs for the 'requests' library.
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
     "pytest-mock>=3.14.1",
@@ -63,9 +55,12 @@ dev = [
 # --- Tool Configurations ---
 # Centralized settings for your development tools.
 
-[tool.hatch.version]
+#[tool.hatch.version]
 # Tells Hatch where to find the project's version number.
-path = "src/trade_weaver/__init__.py"
+#path = "trade_weaver/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["trade_weaver", "market_analyst"]
 
 [tool.ruff]
 # Configuration for the Ruff linter and formatter.
