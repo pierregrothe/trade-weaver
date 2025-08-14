@@ -48,8 +48,8 @@ graph TD
 
 ### Description of Flow
 
-1.  **Ingestion:** A dedicated `Data Ingestion Service` connects to all external APIs (EODHD, IBKR, etc.) to source historical, fundamental, and real-time market data.
-2.  **Decoupling:** The ingestion service publishes all raw data into a central `Pub/Sub` topic. This decouples the data sources from the data consumers, adding resilience and scalability.
-3.  **Analysis:** The `Market Analyst Agent` subscribes to the raw data topic. It reads its configuration from Firestore, processes the data through its multi-stage pipeline, and produces a single, objective `MarketAnalysisReport` as a JSON object.
-4.  **Execution:** The `Strategy & Execution Agent` consumes this JSON report, applies its own strategic logic and risk management rules (also read from Firestore), and executes trades.
-5.  **Logging:** All executed trades are recorded as immutable logs in the `Trades` collection within Firestore.
+1. **Ingestion:** A dedicated `Data Ingestion Service` connects to all external APIs (EODHD, IBKR, etc.) to source historical, fundamental, and real-time market data.
+2. **Decoupling:** The ingestion service publishes all raw data into a central `Pub/Sub` topic. This decouples the data sources from the data consumers, adding resilience and scalability.
+3. **Analysis:** The `Market Analyst Agent` subscribes to the raw data topic. It reads its configuration from Firestore, processes the data through its multi-stage pipeline, and produces a single, objective `MarketAnalysisReport` as a JSON object.
+4. **Execution:** The `Strategy & Execution Agent` consumes this JSON report, applies its own strategic logic and risk management rules (also read from Firestore), and executes trades.
+5. **Logging:** All executed trades are recorded as immutable logs in the `Trades` collection within Firestore.

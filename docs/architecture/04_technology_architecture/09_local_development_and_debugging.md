@@ -6,16 +6,16 @@ This document provides a practical guide for developers to run, debug, and test 
 
 The ADK provides three primary tools for local agent interaction:
 
--   **`adk run`**: For direct command-line interaction.
--   **`adk web`**: For interactive testing in a simple web UI.
--   **`adk api_server`**: For exposing the agent as a REST API for programmatic testing (e.g., with Postman).
+- **`adk run`**: For direct command-line interaction.
+- **`adk web`**: For interactive testing in a simple web UI.
+- **`adk api_server`**: For exposing the agent as a REST API for programmatic testing (e.g., with Postman).
 
 ## 2. `adk run`: Command-Line Interaction
 
 This is the quickest way to test an agent's response to a single input.
 
--   **Use Case:** Quickly verifying a change to an agent's logic or a tool's functionality from the terminal.
--   **Example Command:**
+- **Use Case:** Quickly verifying a change to an agent's logic or a tool's functionality from the terminal.
+- **Example Command:**
 
     ```bash
     # Run the MarketAnalystAgent with a simple text input
@@ -26,8 +26,8 @@ This is the quickest way to test an agent's response to a single input.
 
 This command launches a local, browser-based chat interface for more interactive and conversational testing.
 
--   **Use Case:** Debugging conversational flows, demonstrating an agent's capabilities, or for developers who prefer a GUI.
--   **Example Command:**
+- **Use Case:** Debugging conversational flows, demonstrating an agent's capabilities, or for developers who prefer a GUI.
+- **Example Command:**
 
     ```bash
     # Launch the web UI for the ExecutionAgent
@@ -38,8 +38,8 @@ This command launches a local, browser-based chat interface for more interactive
 
 This is the most powerful tool for local testing, as it exposes the agent via a standard REST API, allowing for integration with tools like Postman or automated test scripts.
 
--   **Use Case:** Testing the agent's response to complex JSON inputs (like a `MarketAnalysisReport`) or integrating the agent into a local integration test suite.
--   **Example Command:**
+- **Use Case:** Testing the agent's response to complex JSON inputs (like a `MarketAnalysisReport`) or integrating the agent into a local integration test suite.
+- **Example Command:**
 
     ```bash
     # Start the API server for the ExecutionAgent on the default port
@@ -50,9 +50,9 @@ This is the most powerful tool for local testing, as it exposes the agent via a 
 
 Once the API server is running, you can interact with it using any API client. To test the `ExecutionAgent`, you would configure Postman as follows:
 
-1.  **URL:** `POST http://127.0.0.1:8080/:run`
-2.  **Headers:** `Content-Type: application/json`
-3.  **Body (Raw JSON):**
+1. **URL:** `POST http://127.0.0.1:8080/:run`
+2. **Headers:** `Content-Type: application/json`
+3. **Body (Raw JSON):**
 
     ```json
     {

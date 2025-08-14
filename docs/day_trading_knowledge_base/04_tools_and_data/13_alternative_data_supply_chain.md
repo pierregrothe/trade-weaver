@@ -6,24 +6,24 @@ This document explores the use of supply chain data as a powerful source of alte
 
 The global supply chain is a complex network of relationships between suppliers, manufacturers, logistics providers, and customers. Data generated from this network provides a ground-truth view of economic activity. For a trading agent, analyzing this data can reveal:
 
--   **Revenue & Earnings Surprises:** Tracking a retailer's import volumes can provide an early signal of its quarterly sales figures.
--   **Production Bottlenecks:** Identifying disruptions at a key supplier can help predict production issues for a downstream company.
--   **Competitive Shifts:** Analyzing shifts in shipping volume between two competitors can indicate changes in market share.
+- **Revenue & Earnings Surprises:** Tracking a retailer's import volumes can provide an early signal of its quarterly sales figures.
+- **Production Bottlenecks:** Identifying disruptions at a key supplier can help predict production issues for a downstream company.
+- **Competitive Shifts:** Analyzing shifts in shipping volume between two competitors can indicate changes in market share.
 
 This is a highly specialized data category that is **not available** through standard brokers or foundational data providers like EODHD. It requires subscriptions to specialist vendors.
 
 ## 2. Primary Types of Supply Chain Data
 
--   **Bills of Lading / Shipping Manifests:** Documents containing details of a shipment, including the shipper, consignee, vessel name, container numbers, and a description of the goods. This is one of the most valuable data types.
--   **Geolocation Data (AIS):** Real-time tracking data from the Automatic Identification System (AIS) of maritime vessels.
--   **Customs Data:** Government-collected data on imports and exports.
--   **Sensor & IoT Data:** Real-time information from sensors on shipping containers or warehouses, tracking things like temperature, humidity, and location.
+- **Bills of Lading / Shipping Manifests:** Documents containing details of a shipment, including the shipper, consignee, vessel name, container numbers, and a description of the goods. This is one of the most valuable data types.
+- **Geolocation Data (AIS):** Real-time tracking data from the Automatic Identification System (AIS) of maritime vessels.
+- **Customs Data:** Government-collected data on imports and exports.
+- **Sensor & IoT Data:** Real-time information from sensors on shipping containers or warehouses, tracking things like temperature, humidity, and location.
 
 ## 3. Leading Data Providers
 
--   **Bloomberg / Refinitiv (LSEG):** Offer comprehensive supply chain relationship data, mapping out the customers, suppliers, and partners of global companies.
--   **S&P Global Supply Chain Console:** Provides a platform integrating trade, pricing, and country risk data with over 2 billion shipment records.
--   **Sedex:** Focuses on ethical and sustainable supply chain data, which is crucial for ESG-focused risk analysis.
+- **Bloomberg / Refinitiv (LSEG):** Offer comprehensive supply chain relationship data, mapping out the customers, suppliers, and partners of global companies.
+- **S&P Global Supply Chain Console:** Provides a platform integrating trade, pricing, and country risk data with over 2 billion shipment records.
+- **Sedex:** Focuses on ethical and sustainable supply chain data, which is crucial for ESG-focused risk analysis.
 
 ## 4. ADK Implementation: Hypothetical `FunctionTool`
 

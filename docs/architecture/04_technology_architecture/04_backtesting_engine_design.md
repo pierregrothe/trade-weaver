@@ -10,15 +10,15 @@ To validate trading strategies and prevent financial loss, the project requires 
 
 Instead of building a complex, time-consuming custom backtesting engine from scratch, the project will **utilize an existing, mature open-source backtesting library**. This approach provides several key advantages:
 
--   **Speed of Development:** Allows the team to focus on strategy development and alpha generation, which is the unique value of the project.
--   **Reliability:** Leverages battle-tested and well-documented libraries, reducing the risk of subtle bugs in the core simulation logic.
--   **Bias Mitigation:** Mature libraries provide clear patterns and tools for handling historical data correctly, helping to avoid common biases.
+- **Speed of Development:** Allows the team to focus on strategy development and alpha generation, which is the unique value of the project.
+- **Reliability:** Leverages battle-tested and well-documented libraries, reducing the risk of subtle bugs in the core simulation logic.
+- **Bias Mitigation:** Mature libraries provide clear patterns and tools for handling historical data correctly, helping to avoid common biases.
 
 ## 3. Recommended Technology
 
 The primary candidate for initial implementation is the **`backtrader`** library.
 
--   **Rationale:** `backtrader` is a powerful, popular, and well-documented Python library for backtesting trading strategies. It has a strong community and has solved many of the complex problems associated with historical data simulation.
+- **Rationale:** `backtrader` is a powerful, popular, and well-documented Python library for backtesting trading strategies. It has a strong community and has solved many of the complex problems associated with historical data simulation.
 
 ## 4. Implementation Note: The Adapter Layer
 

@@ -12,20 +12,20 @@ This provides a robust, low-frequency measure of perceived global risk.
 
 For day trading, a monthly index is too slow. We can adapt the GPR methodology to create our own high-frequency risk score using our real-time EODHD news feed.
 
--   **Data Source:** EODHD Financial News API.
--   **Methodology:**
-    1.  **Relevance Filtering:** Create a dictionary of keywords related to geopolitical risk (e.g., `sanctions`, `trade dispute`, `military`, `unrest`, `election`). The agent will scan all incoming news headlines for these keywords to filter for relevant articles.
-    2.  **Sentiment Analysis:** For each relevant article, use an NLP model (like FinBERT) to calculate a sentiment score (positive, negative, neutral).
-    3.  **Scoring:** An individual `ArticleRiskScore` can be calculated as `Relevance * abs(Negative_Sentiment)`. The absolute value is used because even "positive" news about a conflict (e.g., a "successful" military strike) represents elevated risk.
-    4.  **Aggregation:** The final, high-frequency GPR score is the **Exponential Moving Average (EMA) of the `ArticleRiskScore`** over a rolling time window (e.g., 1-hour). This gives more weight to the most recent news, making the score highly reactive.
+- **Data Source:** EODHD Financial News API.
+- **Methodology:**
+    1. **Relevance Filtering:** Create a dictionary of keywords related to geopolitical risk (e.g., `sanctions`, `trade dispute`, `military`, `unrest`, `election`). The agent will scan all incoming news headlines for these keywords to filter for relevant articles.
+    2. **Sentiment Analysis:** For each relevant article, use an NLP model (like FinBERT) to calculate a sentiment score (positive, negative, neutral).
+    3. **Scoring:** An individual `ArticleRiskScore` can be calculated as `Relevance * abs(Negative_Sentiment)`. The absolute value is used because even "positive" news about a conflict (e.g., a "successful" military strike) represents elevated risk.
+    4. **Aggregation:** The final, high-frequency GPR score is the **Exponential Moving Average (EMA) of the `ArticleRiskScore`** over a rolling time window (e.g., 1-hour). This gives more weight to the most recent news, making the score highly reactive.
 
 ## 3. Commercial Data Providers
 
 While a custom index is powerful, several commercial providers offer more sophisticated, expert-driven geopolitical data. These can be considered as supplementary "edge-enhancing" data sources.
 
--   **BMI (GeoQuant):** A leading provider that uses a hybrid model combining AI with human political scientists to generate high-frequency, back-testable risk data for over 140 countries.
--   **Eurasia Group:** A top-tier consultancy known for its qualitative, expert-driven analysis and forward-looking reports on major geopolitical trends.
--   **Verisk Maplecroft:** Offers over 190 global risk indices, with a strong focus on integrating ESG and subnational political risk, which is valuable for analyzing companies with complex global supply chains.
+- **BMI (GeoQuant):** A leading provider that uses a hybrid model combining AI with human political scientists to generate high-frequency, back-testable risk data for over 140 countries.
+- **Eurasia Group:** A top-tier consultancy known for its qualitative, expert-driven analysis and forward-looking reports on major geopolitical trends.
+- **Verisk Maplecroft:** Offers over 190 global risk indices, with a strong focus on integrating ESG and subnational political risk, which is valuable for analyzing companies with complex global supply chains.
 
 ## 4. ADK Implementation
 

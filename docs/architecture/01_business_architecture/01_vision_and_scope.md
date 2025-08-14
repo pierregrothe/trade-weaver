@@ -20,18 +20,18 @@ The initial user base is a small, private group of experienced traders who under
 
 ### In-Scope Features (Phase 1 - MVP)
 
-*   User and Role Management (Admin, Tenant Manager, Portfolio Manager, Trader, Client).
-*   Secure management of Broker API keys.
-*   Multi-portfolio tracking with multi-currency support.
-*   A configurable system for managing active markets and exchanges.
-*   A `PreMarketAnalysis` to identify trade opportunities based on a quantitative, catalyst-driven scanning process.
+* User and Role Management (Admin, Tenant Manager, Portfolio Manager, Trader, Client).
+* Secure management of Broker API keys.
+* Multi-portfolio tracking with multi-currency support.
+* A configurable system for managing active markets and exchanges.
+* A `PreMarketAnalysis` to identify trade opportunities based on a quantitative, catalyst-driven scanning process.
 
 ### In-Scope Features (Phase 2 and Beyond)
 
-*   A UI to display, approve, or reject trade opportunities generated in Phase 1.
-*   An `Executor` to place trades in both "Live" and "Paper" modes.
-*   Fully autonomous "YOLO" modes for both live and paper trading.
-*   Compliance with Canadian (CIRO) trading regulations.
+* A UI to display, approve, or reject trade opportunities generated in Phase 1.
+* An `Executor` to place trades in both "Live" and "Paper" modes.
+* Fully autonomous "YOLO" modes for both live and paper trading.
+* Compliance with Canadian (CIRO) trading regulations.
 
 ### Out-of-Scope Features (Future Considerations)
 

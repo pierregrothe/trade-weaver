@@ -19,7 +19,7 @@ The platform is composed of the following managed services:
 
 The deployment model is designed for simplicity and maintainability:
 
--   The entire ADK application, including all agents (`analyzer`, `executor`, etc.), strategies, and core logic, will be packaged into a **single container image**.
--   This container image will be deployed as a **single Google Cloud Run service**.
--   The application within the container acts as an event handler, listening for messages from Pub/Sub and invoking the appropriate ADK agent based on the message content.
--   The modular folder structure (e.g., `pre_market_analysis/`) is a **code organization and development pattern**, not a microservices deployment pattern. It ensures our single application is clean, maintainable, and easy to test.
+- The entire ADK application, including all agents (`analyzer`, `executor`, etc.), strategies, and core logic, will be packaged into a **single container image**.
+- This container image will be deployed as a **single Google Cloud Run service**.
+- The application within the container acts as an event handler, listening for messages from Pub/Sub and invoking the appropriate ADK agent based on the message content.
+- The modular folder structure (e.g., `pre_market_analysis/`) is a **code organization and development pattern**, not a microservices deployment pattern. It ensures our single application is clean, maintainable, and easy to test.

@@ -23,8 +23,8 @@ client = APIClient(api_key)
 
 For a day trading agent, a persistent, low-latency WebSocket connection is mandatory for receiving real-time trade data.
 
--   **[HOW]** We will use the library's `EODHDClient.new_websocket_client()` method to establish the connection. The client will run in a separate, asynchronous thread to avoid blocking the main application.
--   **[ADK_IMPLEMENTATION]** A dedicated data ingestion service (e.g., a GCP Cloud Run instance) will run this WebSocket client. It will receive messages and publish them to a GCP Pub/Sub topic, from which the main trading agent can subscribe. This decouples data ingestion from trading logic.
+- **[HOW]** We will use the library's `EODHDClient.new_websocket_client()` method to establish the connection. The client will run in a separate, asynchronous thread to avoid blocking the main application.
+- **[ADK_IMPLEMENTATION]** A dedicated data ingestion service (e.g., a GCP Cloud Run instance) will run this WebSocket client. It will receive messages and publish them to a GCP Pub/Sub topic, from which the main trading agent can subscribe. This decouples data ingestion from trading logic.
 
 ```python
 # Example: Real-time trade data for multiple stocks
@@ -44,8 +44,8 @@ ws_client.run_async() # Runs the client in a background thread
 
 EODHD provides an API endpoint to calculate a wide range of technical indicators. This allows us to offload the computational work from our agent.
 
--   **[HOW]** The `client.get_technical_indicator_data()` method can be used to request pre-calculated indicator values.
--   **[ADK_IMPLEMENTATION]** A `FunctionTool` within the agent can call this endpoint on demand to get up-to-date indicator values for a given stock, which can then be used as features for the agent's decision-making process.
+- **[HOW]** The `client.get_technical_indicator_data()` method can be used to request pre-calculated indicator values.
+- **[ADK_IMPLEMENTATION]** A `FunctionTool` within the agent can call this endpoint on demand to get up-to-date indicator values for a given stock, which can then be used as features for the agent's decision-making process.
 
 ```python
 # Example: Get the 14-day RSI for AAPL
@@ -60,8 +60,8 @@ rsi_data = client.get_technical_indicator_data(
 
 EODHD provides a news API with sentiment analysis, which is a critical input for our catalyst-driven strategies.
 
--   **[HOW]** The `client.get_financial_news_and_sentiment_data()` method can be used to retrieve recent news headlines and their associated sentiment scores.
--   **[ADK_IMPLEMENTATION]** This will be a core component of our pre-market scanning pipeline. A `FunctionTool` will call this endpoint for stocks on our potential watchlist to get a quantitative measure of the news catalyst, which will be used in our Gapper Quality Score (GQS).
+- **[HOW]** The `client.get_financial_news_and_sentiment_data()` method can be used to retrieve recent news headlines and their associated sentiment scores.
+- **[ADK_IMPLEMENTATION]** This will be a core component of our pre-market scanning pipeline. A `FunctionTool` will call this endpoint for stocks on our potential watchlist to get a quantitative measure of the news catalyst, which will be used in our Gapper Quality Score (GQS).
 
 ```python
 # Example: Get news and sentiment for AAPL
@@ -75,8 +75,8 @@ news_data = client.get_financial_news_and_sentiment_data(
 
 While EODHD provides a wealth of data, it does not cover everything. We will need to build the following components from scratch:
 
--   **Advanced AI/ML Models:** EODHD provides the raw data, but we are responsible for building, training, and deploying our own LSTM, Reinforcement Learning, and other advanced predictive models.
--   **Custom Feature Engineering:** While EODHD offers standard technical indicators, any proprietary or complex features (like Order Flow Imbalance) will need to be calculated by our agent.
--   **The Core Trading Logic:** The agent's decision-making matrix, risk management rules, and overall trading logic are unique to our system and must be built internally.
+- **Advanced AI/ML Models:** EODHD provides the raw data, but we are responsible for building, training, and deploying our own LSTM, Reinforcement Learning, and other advanced predictive models.
+- **Custom Feature Engineering:** While EODHD offers standard technical indicators, any proprietary or complex features (like Order Flow Imbalance) will need to be calculated by our agent.
+- **The Core Trading Logic:** The agent's decision-making matrix, risk management rules, and overall trading logic are unique to our system and must be built internally.
 
 [SOURCE_ID: EODHD API Documentation]

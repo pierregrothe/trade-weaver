@@ -4,9 +4,9 @@
 
 ## Core Design Principles
 
--   **Structure for Queries:** Data is modeled to match the specific read patterns of the application, minimizing the need for complex client-side joins.
--   **Denormalization for Reads:** To optimize for read speed, some data is intentionally duplicated. For example, a ticker symbol is stored on a trade document, even though it could be looked up from a separate instrument document.
--   **Aggregation for Cost:** High-frequency data (like market data) is aggregated into time-bucketed documents (the "roll-up" pattern) to minimize write operations.
+- **Structure for Queries:** Data is modeled to match the specific read patterns of the application, minimizing the need for complex client-side joins.
+- **Denormalization for Reads:** To optimize for read speed, some data is intentionally duplicated. For example, a ticker symbol is stored on a trade document, even though it could be looked up from a separate instrument document.
+- **Aggregation for Cost:** High-frequency data (like market data) is aggregated into time-bucketed documents (the "roll-up" pattern) to minimize write operations.
 
 ---
 
@@ -16,11 +16,11 @@ These collections store the global configurations for the entire platform. They 
 
 ### `Markets` Collection
 
--   **Purpose:** Defines the major markets (AMER, EMEA, APAC) the agent can operate in.
--   **Document ID:** Human-readable string (e.g., `AMER`).
--   **Interactions & Usage:**
-    -   **Writes:** Administrator (manual setup).
-    -   **Reads:** `CoordinatorAgent` to get a list of all markets to potentially scan.
+- **Purpose:** Defines the major markets (AMER, EMEA, APAC) the agent can operate in.
+- **Document ID:** Human-readable string (e.g., `AMER`).
+- **Interactions & Usage:**
+  - **Writes:** Administrator (manual setup).
+  - **Reads:** `CoordinatorAgent` to get a list of all markets to potentially scan.
 
 ```json
 // /Markets/AMER

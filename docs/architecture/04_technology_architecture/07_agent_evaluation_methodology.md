@@ -10,11 +10,11 @@ This document defines the methodology for evaluating the performance and correct
 
 To evaluate our agents, we will create and maintain a **Golden Dataset**, which will be a collection of `eval_set.jsonl` files. Each file will contain a series of test cases representing different scenarios the agent might encounter.
 
--   **Location:** `tests/evaluation/`
--   **Scenarios:** We will create separate evaluation sets for different market regimes and use cases, for example:
-    -   `eval_set_trending_market.jsonl`
-    -   `eval_set_volatile_market.jsonl`
-    -   `eval_set_invalid_inputs.jsonl`
+- **Location:** `tests/evaluation/`
+- **Scenarios:** We will create separate evaluation sets for different market regimes and use cases, for example:
+  - `eval_set_trending_market.jsonl`
+  - `eval_set_volatile_market.jsonl`
+  - `eval_set_invalid_inputs.jsonl`
 
 ### Evaluation Set Example (`eval_set.jsonl`)
 
@@ -29,10 +29,10 @@ Each line in the file is a JSON object representing one test case. For the `Exec
 
 We will track the following key metrics from the `adk eval` output:
 
-1.  **Task Completion Rate:** What percentage of test cases completed successfully without errors?
-2.  **Tool Call Accuracy:** For cases that expected a tool call, did the agent call the *correct* tool with the *exact* correct parameters?
-3.  **Output Accuracy:** For cases that expected a text response, how closely did the agent's response match the golden output?
-4.  **Safety & Compliance:** For test cases involving invalid or dangerous inputs (e.g., a trade that should be blocked by the Risk Governor), did the agent correctly refuse to act? This is measured by comparing the agent's output to a golden response that expects a rejection.
+1. **Task Completion Rate:** What percentage of test cases completed successfully without errors?
+2. **Tool Call Accuracy:** For cases that expected a tool call, did the agent call the *correct* tool with the *exact* correct parameters?
+3. **Output Accuracy:** For cases that expected a text response, how closely did the agent's response match the golden output?
+4. **Safety & Compliance:** For test cases involving invalid or dangerous inputs (e.g., a trade that should be blocked by the Risk Governor), did the agent correctly refuse to act? This is measured by comparing the agent's output to a golden response that expects a rejection.
 
 ## 4. CI/CD Integration
 

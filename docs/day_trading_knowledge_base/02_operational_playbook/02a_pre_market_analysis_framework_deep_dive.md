@@ -6,9 +6,9 @@ This document provides the definitive, end-to-end conceptual blueprint for the p
 
 The pre-market analysis pipeline must account for the fundamental differences in how various global exchanges operate before the official open. This requires two distinct analytical models:
 
--   **Introspective (Confirmatory) Model:** Used for markets with active pre-market trading (e.g., NASDAQ, NYSE). This model analyzes a stock's *own* pre-market price, volume, and order flow data to *confirm* the quality and conviction of an observed move.
+- **Introspective (Confirmatory) Model:** Used for markets with active pre-market trading (e.g., NASDAQ, NYSE). This model analyzes a stock's *own* pre-market price, volume, and order flow data to *confirm* the quality and conviction of an observed move.
 
--   **Extrospective (Predictive) Model:** Used for markets that use a pre-open auction (e.g., TSX, LSE). Since there is no active trading to analyze, this model ingests data from highly correlated *external* instruments (like US-listed ETFs or commodity futures) to *predict* the likely direction and strength of the opening auction.
+- **Extrospective (Predictive) Model:** Used for markets that use a pre-open auction (e.g., TSX, LSE). Since there is no active trading to analyze, this model ingests data from highly correlated *external* instruments (like US-listed ETFs or commodity futures) to *predict* the likely direction and strength of the opening auction.
 
 ## 2. Data Sourcing & Catalyst Identification Playbook
 
@@ -16,21 +16,21 @@ A potent catalyst is the primary driver of pre-market activity. The analysis mus
 
 ### 2.1 Foundational Data (EODHD)
 
--   **Real-Time & Historical Pricing:** The primary source for L1 real-time data via WebSockets and deep historical data for calculating baseline metrics.
--   **Fundamentals:** Used for the initial universe filter (e.g., market capitalization, average volume).
--   **News Catalyst:** Provides the baseline news headlines for NLP analysis.
+- **Real-Time & Historical Pricing:** The primary source for L1 real-time data via WebSockets and deep historical data for calculating baseline metrics.
+- **Fundamentals:** Used for the initial universe filter (e.g., market capitalization, average volume).
+- **News Catalyst:** Provides the baseline news headlines for NLP analysis.
 
 ### 2.2 Alternative Data for "Narrative Strength"
 
 A high `Catalyst_Score` is derived from a coherent theme emerging from multiple data sources:
 
--   **SEC Filings (via sec-api.io or similar):**
-    -   **Form 8-K:** Detects unscheduled material events (e.g., M&A, bankruptcy).
-    -   **Forms 3, 4, 5:** Identifies clusters of insider buying or selling.
--   **Social Sentiment (via StockTwits, Reddit API):**
-    -   Monitors the *rate of change* of sentiment scores and mention volume.
--   **Sector-Specific Catalysts (e.g., Biotech):**
-    -   Uses specialized databases to track clinical trial phases, PDUFA dates, etc.
+- **SEC Filings (via sec-api.io or similar):**
+  - **Form 8-K:** Detects unscheduled material events (e.g., M&A, bankruptcy).
+  - **Forms 3, 4, 5:** Identifies clusters of insider buying or selling.
+- **Social Sentiment (via StockTwits, Reddit API):**
+  - Monitors the *rate of change* of sentiment scores and mention volume.
+- **Sector-Specific Catalysts (e.g., Biotech):**
+  - Uses specialized databases to track clinical trial phases, PDUFA dates, etc.
 
 ## 3. Quantitative Scoring Engine: The Chart Clarity Score
 
@@ -52,5 +52,5 @@ The `Chart_Clarity_Score` is a composite, weighted average of seven distinct, qu
 
 To prevent alpha decay, the system uses a post-market, closed-loop system that uses machine learning to refine the pre-market ranking algorithm. This is achieved with a **meta-labeling** framework.
 
--   **Primary Model (e.g., XGBoost):** Predicts the *direction* of a potential trade (+1 for long, -1 for short) based on the full set of engineered features.
--   **Secondary Model (e.g., Logistic Regression):** Predicts the *probability that the primary model is correct*. Its output is a confidence score (0.0 to 1.0) that is used to filter and rank the initial signals, and can be used for probabilistic position sizing.
+- **Primary Model (e.g., XGBoost):** Predicts the *direction* of a potential trade (+1 for long, -1 for short) based on the full set of engineered features.
+- **Secondary Model (e.g., Logistic Regression):** Predicts the *probability that the primary model is correct*. Its output is a confidence score (0.0 to 1.0) that is used to filter and rank the initial signals, and can be used for probabilistic position sizing.

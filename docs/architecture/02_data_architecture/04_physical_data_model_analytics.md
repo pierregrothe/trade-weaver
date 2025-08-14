@@ -6,9 +6,9 @@ This document defines the physical schemas for the tables in the analytics data 
 
 This table stores the raw, time-series data as it is ingested from the providers. It is optimized for write-heavy workloads and serves as the immutable source of truth.
 
--   **Table Name:** `raw_market_data`
--   **Partitioning:** Partitioned by `event_date` (Day).
--   **Clustering:** Clustered by `ticker`.
+- **Table Name:** `raw_market_data`
+- **Partitioning:** Partitioned by `event_date` (Day).
+- **Clustering:** Clustered by `ticker`.
 
 | Column Name | Data Type | Description |
 | :--- | :--- | :--- |
@@ -26,9 +26,9 @@ This table stores the raw, time-series data as it is ingested from the providers
 
 This table stores the calculated features and technical indicators for each instrument at each time step. This is the primary table used as the input for training machine learning models.
 
--   **Table Name:** `instrument_features`
--   **Partitioning:** Partitioned by `feature_date` (Day).
--   **Clustering:** Clustered by `ticker`.
+- **Table Name:** `instrument_features`
+- **Partitioning:** Partitioned by `feature_date` (Day).
+- **Clustering:** Clustered by `ticker`.
 
 | Column Name | Data Type | Description |
 | :--- | :--- | :--- |
