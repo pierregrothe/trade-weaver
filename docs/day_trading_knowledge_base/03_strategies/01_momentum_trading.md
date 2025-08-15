@@ -1,4 +1,4 @@
-# [STRATEGY: Momentum] Momentum Trading
+# [STRATEGY: Momentum] Intraday Momentum Trading
 
 This document provides a deep dive into the Intraday Momentum strategy, detailing its statistical rationale, optimal parameters, quantified performance, and implementation architecture.
 
@@ -8,7 +8,6 @@ This document provides a deep dive into the Intraday Momentum strategy, detailin
 - **[WHY]** The inefficiency arises from several behavioral phenomena:
     1. **[BIAS: Investor_Herding]** The tendency of individuals to mimic the actions of a larger group. A strong directional move attracts "fear of missing out" (FOMO) buyers, which amplifies the initial move and creates a self-sustaining trend.
     2. **[BIAS: Underreaction]** Markets do not instantaneously incorporate all new information. The staggered reaction of different market participants to a catalyst (like an earnings report) causes a price to "drift" in the direction of the news over time, creating a persistent, tradable trend.
-    3. **[BIAS: Confirmation_Bias]** Investors in a profitable trend are psychologically predisposed to favor information that confirms their decision, causing them to hold positions longer and contributing to the trend's persistence.
 - **[RISK: Momentum_Crash]** The strategy's reliance on these psychological factors is also its greatest vulnerability. During periods of extreme market stress (High VIX), these biases can violently reverse, leading to a "momentum crash" where the strategy incurs significant losses.
 
 ### [CONCEPT: Optimal_Parameters] 2. Optimal Implementation Parameters (5-min, NASDAQ 100)

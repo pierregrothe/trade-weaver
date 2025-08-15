@@ -1,14 +1,15 @@
-# [STRATEGY: Scalping] Scalping
+# [STRATEGY: Scalping] High-Frequency Scalping Strategies
 
-This document details Scalping, the highest-frequency day trading strategy, which profits from market microstructure inefficiencies. This strategy is only viable through full automation.
+This document details Scalping, the highest-frequency day trading strategy, which profits from market microstructure inefficiencies. This strategy is only viable through full automation and requires a deep understanding of order flow and market mechanics.
 
 ### [PRINCIPLE: Statistical_Edge] 1. Statistical Edge and Rationale
 
-- **[WHAT]** Scalping exploits transient, structural inefficiencies within the market's mechanics, operating on a timescale of seconds or minutes. It aims to capture many small profits from minimal price moves.
+- **[WHAT]** Scalping exploits transient, structural inefficiencies within the market's mechanics, operating on a timescale of seconds or minutes. It aims to capture many small profits, often just a few cents or ticks, from minimal price moves.
 - **[WHY]** The edge is derived from two primary sources:
     1. **[INEFFICIENCY: Bid_Ask_Spread] Capturing the Bid-Ask Spread:** The agent acts as a "miniature market maker," simultaneously placing buy and sell limit orders to capture the spread.
     2. **[INEFFICIENCY: Order_Flow_Imbalance] Fleeting Order Flow Imbalances:** The agent analyzes Level II and Time & Sales data to detect temporary, massive imbalances in buying or selling pressure that precede very short-term, directional price moves, and executes a trade to front-run slower participants.
-- **[RISK: Adverse_Selection]** The primary risk is **adverse selection**: unknowingly trading with a more informed participant who is causing the imbalance, leading to immediate losses.
+- **[RISK: Adverse_Selection]** The primary risk is **adverse selection**: unknowingly providing liquidity to a more informed participant who is causing the imbalance, leading to immediate losses.
+- **[RISK: Costs_and_Latency]** This strategy is extremely sensitive to transaction costs (commissions, fees) and latency. Profitability is often dependent on a cost structure that includes liquidity-adding rebates.
 
 ### [CONCEPT: Prerequisites] 2. Quantitative Prerequisites
 
@@ -16,33 +17,25 @@ This document details Scalping, the highest-frequency day trading strategy, whic
 - **[REQUIREMENT: Tight_Spreads]** The bid-ask spread must be consistently **$0.01**.
 - **[REQUIREMENT: Fee_Structure]** A **per-share commission** structure with low fees is mandatory. For market making, **liquidity-adding rebates** are required for profitability.
 
-### [CONCEPT: Indicators] 3. Indicators for Scalping
+### [CONCEPT: AI_Architectures] 3. Specific, Programmable Scalping Architectures
 
-Scalpers use fast-reacting indicators on very short timeframes (e.g., 1-minute charts).
+1.  **[ARCHITECTURE: Market_Making] Passive Market Making (Spread Capture):**
+    - **[LOGIC:]** Continuously place bid and ask limit orders around a calculated mid-price. Actively manage inventory risk by "skewing" quotes (i.e., adjusting bid/ask prices) to trade back towards a flat position.
+    - **[RISK:]** Inventory risk. The agent can accumulate a position if the market trends in one direction.
 
-- **[INDICATOR: Moving_Averages]** Fast EMAs (e.g., 9-period, 20-period) are used as dynamic support and resistance for quick bounce trades.
-- **[INDICATOR: Oscillators]** Stochastics, MACD, and RSI are tuned to very short periods to identify micro-overbought/oversold conditions for fade scalps.
-- **[INDICATOR: VWAP]** The Volume-Weighted Average Price is a key level. Scalpers trade bounces off VWAP or play for a quick cross and rejection.
-- **[INDICATOR: Order_Flow_Imbalance]** An advanced indicator that directly measures the aggressive buy vs. sell orders from the tape, providing a real-time signal of short-term price pressure.
-
-### [CONCEPT: AI_Architectures] 4. Specific, Programmable Scalping Architectures
-
-1. **[ARCHITECTURE: Market_Making] Passive Market Making (Spread Capture):**
-    - **[LOGIC:]** Continuously place bid and ask limit orders around a calculated mid-price. Actively manage inventory risk by "skewing" quotes to trade back towards a flat position.
-
-2. **[ARCHITECTURE: Order_Flow_Imbalance] Aggressive Order Flow Imbalance (Liquidity Taking):**
-    - **[LOGIC:]** Scan the top levels of the L2 order book. If the volume on one side massively outweighs the other (e.g., `bid_volume > ask_volume * 3.0`), execute an immediate market order.
+2.  **[ARCHITECTURE: Order_Flow_Imbalance] Aggressive Order Flow Imbalance (Liquidity Taking):**
+    - **[LOGIC:]** Scan the top levels of the L2 order book. If the volume on one side massively outweighs the other (e.g., `bid_volume > ask_volume * 3.0`), execute an immediate market order to front-run the expected price move.
     - **[PSEUDOCODE: Imbalance_Scalp]**
-        `FUNCTION execute_imbalance_scalp(ticker):`
-        `// Continuously monitor the top N levels of the book`
-        `WHILE True:`
-        `bid_volume, ask_volume = get_level2_volume(ticker, depth=5)`
-        `IF bid_volume > (ask_volume * 3.0):`
-        `entry_price = execute_market_buy(ticker, position_size)`
-        `// Immediately place OCO exit orders`
-        `place_oco_sell_order(ticker, position_size, take_profit=entry_price+0.03, stop_loss=entry_price-0.02)`
-        `WAIT_FOR_EXIT_FILL`
-        `BREAK`
+        `FUNCTION execute_imbalance_scalp(ticker):
+            // Continuously monitor the top N levels of the book
+            WHILE True:
+                bid_volume, ask_volume = get_level2_volume(ticker, depth=5)
+                IF bid_volume > (ask_volume * 3.0):
+                    entry_price = execute_market_buy(ticker, position_size)
+                    // Immediately place OCO exit orders with very tight targets
+                    place_oco_sell_order(ticker, position_size, take_profit=entry_price+0.03, stop_loss=entry_price-0.02)
+                    WAIT_FOR_EXIT_FILL
+                    BREAK`
 
 [SOURCE_ID: Intraday Scalping AI Architecture]
 [SOURCE_ID: Expanded Day Trading Knowledge Base: Market Regimes, Indicators, and Strategies_chatGPT.md]
