@@ -1,4 +1,3 @@
-# /market_analyst/agent.py
 import uuid
 from datetime import datetime, timezone
 from typing import AsyncGenerator, List, Dict, Any
@@ -7,14 +6,16 @@ from google.adk.agents import BaseAgent, ParallelAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.adk.tools import FunctionTool
+from google.genai import types as genai_types
 
 from market_analyst.sub_agents.exchange_gapper_discovery.agent import ExchangeGapperDiscovery
 from market_analyst.sub_agents.ticker_enrichment_pipeline.agent import TickerEnrichmentPipeline
-from market_analyst.schemas import MarketAnalysisReport, ExchangeReport, MarketRegime
+from market_analyst.schemas import MarketAnalysisReport, ExchangeReport, MarketRegime, ObservedInstrument
 from market_analyst.tools import cluster_instruments
-from market_analyst.sub_agents.ticker_enrichment_pipeline.schemas import ObservedInstrument
 
 class MarketAnalysisCoordinator(BaseAgent):
+    """Orchestrates the market analysis pipeline. This agent is STATELESS."""
+
     async def _run_async_impl(
         self,
         ctx: InvocationContext,
@@ -24,8 +25,6 @@ class MarketAnalysisCoordinator(BaseAgent):
         exchange_ids = ctx.session.state.get("exchanges", [])
 
         if not exchange_ids:
-            # Import genai types locally for the event
-            from google.genai import types as genai_types
             yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="Error: No exchanges provided.")]))
             return
 
@@ -61,7 +60,14 @@ class MarketAnalysisCoordinator(BaseAgent):
         ]
 
         if not enrichment_agents:
-            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="No gappers found to enrich.")]))
+            # Create an empty report if no gappers were found
+            final_report_no_gappers = MarketAnalysisReport(
+                report_id=str(uuid.uuid4()),
+                analysis_timestamp_utc=datetime.now(timezone.utc).isoformat(),
+                run_type=run_type,
+                exchange_reports=list(exchange_reports_map.values()),
+            )
+            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text=final_report_no_gappers.model_dump_json(indent=2))]))
             return
 
         enrichment_pipeline = ParallelAgent(name="enrichment_pipeline", sub_agents=enrichment_agents)
@@ -77,7 +83,6 @@ class MarketAnalysisCoordinator(BaseAgent):
 
         # --- Stage 3: Cluster Instruments ---
         cluster_tool = FunctionTool(cluster_instruments)
-        # Use tool_context=ctx for proper ADK execution
         cluster_result = await cluster_tool.run_async(args={"instruments": enriched_instruments_dicts}, tool_context=ctx)
         clustered_instruments = cluster_result.get("clustered_instruments", [])
 
@@ -94,7 +99,6 @@ class MarketAnalysisCoordinator(BaseAgent):
             exchange_reports=list(exchange_reports_map.values()),
         )
 
-        from google.genai import types as genai_types
         yield Event(
             author=self.name,
             content=genai_types.Content(parts=[genai_types.Part(text=final_report.model_dump_json(indent=2))])

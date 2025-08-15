@@ -1,4 +1,3 @@
-# /market_analyst/sub_agents/ticker_enrichment_pipeline/tools.py
 import asyncio
 from typing import Dict, Any
 from .schemas import ObservedInstrument, GapperData, RiskMetrics, CatalystAnalysis, KeyTechnicalLevels, RawTechnicals, Macd, BollingerBands, ChartClarityComponents, FundamentalData
@@ -8,6 +7,7 @@ async def enrich_ticker_data(ticker: str, gapper_data: Dict[str, Any], exchange_
     print(f"Enriching ticker data for {ticker}...")
     await asyncio.sleep(0.5)
 
+    # Use Pydantic models for validation and structure, then dump to dict
     enriched_data = ObservedInstrument(
         ticker=ticker,
         exchange_id=exchange_id,

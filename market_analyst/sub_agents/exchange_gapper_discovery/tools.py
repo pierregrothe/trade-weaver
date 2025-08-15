@@ -1,4 +1,3 @@
-# /market_analyst/sub_agents/exchange_gapper_discovery/tools.py
 import asyncio
 from typing import List, Dict, Any
 
@@ -15,6 +14,5 @@ async def get_market_regime(exchange_id: str) -> Dict[str, Any]:
     """Gets the market regime for a given exchange. Returns a dictionary."""
     print(f"Getting market regime for {exchange_id}...")
     await asyncio.sleep(0.1)
-    # In a real scenario, the VIX ticker would be looked up from config
     vix_ticker = "^VIXC" if exchange_id == "TSX" else "^VIX"
     return {"vix_ticker": vix_ticker, "vix_value": 18.5, "adx_value": 28.1}

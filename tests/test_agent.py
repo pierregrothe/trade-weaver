@@ -1,4 +1,3 @@
-# /tests/test_agent.py
 import pytest
 from google.adk.evaluation.agent_evaluator import AgentEvaluator
 
