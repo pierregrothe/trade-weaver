@@ -1,3 +1,4 @@
+# /market_analyst/sub_agents/ticker_enrichment_pipeline/schemas.py
 from pydantic import BaseModel, Field
 from typing import List, Optional
 

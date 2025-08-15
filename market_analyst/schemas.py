@@ -1,3 +1,4 @@
+# /market_analyst/schemas.py
 from pydantic import BaseModel, Field
 from typing import List
 from .sub_agents.ticker_enrichment_pipeline.schemas import ObservedInstrument

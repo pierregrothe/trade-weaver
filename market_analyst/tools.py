@@ -1,3 +1,4 @@
+# /market_analyst/tools.py
 from typing import List, Dict, Any
 
 from google.adk.events import Event
