@@ -1,11 +1,7 @@
 # /market_analyst/sub_agents/exchange_gapper_discovery/schemas.py
-from pydantic import BaseModel, Field
-from typing import List
+from pydantic import BaseModel
+from typing import List, Dict, Any
 
 class GapperDiscoveryResult(BaseModel):
-    """
-    Represents the output of the gapper discovery agent.
-    """
-    exchange_id: str = Field(..., description="The exchange ID.")
-    gappers: List[dict] = Field(..., description="A list of gapping instruments.")
-    market_regime: dict = Field(..., description="The market regime.")
+    tickers: List[Dict[str, Any]]
+    market_regime: Dict[str, Any]

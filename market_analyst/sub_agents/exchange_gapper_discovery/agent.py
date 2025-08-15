@@ -1,4 +1,4 @@
-# /market_analyst/sub_agents/exchange_gapper_discovery/agent.py (Corrected)
+# /market_analyst/sub_agents/exchange_gapper_discovery/agent.py
 from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from typing import AsyncGenerator

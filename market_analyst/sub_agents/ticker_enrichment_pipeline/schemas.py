@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class GapperData(BaseModel):
+    ticker: str
     gap_percent: float
     pre_market_volume: int
     relative_volume: float
@@ -56,10 +57,6 @@ class FundamentalData(BaseModel):
     market_capitalization: int
 
 class ObservedInstrument(BaseModel):
-    """
-    Represents a single instrument that has been observed and enriched
-    with various data points.
-    """
     ticker: str
     exchange_id: str
     gapper_data: GapperData
@@ -69,4 +66,4 @@ class ObservedInstrument(BaseModel):
     raw_technicals: RawTechnicals
     chart_clarity_raw_components: ChartClarityComponents
     fundamental_data: FundamentalData
-    correlation_cluster_id: Optional[int] = Field(None, description="The correlation cluster ID, added by the coordinator.")
+    correlation_cluster_id: Optional[int] = None

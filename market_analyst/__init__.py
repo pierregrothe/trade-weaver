@@ -1,2 +1,2 @@
 # /market_analyst/__init__.py
-from . import agent
+from .agent import root_agent
