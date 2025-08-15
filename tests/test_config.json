@@ -1,0 +1,12 @@
+{
+    "criteria": {
+        "response_match_score": 0.5,
+        "tool_trajectory_avg_score": 1.0,
+        "semantic_similarity_score": 0.7
+    },
+    "evaluation_config": {
+        "allow_wildcards": true,
+        "ignore_dynamic_fields": ["report_id", "analysis_timestamp_utc"],
+        "focus_on_structure": true
+    }
+}

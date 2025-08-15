@@ -96,4 +96,5 @@ asyncio_mode = "auto" # Let pytest-asyncio handle the event loop automatically.
 filterwarnings = [
     "ignore::UserWarning:google.adk.evaluation.metric_evaluator_registry",
     "ignore::UserWarning:google.adk.evaluation.agent_evaluator",
+    'ignore:Field name "config_type" in "SequentialAgent" shadows an attribute in parent "BaseAgent":UserWarning',
 ]

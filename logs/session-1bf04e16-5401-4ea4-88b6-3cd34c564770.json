@@ -1,0 +1,175 @@
+{
+  "id": "1bf04e16-5401-4ea4-88b6-3cd34c564770",
+  "appName": "market_analyst",
+  "userId": "user",
+  "state": {},
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n\"run_type\": \"Pre-Market\",\n\"exchanges\": [\n\"NASDAQ\",\n\"TSX\"\n]\n}"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-28f87d42-1f1d-4450-b48a-58b80a6a3371",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "541f0766-f4e2-45cb-9573-cd9ab65fdb8a",
+      "timestamp": 1755283084.653769
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Parsed input: run_type=Pre-Market, exchanges=['NASDAQ', 'TSX']"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "market_analyst_coordinator",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "35074908-4d23-4608-b420-6daebf5bea20",
+      "timestamp": 1755283084.653977
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "discover_TSX",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "0eb9f904-688b-4834-8706-a7713e6187f0",
+      "timestamp": 1755283084.965929
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "discover_NASDAQ",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "5219959d-1ba1-4e66-a135-a65ff64e2720",
+      "timestamp": 1755283084.965861
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_GOOG",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "e5cad038-ca16-4833-a6c4-44aad0941951",
+      "timestamp": 1755283085.505928
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_AAPL",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "f8cfca2a-a2de-40f0-8332-787a36d1c0bd",
+      "timestamp": 1755283085.505719
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_GOOG",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "821d0707-1f46-41c9-932f-77a99fcf9f54",
+      "timestamp": 1755283085.50581
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_AAPL",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "167e8afd-568d-4ec5-8d68-07b472d262d6",
+      "timestamp": 1755283085.505877
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Market analysis completed successfully."
+          },
+          {
+            "text": "{\n  \"report_id\": \"9c3b483a-e6bb-4de2-99fe-a9eb60cd6aca\",\n  \"analysis_timestamp_utc\": \"2025-08-15T18:38:05.510602+00:00\",\n  \"run_type\": \"Pre-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"NASDAQ\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": []\n    },\n    {\n      \"exchange_id\": \"TSX\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIXC\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": [\n        {\n          \"ticker\": \"AAPL\",\n          \"exchange_id\": \"TSX\",\n          \"gapper_data\": {\n            \"ticker\": \"AAPL\",\n            \"gap_percent\": 5.2,\n            \"pre_market_volume\": 1250000,\n            \"relative_volume\": 15.3\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 3.45,\n            \"average_dollar_volume_30d\": 15200000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Earnings Beat\",\n            \"recent_headlines\": [\n              \"Apple reports record Q3 earnings...\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 195.5,\n            \"pre_market_low\": 192.0,\n            \"previous_day_high\": 191.75\n          },\n          \"raw_technicals\": {\n            \"vwap\": 194.88,\n            \"rsi_14d\": 68.2,\n            \"macd_12_26_9\": {\n              \"macd_line\": 1.25,\n              \"signal_line\": 1.1,\n              \"histogram\": 0.15\n            },\n            \"ema_9d\": 193.5,\n            \"ema_20d\": 192.8,\n            \"ema_50d\": 190.1,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 196.5,\n              \"middle_band\": 192.8,\n              \"lower_band\": 189.1,\n              \"band_width\": 0.038\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.98,\n            \"price_action_rhythm\": 0.95,\n            \"volatility_character\": 0.97,\n            \"volume_profile_structure\": 0.99,\n            \"volume_trend_confirmation\": 0.92,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Apple Inc.\",\n            \"sector\": \"Technology\",\n            \"industry\": \"Consumer Electronics\",\n            \"market_capitalization\": 3100000000000\n          },\n          \"correlation_cluster_id\": 1\n        },\n        {\n          \"ticker\": \"AAPL\",\n          \"exchange_id\": \"TSX\",\n          \"gapper_data\": {\n            \"ticker\": \"AAPL\",\n            \"gap_percent\": 5.2,\n            \"pre_market_volume\": 1250000,\n            \"relative_volume\": 15.3\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 3.45,\n            \"average_dollar_volume_30d\": 15200000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Earnings Beat\",\n            \"recent_headlines\": [\n              \"Apple reports record Q3 earnings...\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 195.5,\n            \"pre_market_low\": 192.0,\n            \"previous_day_high\": 191.75\n          },\n          \"raw_technicals\": {\n            \"vwap\": 194.88,\n            \"rsi_14d\": 68.2,\n            \"macd_12_26_9\": {\n              \"macd_line\": 1.25,\n              \"signal_line\": 1.1,\n              \"histogram\": 0.15\n            },\n            \"ema_9d\": 193.5,\n            \"ema_20d\": 192.8,\n            \"ema_50d\": 190.1,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 196.5,\n              \"middle_band\": 192.8,\n              \"lower_band\": 189.1,\n              \"band_width\": 0.038\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.98,\n            \"price_action_rhythm\": 0.95,\n            \"volatility_character\": 0.97,\n            \"volume_profile_structure\": 0.99,\n            \"volume_trend_confirmation\": 0.92,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Apple Inc.\",\n            \"sector\": \"Technology\",\n            \"industry\": \"Consumer Electronics\",\n            \"market_capitalization\": 3100000000000\n          },\n          \"correlation_cluster_id\": 1\n        },\n        {\n          \"ticker\": \"GOOG\",\n          \"exchange_id\": \"TSX\",\n          \"gapper_data\": {\n            \"ticker\": \"GOOG\",\n            \"gap_percent\": -3.1,\n            \"pre_market_volume\": 850000,\n            \"relative_volume\": 12.1\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 3.45,\n            \"average_dollar_volume_30d\": 15200000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Earnings Beat\",\n            \"recent_headlines\": [\n              \"Apple reports record Q3 earnings...\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 195.5,\n            \"pre_market_low\": 192.0,\n            \"previous_day_high\": 191.75\n          },\n          \"raw_technicals\": {\n            \"vwap\": 194.88,\n            \"rsi_14d\": 68.2,\n            \"macd_12_26_9\": {\n              \"macd_line\": 1.25,\n              \"signal_line\": 1.1,\n              \"histogram\": 0.15\n            },\n            \"ema_9d\": 193.5,\n            \"ema_20d\": 192.8,\n            \"ema_50d\": 190.1,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 196.5,\n              \"middle_band\": 192.8,\n              \"lower_band\": 189.1,\n              \"band_width\": 0.038\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.98,\n            \"price_action_rhythm\": 0.95,\n            \"volatility_character\": 0.97,\n            \"volume_profile_structure\": 0.99,\n            \"volume_trend_confirmation\": 0.92,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Alphabet Inc.\",\n            \"sector\": \"Technology\",\n            \"industry\": \"Internet Content & Information\",\n            \"market_capitalization\": 2200000000000\n          },\n          \"correlation_cluster_id\": 1\n        },\n        {\n          \"ticker\": \"GOOG\",\n          \"exchange_id\": \"TSX\",\n          \"gapper_data\": {\n            \"ticker\": \"GOOG\",\n            \"gap_percent\": -3.1,\n            \"pre_market_volume\": 850000,\n            \"relative_volume\": 12.1\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 3.45,\n            \"average_dollar_volume_30d\": 15200000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Earnings Beat\",\n            \"recent_headlines\": [\n              \"Apple reports record Q3 earnings...\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 195.5,\n            \"pre_market_low\": 192.0,\n            \"previous_day_high\": 191.75\n          },\n          \"raw_technicals\": {\n            \"vwap\": 194.88,\n            \"rsi_14d\": 68.2,\n            \"macd_12_26_9\": {\n              \"macd_line\": 1.25,\n              \"signal_line\": 1.1,\n              \"histogram\": 0.15\n            },\n            \"ema_9d\": 193.5,\n            \"ema_20d\": 192.8,\n            \"ema_50d\": 190.1,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 196.5,\n              \"middle_band\": 192.8,\n              \"lower_band\": 189.1,\n              \"band_width\": 0.038\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.98,\n            \"price_action_rhythm\": 0.95,\n            \"volatility_character\": 0.97,\n            \"volume_profile_structure\": 0.99,\n            \"volume_trend_confirmation\": 0.92,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Alphabet Inc.\",\n            \"sector\": \"Technology\",\n            \"industry\": \"Internet Content & Information\",\n            \"market_capitalization\": 2200000000000\n          },\n          \"correlation_cluster_id\": 1\n        }\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "market_analyst_coordinator",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "743199ca-aa46-40d1-90d2-2f8598d0d182",
+      "timestamp": 1755283085.510772
+    }
+  ],
+  "lastUpdateTime": 1755283085.510772
+}
