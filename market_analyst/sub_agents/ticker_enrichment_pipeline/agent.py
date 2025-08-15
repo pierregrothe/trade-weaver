@@ -8,17 +8,12 @@ from .tools import enrich_ticker_data
 from pydantic import Field
 
 class TickerEnrichmentPipeline(BaseAgent):
-    """A sub-agent that enriches data for a single ticker."""
-
-    # --- THE FIX: Declare all __init__ parameters as class fields ---
     ticker: str = Field(..., description="The ticker to enrich.")
     exchange_id: str = Field(..., description="The ID of the exchange the ticker belongs to.")
     gapper_data: Dict[str, Any] = Field(..., description="The gapper data for the ticker.")
 
     def __init__(self, **kwargs):
-        # The name is set dynamically from the ticker passed in kwargs
         super().__init__(name=f"enrich_{kwargs.get('ticker')}", **kwargs)
-        # Pydantic automatically assigns self.ticker, self.exchange_id, etc.
 
     async def _run_async_impl(
         self,
@@ -30,6 +25,5 @@ class TickerEnrichmentPipeline(BaseAgent):
             exchange_id=self.exchange_id,
             gapper_data=self.gapper_data
         )
-        # The agent's only job is to put its result in the state.
         ctx.session.state[f"enriched_{self.ticker}"] = enriched_data_dict
         yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="Done")]))

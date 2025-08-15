@@ -9,14 +9,10 @@ from pydantic import Field
 
 class ExchangeGapperDiscovery(BaseAgent):
     """A sub-agent that discovers gappers for a given exchange."""
-
-    # --- THE FIX: Declare the parameter as a class field ---
     exchange_id: str = Field(..., description="The ID of the exchange to discover gappers for.")
 
     def __init__(self, **kwargs):
-        # The 'name' is now set dynamically based on the exchange_id passed in kwargs
         super().__init__(name=f"discover_{kwargs.get('exchange_id')}", **kwargs)
-        # Pydantic automatically assigns self.exchange_id from the kwargs
 
     async def _run_async_impl(
         self,
@@ -30,5 +26,5 @@ class ExchangeGapperDiscovery(BaseAgent):
             "tickers": gappers_list,
             "market_regime": market_regime_dict
         }
-        # This worker agent completes its task by updating state. It yields no final Event.
+        # This worker agent yields nothing; its job is to update state.
         yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="Done")]))

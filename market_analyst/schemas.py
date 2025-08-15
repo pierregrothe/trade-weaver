@@ -2,6 +2,13 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+# --- Data Structures for Final Report ---
+
+class MarketRegime(BaseModel):
+    vix_ticker: str
+    vix_value: float
+    adx_value: float
+
 class GapperData(BaseModel):
     ticker: str
     gap_percent: float
@@ -67,11 +74,6 @@ class ObservedInstrument(BaseModel):
     chart_clarity_raw_components: ChartClarityComponents
     fundamental_data: FundamentalData
     correlation_cluster_id: Optional[int] = None
-
-class MarketRegime(BaseModel):
-    vix_ticker: str
-    vix_value: float
-    adx_value: float
 
 class ExchangeReport(BaseModel):
     exchange_id: str
