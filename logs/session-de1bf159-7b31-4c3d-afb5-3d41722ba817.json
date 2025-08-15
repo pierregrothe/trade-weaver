@@ -1,0 +1,172 @@
+{
+  "id": "de1bf159-7b31-4c3d-afb5-3d41722ba817",
+  "appName": "market_analyst",
+  "userId": "user",
+  "state": {},
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n\"run_type\": \"Pre-Market\",\n\"exchanges\": [\n\"NASDAQ\",\n\"TSX\"\n]\n}"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-074defb0-a449-41e0-a5a3-f721c53514a5",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "e54ab09e-ae97-48aa-ae56-a881f9125b61",
+      "timestamp": 1755283748.718369
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Parsed input: run_type=Pre-Market, exchanges=['NASDAQ', 'TSX']"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "market_analyst_coordinator",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "07a275d3-defb-4db3-a828-8c7ae6f28a8d",
+      "timestamp": 1755283748.718584
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "discover_NASDAQ",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "24ac7962-ab8e-45f1-9588-d4c5a9eee5ce",
+      "timestamp": 1755283749.036338
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "discover_TSX",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "548f2928-7319-4084-84d4-8bb8a026ee39",
+      "timestamp": 1755283749.036416
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_AAPL",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "feec892a-ac6e-4591-8f7a-9b143b132390",
+      "timestamp": 1755283749.555452
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_SHOP_TO",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "896cf78d-36f8-47ce-b6c7-289c5c8463f6",
+      "timestamp": 1755283749.555623
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_TSLA",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "ca53fbce-d5a2-434f-8539-18f114bf1a35",
+      "timestamp": 1755283749.555563
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "enrich_CNR_TO",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "3ee9d8fd-c936-43b0-b78d-261af59f7ccf",
+      "timestamp": 1755283749.555698
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"report_id\": \"d1ad12f0-9aa6-4096-b3f0-99004c2430c2\",\n  \"analysis_timestamp_utc\": \"2025-08-15T18:49:09.559793+00:00\",\n  \"run_type\": \"Pre-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"NASDAQ\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": [\n        {\n          \"ticker\": \"AAPL\",\n          \"exchange_id\": \"NASDAQ\",\n          \"gapper_data\": {\n            \"ticker\": \"AAPL\",\n            \"gap_percent\": 5.2,\n            \"pre_market_volume\": 1250000,\n            \"relative_volume\": 15.3\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 3.45,\n            \"average_dollar_volume_30d\": 15200000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Earnings Beat\",\n            \"recent_headlines\": [\n              \"Apple reports record Q3 earnings, iPhone sales surge\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 195.5,\n            \"pre_market_low\": 192.0,\n            \"previous_day_high\": 191.75\n          },\n          \"raw_technicals\": {\n            \"vwap\": 194.88,\n            \"rsi_14d\": 68.2,\n            \"macd_12_26_9\": {\n              \"macd_line\": 1.25,\n              \"signal_line\": 1.1,\n              \"histogram\": 0.15\n            },\n            \"ema_9d\": 193.5,\n            \"ema_20d\": 192.8,\n            \"ema_50d\": 190.1,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 196.5,\n              \"middle_band\": 192.8,\n              \"lower_band\": 189.1,\n              \"band_width\": 0.038\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.98,\n            \"price_action_rhythm\": 0.95,\n            \"volatility_character\": 0.97,\n            \"volume_profile_structure\": 0.99,\n            \"volume_trend_confirmation\": 0.92,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Apple Inc.\",\n            \"sector\": \"Technology\",\n            \"industry\": \"Consumer Electronics\",\n            \"market_capitalization\": 3100000000000\n          },\n          \"correlation_cluster_id\": 0\n        },\n        {\n          \"ticker\": \"TSLA\",\n          \"exchange_id\": \"NASDAQ\",\n          \"gapper_data\": {\n            \"ticker\": \"TSLA\",\n            \"gap_percent\": -2.8,\n            \"pre_market_volume\": 980000,\n            \"relative_volume\": 8.7\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 12.75,\n            \"average_dollar_volume_30d\": 8900000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Production Update\",\n            \"recent_headlines\": [\n              \"Tesla Q3 deliveries miss expectations, stock drops\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 248.2,\n            \"pre_market_low\": 242.1,\n            \"previous_day_high\": 251.8\n          },\n          \"raw_technicals\": {\n            \"vwap\": 245.32,\n            \"rsi_14d\": 42.8,\n            \"macd_12_26_9\": {\n              \"macd_line\": -2.15,\n              \"signal_line\": -1.85,\n              \"histogram\": -0.3\n            },\n            \"ema_9d\": 244.1,\n            \"ema_20d\": 248.95,\n            \"ema_50d\": 255.3,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 262.4,\n              \"middle_band\": 248.95,\n              \"lower_band\": 235.5,\n              \"band_width\": 0.108\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.85,\n            \"price_action_rhythm\": 0.78,\n            \"volatility_character\": 0.92,\n            \"volume_profile_structure\": 0.88,\n            \"volume_trend_confirmation\": 0.75,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Tesla Inc.\",\n            \"sector\": \"Consumer Cyclical\",\n            \"industry\": \"Auto Manufacturers\",\n            \"market_capitalization\": 780000000000\n          },\n          \"correlation_cluster_id\": 1\n        }\n      ]\n    },\n    {\n      \"exchange_id\": \"TSX\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIXC\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": [\n        {\n          \"ticker\": \"CNR.TO\",\n          \"exchange_id\": \"TSX\",\n          \"gapper_data\": {\n            \"ticker\": \"CNR.TO\",\n            \"gap_percent\": -1.5,\n            \"pre_market_volume\": 320000,\n            \"relative_volume\": 6.2\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 2.95,\n            \"average_dollar_volume_30d\": 680000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Quarterly Results\",\n            \"recent_headlines\": [\n              \"Canadian National Railway reports steady Q3 volumes\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 142.85,\n            \"pre_market_low\": 140.5,\n            \"previous_day_high\": 143.2\n          },\n          \"raw_technicals\": {\n            \"vwap\": 141.65,\n            \"rsi_14d\": 48.7,\n            \"macd_12_26_9\": {\n              \"macd_line\": -0.45,\n              \"signal_line\": -0.38,\n              \"histogram\": -0.07\n            },\n            \"ema_9d\": 141.2,\n            \"ema_20d\": 142.1,\n            \"ema_50d\": 144.8,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 147.3,\n              \"middle_band\": 142.1,\n              \"lower_band\": 136.9,\n              \"band_width\": 0.073\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.96,\n            \"price_action_rhythm\": 0.93,\n            \"volatility_character\": 0.88,\n            \"volume_profile_structure\": 0.95,\n            \"volume_trend_confirmation\": 0.91,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Canadian National Railway Company\",\n            \"sector\": \"Industrials\",\n            \"industry\": \"Railroads\",\n            \"market_capitalization\": 95000000000\n          },\n          \"correlation_cluster_id\": 1\n        },\n        {\n          \"ticker\": \"SHOP.TO\",\n          \"exchange_id\": \"TSX\",\n          \"gapper_data\": {\n            \"ticker\": \"SHOP.TO\",\n            \"gap_percent\": 3.1,\n            \"pre_market_volume\": 450000,\n            \"relative_volume\": 12.5\n          },\n          \"risk_metrics\": {\n            \"average_true_range_14d\": 5.85,\n            \"average_dollar_volume_30d\": 450000000.0\n          },\n          \"catalyst_analysis\": {\n            \"primary_catalyst_type\": \"Partnership Announcement\",\n            \"recent_headlines\": [\n              \"Shopify announces new AI-powered merchant tools\"\n            ]\n          },\n          \"key_technical_levels\": {\n            \"pre_market_high\": 89.45,\n            \"pre_market_low\": 86.2,\n            \"previous_day_high\": 87.3\n          },\n          \"raw_technicals\": {\n            \"vwap\": 87.95,\n            \"rsi_14d\": 58.3,\n            \"macd_12_26_9\": {\n              \"macd_line\": 0.85,\n              \"signal_line\": 0.72,\n              \"histogram\": 0.13\n            },\n            \"ema_9d\": 87.1,\n            \"ema_20d\": 85.4,\n            \"ema_50d\": 82.95,\n            \"bollinger_bands_20d_2std\": {\n              \"upper_band\": 92.1,\n              \"middle_band\": 85.4,\n              \"lower_band\": 78.7,\n              \"band_width\": 0.157\n            }\n          },\n          \"chart_clarity_raw_components\": {\n            \"range_integrity\": 0.92,\n            \"price_action_rhythm\": 0.89,\n            \"volatility_character\": 0.94,\n            \"volume_profile_structure\": 0.91,\n            \"volume_trend_confirmation\": 0.87,\n            \"order_flow_absorption\": 0.0,\n            \"cumulative_volume_delta\": 0.0\n          },\n          \"fundamental_data\": {\n            \"name\": \"Shopify Inc.\",\n            \"sector\": \"Technology\",\n            \"industry\": \"Software - Infrastructure\",\n            \"market_capitalization\": 112000000000\n          },\n          \"correlation_cluster_id\": 0\n        }\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "market_analyst_coordinator",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "e244ea3f-8252-4cde-bdd4-c43d13d6a593",
+      "timestamp": 1755283749.559966
+    }
+  ],
+  "lastUpdateTime": 1755283749.559966
+}

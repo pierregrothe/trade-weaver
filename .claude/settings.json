@@ -1,0 +1,150 @@
+{
+    // Custom instructions for ADK development
+    "custom-instructions": "You are an expert in Google Agent Development Kit (ADK) version 1.11.0. IMPORTANT: Always validate code against the llms.txt file located in the project root, which contains the official ADK documentation. Ensure all classes, methods, and parameters exist in the documentation before using them. Never invent or assume features not explicitly documented in llms.txt. Always use Gemini 2.5 Flash as the default model (gemini-2.5-flash) unless specified otherwise. For cost-sensitive tasks use gemini-2.5-flash-lite, and for complex reasoning use gemini-2.5-pro. Follow ADK best practices and ensure all code is compatible with version 1.11.0. When creating agents, always use the LlmAgent class for LLM-powered agents and proper tool integration. Before providing any code solution, reference which section from llms.txt you are using as the source. The project uses VSCode as the IDE, Python 3.13.6, and .venv as the virtual environment. Use Python 3.13+ features where appropriate.",
+    // Model selection for Claude Code - use latest Opus
+    "model": "claude-sonnet-latest",
+    // File types to include in context
+    "context-files": {
+        "include": [
+            "llms.txt", // ALWAYS include ADK documentation
+            "**/*.py",
+            "**/*.md",
+            "**/*.txt",
+            "**/*.json",
+            "**/*.yaml",
+            "**/*.yml",
+            "**/requirements.txt",
+            "**/pyproject.toml",
+            "**/Dockerfile",
+            "**/.env.example"
+        ],
+        "exclude": [
+            "**/__pycache__/**",
+            "**/*.pyc",
+            "**/.venv/**",
+            "**/env/**",
+            "**/.git/**",
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/.pytest_cache/**",
+            "**/*.log",
+            "**/logs/**",
+            "**/.claude_cache/**",
+            "**/.vscode/**",
+            "**/.idea/**"
+        ]
+    },
+    // Auto-approval settings
+    "auto-approval": {
+        // Automatically approve file creation for ADK agents
+        "create": [
+            "agents/*.py",
+            "tools/*.py",
+            "config/*.json",
+            "config/*.yaml",
+            "tests/test_*.py"
+        ],
+        // Automatically approve edits to existing files
+        "edit": [
+            "agents/*.py",
+            "tools/*.py",
+            "requirements.txt",
+            "README.md"
+        ],
+        // Never auto-approve these operations
+        "never": [
+            "**/settings.json",
+            "**/.env",
+            "**/credentials.json",
+            "**/service-account*.json"
+        ]
+    },
+    // Tool use preferences
+    "tool-use": {
+        // Allow all tools by default for ADK development
+        "disabled-tools": [],
+        // Set conservative limits for safety
+        "max-file-read-size": 1000000, // 1MB
+        "max-file-write-size": 500000 // 500KB
+    },
+    // Display preferences
+    "display": {
+        "markdown": true,
+        "syntax-highlighting": true,
+        "line-numbers": true,
+        "show-hidden-files": false
+    },
+    // Code generation preferences
+    "code-generation": {
+        "language": "python",
+        "style": "google", // Google Python style guide
+        "indent": 4,
+        "line-length": 100,
+        "quotes": "double", // For consistency with Google style
+        "docstring-format": "google",
+        "type-hints": true,
+        "auto-imports": true
+    },
+    // ADK-specific settings
+    "adk": {
+        "default-model": "gemini-2.5-flash",
+        "fallback-model": "gemini-2.5-flash-lite",
+        "complex-tasks-model": "gemini-2.5-pro",
+        "adk-version": "1.11.0",
+        "validate-imports": true,
+        "auto-fix-imports": true,
+        "prefer-vertex-ai-deployment": true
+    },
+    // Testing preferences
+    "testing": {
+        "framework": "pytest",
+        "auto-generate-tests": true,
+        "test-file-pattern": "test_*.py",
+        "coverage-threshold": 80
+    },
+    // Environment settings
+    "environment": {
+        "python-version": "3.13",
+        "virtual-env": ".venv",
+        "package-manager": "pip",
+        "auto-install-dependencies": false,
+        "ide": "vscode"
+    },
+    // Safety settings
+    "safety": {
+        "confirm-destructive-operations": true,
+        "backup-before-edit": true,
+        "validate-syntax-before-save": true,
+        "check-for-secrets": true
+    },
+    // Project templates for ADK
+    "templates": {
+        "new-agent": {
+            "template": "from google.adk.agents import LlmAgent\n\nclass {AgentName}(LlmAgent):\n    def __init__(self):\n        super().__init__(\n            name=\"{agent_name}\",\n            model=\"gemini-2.5-flash\",\n            instruction=\"{instruction}\",\n            description=\"{description}\",\n            tools=[]\n        )"
+        },
+        "new-tool": {
+            "template": "def {tool_name}({parameters}) -> dict:\n    \"\"\"{description}\n    \n    Args:\n        {args_description}\n    \n    Returns:\n        dict: {return_description}\n    \"\"\"\n    # Implementation\n    return {\"status\": \"success\", \"result\": None}"
+        }
+    },
+    // Integration settings
+    "integrations": {
+        "git": {
+            "auto-commit": false,
+            "commit-message-format": "feat(adk): {message}",
+            "branch-naming": "feature/adk-{feature}"
+        },
+        "gcp": {
+            "project-id": "${GCP_PROJECT_ID}",
+            "region": "us-central1",
+            "use-application-default-credentials": true
+        }
+    },
+    // Debug settings
+    "debug": {
+        "verbose": false,
+        "log-api-calls": false,
+        "save-conversation-history": true,
+        "history-file": ".claude-history.json"
+    }
+}

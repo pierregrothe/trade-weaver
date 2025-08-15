@@ -1,0 +1,36 @@
+{
+  "eval_set_id": "market_analyst_final_validation",
+  "name": "Market Analyst Agent Final Validation",
+  "description": "Final validation focusing on core functionality: clean JSON output, proper structure, and exchange handling.",
+  "eval_cases": [
+    {
+      "eval_id": "eval_case_clean_json_output",
+      "conversation": [
+        {
+          "invocation_id": "e-clean-json-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Pre-Market\", \"exchanges\": [\"NASDAQ\", \"TSX\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "*"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user",
+        "state": {}
+      }
+    }
+  ]
+}

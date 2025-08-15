@@ -30,7 +30,7 @@ requires-python = ">=3.11,<3.15"
 # Core dependencies required for the application to run.
 dependencies = [
     "eodhd>=1.0.32",
-    "google-adk>=1.10.0",
+    "google-adk>=1.11.0",
     "google-cloud-firestore>=2.21.0",
     "google-cloud-secret-manager>=2.24.0",
     "python-dotenv>=1.1.1",
@@ -49,7 +49,7 @@ dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
     "pytest-mock>=3.14.1",
-    "google-adk[eval]>=1.10.0", # For running the evaluation framework
+    "google-adk[eval]>=1.11.0", # For running the evaluation framework
 ]
 
 # --- Tool Configurations ---
@@ -96,4 +96,5 @@ asyncio_mode = "auto" # Let pytest-asyncio handle the event loop automatically.
 filterwarnings = [
     "ignore::UserWarning:google.adk.evaluation.metric_evaluator_registry",
     "ignore::UserWarning:google.adk.evaluation.agent_evaluator",
+    'ignore:Field name "config_type" in "SequentialAgent" shadows an attribute in parent "BaseAgent":UserWarning',
 ]

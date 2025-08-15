@@ -1,0 +1,181 @@
+{
+  "eval_set_id": "market_analyst_eval_set_comprehensive",
+  "name": "Market Analyst Agent Comprehensive Evaluation Set",
+  "description": "Comprehensive evaluation set for the market_analyst agent covering multiple scenarios, clean JSON output, and proper exchange distribution.",
+  "eval_cases": [
+    {
+      "eval_id": "eval_case_standard_two_exchanges",
+      "conversation": [
+        {
+          "invocation_id": "e-standard-two-exchange-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Pre-Market\", \"exchanges\": [\"NASDAQ\", \"TSX\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "{\n  \"report_id\": \"*\",\n  \"analysis_timestamp_utc\": \"*\",\n  \"run_type\": \"Pre-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"NASDAQ\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    },\n    {\n      \"exchange_id\": \"TSX\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIXC\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user_standard",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "eval_case_nasdaq_only",
+      "conversation": [
+        {
+          "invocation_id": "e-nasdaq-only-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Pre-Market\", \"exchanges\": [\"NASDAQ\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "{\n  \"report_id\": \"*\",\n  \"analysis_timestamp_utc\": \"*\",\n  \"run_type\": \"Pre-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"NASDAQ\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user_nasdaq_only",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "eval_case_tsx_only",
+      "conversation": [
+        {
+          "invocation_id": "e-tsx-only-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Pre-Market\", \"exchanges\": [\"TSX\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "{\n  \"report_id\": \"*\",\n  \"analysis_timestamp_utc\": \"*\",\n  \"run_type\": \"Pre-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"TSX\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIXC\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user_tsx_only",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "eval_case_intraday_analysis",
+      "conversation": [
+        {
+          "invocation_id": "e-intraday-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Intraday\", \"exchanges\": [\"NASDAQ\", \"TSX\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "{\n  \"report_id\": \"*\",\n  \"analysis_timestamp_utc\": \"*\",\n  \"run_type\": \"Intraday\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"NASDAQ\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    },\n    {\n      \"exchange_id\": \"TSX\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIXC\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user_intraday",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "eval_case_post_market_analysis", 
+      "conversation": [
+        {
+          "invocation_id": "e-post-market-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Post-Market\", \"exchanges\": [\"NASDAQ\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "{\n  \"report_id\": \"*\",\n  \"analysis_timestamp_utc\": \"*\",\n  \"run_type\": \"Post-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"NASDAQ\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user_post_market",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "eval_case_unknown_exchange",
+      "conversation": [
+        {
+          "invocation_id": "e-unknown-exchange-test",
+          "user_content": {
+            "parts": [
+              {
+                "text": "{\"run_type\": \"Pre-Market\", \"exchanges\": [\"LSE\"]}"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "{\n  \"report_id\": \"*\",\n  \"analysis_timestamp_utc\": \"*\",\n  \"run_type\": \"Pre-Market\",\n  \"exchange_reports\": [\n    {\n      \"exchange_id\": \"LSE\",\n      \"market_regime\": {\n        \"vix_ticker\": \"^VIX\",\n        \"vix_value\": 18.5,\n        \"adx_value\": 28.1\n      },\n      \"observed_instruments\": \"*\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "market_analyst",
+        "user_id": "test_user_unknown_exchange",
+        "state": {}
+      }
+    }
+  ]
+}

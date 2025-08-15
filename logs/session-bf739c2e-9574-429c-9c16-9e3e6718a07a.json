@@ -1,0 +1,100 @@
+{
+  "id": "bf739c2e-9574-429c-9c16-9e3e6718a07a",
+  "appName": "market_analyst",
+  "userId": "user",
+  "state": {},
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n\"run_type\": \"Pre-Market\",\n\"exchanges\": [\n\"NASDAQ\",\n\"TSX\"\n]\n}"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-df75b9fc-bcc8-403e-8bd1-b8a35d1ff1a4",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "d4be932d-62ae-46fd-adad-e81d02e8679f",
+      "timestamp": 1755283380.247452
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Parsed input: run_type=Pre-Market, exchanges=['NASDAQ', 'TSX']"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "market_analyst_coordinator",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "9d07c17a-4bb7-4b74-a826-4c25979e7776",
+      "timestamp": 1755283380.2477
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "discover_NASDAQ",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "71d89a24-78f1-4b29-aaf4-9b9e8ce65b22",
+      "timestamp": 1755283380.564575
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Done"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "discover_TSX",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "ee4b3c07-5bfc-4a5f-9eac-600b8d3f29e4",
+      "timestamp": 1755283380.564641
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Unexpected error in market analysis pipeline: 1 validation error for TickerEnrichmentPipeline\nname\n  Value error, Found invalid agent name: `enrich_SHOP.TO`. Agent name must be a valid identifier. It should start with a letter (a-z, A-Z) or an underscore (_), and can only contain letters, digits (0-9), and underscores. [type=value_error, input_value='enrich_SHOP.TO', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.11/v/value_error"
+          }
+        ]
+      },
+      "invocationId": "",
+      "author": "market_analyst_coordinator",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "95c6d468-14aa-423c-942f-ab1f51da2920",
+      "timestamp": 1755283380.567803
+    }
+  ],
+  "lastUpdateTime": 1755283380.567803
+}
