@@ -1,123 +1,106 @@
 # /market_analyst/agent.py
 import uuid
-import json
 from datetime import datetime, timezone
+from typing import AsyncGenerator, List, Dict, Any
+
 from google.adk.agents import BaseAgent, ParallelAgent
 from google.adk.agents.invocation_context import InvocationContext
-from typing import AsyncGenerator, List
 from google.adk.events import Event
-from google.genai import types
-from market_analyst.sub_agents.exchange_gapper_discovery.agent import exchange_gapper_discovery_agent
-from market_analyst.sub_agents.ticker_enrichment_pipeline.agent import TickerEnrichmentPipeline
-from market_analyst.sub_agents.ticker_enrichment_pipeline.schemas import ObservedInstrument
-from market_analyst.tools import cluster_instruments
-from market_analyst.schemas import MarketAnalysisReport, ExchangeReport, MarketRegime
+from google.adk.tools import FunctionTool
 
-from pydantic import Field
+from market_analyst.sub_agents.exchange_gapper_discovery.agent import ExchangeGapperDiscovery
+from market_analyst.sub_agents.ticker_enrichment_pipeline.agent import TickerEnrichmentPipeline
+from market_analyst.schemas import MarketAnalysisReport, ExchangeReport, MarketRegime
+from market_analyst.tools import cluster_instruments
+from market_analyst.sub_agents.ticker_enrichment_pipeline.schemas import ObservedInstrument
 
 class MarketAnalysisCoordinator(BaseAgent):
-    report_id: str = Field(..., description="The ID of the report.")
-    timestamp: str = Field(..., description="The timestamp of the report.")
-
-    def __init__(
-        self,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-    """
-    The root agent for the market analyst.
-    Orchestrates the three-stage workflow from ADR-0018.
-    """
-
     async def _run_async_impl(
         self,
         ctx: InvocationContext,
     ) -> AsyncGenerator[Event, None]:
-        """
-        The implementation of the agent's logic.
-        """
+
         run_type = ctx.session.state.get("run_type", "Pre-Market")
-        exchange_ids = ctx.session.state.get("exchanges", ["NASDAQ", "TSX"])
-        exchange_reports: List[ExchangeReport] = []
+        exchange_ids = ctx.session.state.get("exchanges", [])
+
+        if not exchange_ids:
+            # Import genai types locally for the event
+            from google.genai import types as genai_types
+            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="Error: No exchanges provided.")]))
+            return
+
+        # --- Stage 1: Discover Gappers in Parallel ---
+        discovery_agents = [ExchangeGapperDiscovery(exchange_id=eid) for eid in exchange_ids]
+        discovery_pipeline = ParallelAgent(name="gapper_discovery_pipeline", sub_agents=discovery_agents)
+        async for event in discovery_pipeline.run_async(ctx):
+            yield event
+
+        # --- Fan-In #1 ---
+        all_gappers_with_exchange: List[Dict[str, Any]] = []
+        exchange_reports_map: Dict[str, ExchangeReport] = {}
+
         for exchange_id in exchange_ids:
-            # Clear state for each exchange
-            ctx.session.state.clear()
-
-            # Stage 1: Discover gappers
-            gapper_discovery_agent = exchange_gapper_discovery_agent
-            gapper_discovery_agent.exchange_id = exchange_id
-
-            async for event in gapper_discovery_agent.run_async(ctx):
-                yield event
-
-            gappers_event = ctx.session.state.get(f"{exchange_id}_gappers")
-            gappers = eval(gappers_event.parts[0].text)["tickers"]
-            market_regime_event = ctx.session.state.get(f"{exchange_id}_market_regime")
-            market_regime = eval(market_regime_event.parts[0].text)
-
-            # Stage 2: Enrich gappers in parallel
-            enrichment_agents = []
-            for gapper in gappers:
-                enrichment_agents.append(
-                    TickerEnrichmentPipeline(
-                        name=f"enrich_{gapper['ticker']}",
-                        description=f"Enriches data for {gapper['ticker']}",
-                        ticker=gapper['ticker'],
-                        gapper_data=gapper,
-                        exchange_id=exchange_id,
-                    )
-                )
-
-            parallel_agent = ParallelAgent(
-                name="enrichment_pipeline",
-                sub_agents=enrichment_agents,
-            )
-
-            async for event in parallel_agent.run_async(ctx):
-                yield event
-
-            # Collect enriched data from state
-            enriched_instruments = []
-            for gapper in gappers:
-                enriched_data_event = ctx.session.state.get(f"enriched_{gapper['ticker']}_{exchange_id}")
-                if enriched_data_event:
-                    enriched_data = json.loads(enriched_data_event.parts[0].text)
-                    enriched_instruments.append(ObservedInstrument(**enriched_data))
-
-            # Stage 3: Cluster instruments
-            cluster_result_event = cluster_instruments(
-                [instr.model_dump() for instr in enriched_instruments]
-            )
-            clustered_instruments_data = json.loads(
-                cluster_result_event.content.parts[0].text
-            )["clustered_instruments"]
-
-            clustered_instruments = [ObservedInstrument(**ci) for ci in clustered_instruments_data]
-
-            exchange_reports.append(
-                ExchangeReport(
+            discovery_result = ctx.session.state.get(f"discovery_{exchange_id}")
+            if discovery_result:
+                gappers_list = discovery_result.get("tickers", [])
+                for gapper in gappers_list:
+                    all_gappers_with_exchange.append({**gapper, "exchange_id": exchange_id})
+                exchange_reports_map[exchange_id] = ExchangeReport(
                     exchange_id=exchange_id,
-                    market_regime=MarketRegime(**market_regime),
-                    observed_instruments=clustered_instruments,
+                    market_regime=MarketRegime(**discovery_result["market_regime"]),
+                    observed_instruments=[],
                 )
-            )
 
-        # Create the final report
-        report = MarketAnalysisReport(
-            report_id="c3a1b2e3-4d5f-6a7b-8c9d-0e1f2a3b4c5d",
-            analysis_timestamp_utc="2025-08-12T13:30:00Z",
+        # --- Stage 2: Enrich Gappers in Parallel ---
+        enrichment_agents = [
+            TickerEnrichmentPipeline(
+                ticker=g['ticker'],
+                exchange_id=g['exchange_id'],
+                gapper_data=g
+            ) for g in all_gappers_with_exchange
+        ]
+
+        if not enrichment_agents:
+            yield Event(author=self.name, content=genai_types.Content(parts=[genai_types.Part(text="No gappers found to enrich.")]))
+            return
+
+        enrichment_pipeline = ParallelAgent(name="enrichment_pipeline", sub_agents=enrichment_agents)
+        async for event in enrichment_pipeline.run_async(ctx):
+            yield event
+
+        # --- Fan-In #2 ---
+        enriched_instruments_dicts = []
+        for gapper in all_gappers_with_exchange:
+            enriched_data = ctx.session.state.get(f"enriched_{gapper['ticker']}")
+            if enriched_data:
+                enriched_instruments_dicts.append(enriched_data)
+
+        # --- Stage 3: Cluster Instruments ---
+        cluster_tool = FunctionTool(cluster_instruments)
+        # Use tool_context=ctx for proper ADK execution
+        cluster_result = await cluster_tool.run_async(args={"instruments": enriched_instruments_dicts}, tool_context=ctx)
+        clustered_instruments = cluster_result.get("clustered_instruments", [])
+
+        for instrument_data in clustered_instruments:
+            exchange_id = instrument_data["exchange_id"]
+            if exchange_id in exchange_reports_map:
+                exchange_reports_map[exchange_id].observed_instruments.append(ObservedInstrument(**instrument_data))
+
+        # --- Create and Yield Final Report ---
+        final_report = MarketAnalysisReport(
+            report_id=str(uuid.uuid4()),
+            analysis_timestamp_utc=datetime.now(timezone.utc).isoformat(),
             run_type=run_type,
-            exchange_reports=exchange_reports,
+            exchange_reports=list(exchange_reports_map.values()),
         )
 
+        from google.genai import types as genai_types
         yield Event(
             author=self.name,
-            content=types.Content(parts=[types.Part(text=report.model_dump_json(indent=2))]),
+            content=genai_types.Content(parts=[genai_types.Part(text=final_report.model_dump_json(indent=2))])
         )
 
 root_agent = MarketAnalysisCoordinator(
     name="market_analyst_coordinator",
     description="Orchestrates the market analysis pipeline.",
-    report_id=str(uuid.uuid4()),
-    timestamp=datetime.now(timezone.utc).isoformat(),
 )
